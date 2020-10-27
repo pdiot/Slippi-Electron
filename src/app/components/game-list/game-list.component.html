@@ -1,0 +1,69 @@
+
+<div class="row margin25">
+  <div class="col">
+    <ng-container *ngIf="filteredGameFiles; then filteredDisplay else noFilterDisplay"></ng-container>
+    <ng-template #filteredDisplay>
+      <div *ngIf="filteredGameFiles && filteredGameFiles.length > 0 && notAllGamesFilteredOut; else noExistingGameDisplay" class="card">
+        <div class="card-body">
+          <div *ngFor="let game of filteredGameFiles" class="row" [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game)}">
+            <div class="col-3 ellipsis">
+              <span>{{game.file}}</span>
+            </div>
+            <div class="col-2">
+              <span>{{game.playerCharacterPairs[0].player}}</span>
+            </div>
+            <div class="col-1">
+              <span class="badge badge-secondary">{{game.playerCharacterPairs[0].character.name}} </span>       
+            </div>
+            <div class="col-2">
+              <span>{{game.playerCharacterPairs[1].player}}</span>
+            </div>
+            <div class="col-1">
+              <span class="badge badge-secondary">{{game.playerCharacterPairs[1].character.name}}</span>
+            </div>
+            <div class="col-2">
+              <span>{{game.stage}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noExistingGameDisplay>
+        <div class="card">
+          <div class="card-body ignored">
+            <h1>NO MATCHING GAMES</h1>
+          </div>
+        </div>
+      </ng-template>
+    </ng-template>
+    <ng-template #noFilterDisplay>
+      <div *ngIf="enrichedGameFiles && enrichedGameFiles.length > 0" class="card">
+        <div class="card-body">
+          <div *ngFor="let game of enrichedGameFiles" class="row">
+            <div class="col-3 ellipsis">
+              <span>{{game.file}}</span>
+            </div>
+            <div class="col-2">
+              <span>{{game.playerCharacterPairs[0].player}}</span>
+            </div>
+            <div class="col-1">
+              <span class="badge badge-secondary">{{game.playerCharacterPairs[0].character.name}} </span>       
+            </div>
+            <div class="col-2">
+              <span>{{game.playerCharacterPairs[1].player}}</span>
+            </div>
+            <div class="col-1">
+              <span class="badge badge-secondary">{{game.playerCharacterPairs[1].character.name}}</span>
+            </div>
+            <div class="col-2">
+              <span>{{game.stage}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>    
+  </div>
+</div>
+
+
+
+

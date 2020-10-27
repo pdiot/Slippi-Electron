@@ -1,1 +1,83 @@
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
+
+
 /* You can add global styles to this file, and also import other style files */
+
+.margin25 {
+  margin: 25px;
+}
+
+.upload {
+  cursor: pointer;
+}
+.header {
+  text-align: center;
+}
+
+.header h1 {
+  font-family: serif;
+  font-size: 38px;
+  font-family: 'Times New Roman';
+}
+
+.content {
+  margin: 100px;
+}
+
+.col-8 .content {
+  margin: 20px;
+}
+
+.btn-character {
+  width: fit-content;
+}
+
+.btn-stage {
+  width: fit-content;
+}
+
+.blank {
+  width: 120px;
+  height: 94px;
+}
+
+/** Nique ta mère bootstrap dégage avec tes focus de con **/
+
+.selected {
+  box-shadow: none;
+  color: #fff;
+  background-color: #5bba83 !important;
+  border-color: #343a40;
+}
+
+.ignored {
+  box-shadow: none;
+  color: #fff;
+  background-color: #8d2f2f !important;
+  border-color: #343a40;
+}
+
+.filteredOut {
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.527);
+  background-color: #312f2f !important;
+  border-color: #343a40;
+}
+
+.ellipsis {
+  overflow: hidden;
+  direction: rtl; 
+  margin-left: 15px;
+  white-space: nowrap;
+}
+
+.wrapper {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.row {
+  margin-left: -10px !important;
+  margin-right: -10px!important;
+}
