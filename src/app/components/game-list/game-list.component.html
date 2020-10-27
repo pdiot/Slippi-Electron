@@ -4,6 +4,9 @@
     <ng-container *ngIf="filteredGameFiles; then filteredDisplay else noFilterDisplay"></ng-container>
     <ng-template #filteredDisplay>
       <div *ngIf="filteredGameFiles && filteredGameFiles.length > 0 && notAllGamesFilteredOut; else noExistingGameDisplay" class="card">
+        <div>
+          <span class="btn btn-secondary" (click)="generateStats()">Générer les stats</span>
+        </div>
         <div class="card-body">
           <div *ngFor="let game of filteredGameFiles" class="row" [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game)}">
             <div class="col-3 ellipsis">

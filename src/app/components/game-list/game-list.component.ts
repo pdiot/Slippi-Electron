@@ -100,6 +100,10 @@ export class GameListComponent implements OnInit, OnChanges {
     console.log('Post filter filteredGameFiles : ', this.filteredGameFiles);
   }
 
+  public generateStats(): void {
+    console.log('piou piou les stats piou');
+  }
+
   public isSelected(game: EnrichedGameFile) {
     return !game.filteredOut;
   }
