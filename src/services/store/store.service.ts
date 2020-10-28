@@ -5,6 +5,7 @@ import { GameFileFilter } from 'src/interfaces/types';
 
 export interface Dictionary {
   'enrichedGameFiles': EnrichedGameFile[],
+  'selectedGames': EnrichedGameFile[],
   'gameFilter': GameFileFilter,
   'playerConversions': StatsWrapper<Conversion[]>,
   'opponentConversions': StatsWrapper<Conversion[]>,
@@ -14,6 +15,7 @@ export interface Dictionary {
 
 const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'enrichedGameFiles': true,
+  'selectedGames': true,
   'gameFilter': true,
   'playerConversions': true,
   'opponentConversions': true,

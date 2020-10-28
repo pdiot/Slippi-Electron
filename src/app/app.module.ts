@@ -11,6 +11,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FilterFormComponent } from './components/filter-form/filter-form.component';
 import { MainPanelComponent } from './components/main-panel/main-panel.component';
+import { StatsGameSelectComponent } from './components/stats-game-select/stats-game-select.component';
+import { StatsDisplayComponent } from './components/stats-display/stats-display.component';
+import { StatsLineComponent } from './components/stats-line/stats-line.component';
+import { FoldableBlockComponent } from './components/foldable-block/foldable-block.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +24,11 @@ import { MainPanelComponent } from './components/main-panel/main-panel.component
     GameListComponent,
     SidePanelComponent,
     FilterFormComponent,
-    MainPanelComponent
+    MainPanelComponent,
+    StatsGameSelectComponent,
+    StatsDisplayComponent,
+    StatsLineComponent,
+    FoldableBlockComponent
   ],
   imports: [
     BrowserModule,

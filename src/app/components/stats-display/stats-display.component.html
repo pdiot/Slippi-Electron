@@ -1,0 +1,34 @@
+<!-- Player overall stats -->
+<ng-container *ngIf="playerOverall">
+  <app-foldable-block [label]="'Player overall stats'" [collapseId]="1">
+    <ng-container>
+      <app-foldable-block *ngFor="let character of getKeys(playerOverall); let i = index;" [label]="'Against ' + character" [collapseId]="'1' + i">
+        <ng-container>
+          <app-foldable-block *ngFor="let stage of getKeys(playerOverall[character]); let j = index;" [label]="'On ' + stage" [collapseId]="'1' + i + '' + j">
+            <app-stats-line [label]="'Avg number of hits per conversion'" [value]="playerOverall[character][stage].conversionCountMoyenne"></app-stats-line>
+            <app-stats-line [label]="'Avg dmg per conversion'" [value]="playerOverall[character][stage].damagePerOpeningMoyenne"></app-stats-line>
+            <app-stats-line [label]="'Avg number of kills per game'" [value]="playerOverall[character][stage].killCountMoyenne"></app-stats-line>
+            <app-stats-line [label]="'Avg kill percent'" [value]="playerOverall[character][stage].killPercentMoyenne"></app-stats-line>
+            <app-stats-line [label]="'Avg openings per kill'" [value]="playerOverall[character][stage].openingsPerKillMoyenne"></app-stats-line>
+            <app-stats-line [label]="'Avg damage done per game'" [value]="playerOverall[character][stage].totalDamageMoyenne"></app-stats-line>
+          </app-foldable-block>
+        </ng-container>      
+      </app-foldable-block>
+    </ng-container>  
+  </app-foldable-block>
+</ng-container>
+
+<!-- Opponent overall stats -->
+<app-foldable-block [label]="'Overall opponents stats'">
+  Ma bite dans un foldable 
+</app-foldable-block>
+
+<!-- Player conversions -->
+<app-foldable-block [label]="'Player conversions'">
+  Ma bite dans un foldable 
+</app-foldable-block>
+
+<!-- Opponent conversions -->
+<app-foldable-block [label]="'Opponents conversions'">
+  Ma bite dans un foldable 
+</app-foldable-block>

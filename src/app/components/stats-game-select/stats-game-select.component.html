@@ -1,0 +1,23 @@
+<div>
+  <ng-container *ngIf="filteredEnrichedGameFiles && filteredEnrichedGameFiles.length > 0">
+    <div class="row" *ngFor="let game of filteredEnrichedGameFiles" 
+         (click)="toggleGame(game.shortName)"
+         [ngClass]="{'selected': isActive(game.shortName), 'filteredOut': !isActive(game.shortName)}">
+      <div class="col-2">
+        <span>{{game.enrichedGameFile.playerCharacterPairs[0].player}}</span>
+      </div>
+      <div class="col-2">
+        <span class="badge badge-secondary">{{game.enrichedGameFile.playerCharacterPairs[0].character.name}} </span>       
+      </div>
+      <div class="col-2">
+        <span>{{game.enrichedGameFile.playerCharacterPairs[1].player}}</span>
+      </div>
+      <div class="col-2">
+        <span class="badge badge-secondary">{{game.enrichedGameFile.playerCharacterPairs[1].character.name}}</span>
+      </div>
+      <div class="col-4">
+        <span>{{game.enrichedGameFile.stage}}</span>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,18 +1,31 @@
 <div class="mainContainer">
-  <ng-container *ngIf="hasList; then twoPartDisplay else singlePartDisplay">
+  <ng-container *ngIf="stats; then hasStats else hasNoStats">
   </ng-container>
-
-  <ng-template #twoPartDisplay>
+  <ng-template #hasNoStats>
+    <ng-container *ngIf="hasList; then twoPartDisplayNoStats else singlePartDisplayNoStats">
+    </ng-container>  
+    <ng-template #twoPartDisplayNoStats>
+      <div class="row">
+        <div class="col-3 sidePanel">
+          <app-side-panel [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
+        </div>
+        <div class="col-8">
+          <app-main-panel [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-main-panel>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #singlePartDisplayNoStats>
+      <app-main-panel></app-main-panel>
+    </ng-template>
+  </ng-template>
+  <ng-template #hasStats>
     <div class="row">
       <div class="col-3 sidePanel">
-        <app-side-panel [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
+        <app-side-panel [stats]="stats" [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
       </div>
       <div class="col-8">
-        <app-main-panel [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-main-panel>
+        <app-main-panel [stats]="stats" [selectedGames]="selectedGames"></app-main-panel>
       </div>
     </div>
-  </ng-template>
-  <ng-template #singlePartDisplay>
-    <app-main-panel></app-main-panel>
   </ng-template>
 </div>

@@ -1,3 +1,9 @@
-<div class="container">
-  <app-filter-form [enrichedGameFiles]="enrichedGameFiles"></app-filter-form>
-</div>
+<ng-container *ngIf="stats; then hasStats else noStats"></ng-container>
+<ng-template #noStats>
+  <div class="container">
+    <app-filter-form [enrichedGameFiles]="enrichedGameFiles"></app-filter-form>
+  </div>
+</ng-template>
+<ng-template #hasStats>
+  <app-stats-game-select [stats]="stats" [enrichedGameFiles]="enrichedGameFiles"></app-stats-game-select>
+</ng-template>

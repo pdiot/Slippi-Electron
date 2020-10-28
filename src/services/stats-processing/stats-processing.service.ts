@@ -9,7 +9,7 @@ import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedO
 export class StatsProcessingService {
   constructor() { }
 
-  public processConversions(data: StatsWrapper<Conversion[]>): ProcessedOpenings {
+  public async processConversions(data: StatsWrapper<Conversion[]>): Promise<ProcessedOpenings> {
     let processedNeutralWinsConversions = {};
     let processedNeutralWinsFirstHits = {};
     let processedKillNeutralFirstHits = {};
@@ -126,7 +126,7 @@ export class StatsProcessingService {
     };    
   }
   
-  public processOverallList(data: StatsWrapper<Overall>): IntermediaryStatsWrapper<ProcessedOverallList> {
+  public async processOverallList(data: StatsWrapper<Overall>): Promise<IntermediaryStatsWrapper<ProcessedOverallList>> {
     let processedOverallList = {};
     
     // Create an intermediary wrapper without the gameData
@@ -229,7 +229,8 @@ export class StatsProcessingService {
                 maxMoveId = moveId;
             }
         }
-        return {move: EXTERNALMOVES[maxMoveId].name, count: moves[maxMoveId]};
+        const move = EXTERNALMOVES[maxMoveId];
+        return {move: move ? move.name : 'Weird move', count: moves[maxMoveId]};
     }
     return undefined;    
   }

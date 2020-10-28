@@ -71,3 +71,10 @@ export interface Move {
     hitCount: number,
     damage: number
 }
+
+export interface StatsItem {
+    playerConversions: StatsWrapper<Conversion[]>,
+    opponentConversions: StatsWrapper<Conversion[]>,
+    playerOveralls: StatsWrapper<Overall>,
+    opponentOveralls: StatsWrapper<Overall>,
+  }
