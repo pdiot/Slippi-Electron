@@ -1,0 +1,11 @@
+<div [ngClass]="{'content' : !hasEnrichedGameFiles}">
+  <div class="header">
+      <h1>Slippi stats calculator</h1>
+      <ng-container>
+        <app-upload></app-upload>
+      </ng-container>
+      <ng-container *ngIf="hasEnrichedGameFiles">
+        <app-game-list [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-game-list>
+      </ng-container>
+  </div>
+</div>

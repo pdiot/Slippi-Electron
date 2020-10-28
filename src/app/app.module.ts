@@ -10,6 +10,7 @@ import { SidePanelComponent } from './components/side-panel/side-panel.component
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FilterFormComponent } from './components/filter-form/filter-form.component';
+import { MainPanelComponent } from './components/main-panel/main-panel.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { FilterFormComponent } from './components/filter-form/filter-form.compon
     HomeComponent,
     GameListComponent,
     SidePanelComponent,
-    FilterFormComponent
+    FilterFormComponent,
+    MainPanelComponent
   ],
   imports: [
     BrowserModule,

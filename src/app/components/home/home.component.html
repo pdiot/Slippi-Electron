@@ -8,29 +8,11 @@
         <app-side-panel [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
       </div>
       <div class="col-8">
-        <div>
-          <div class="header">
-              <h1>Slippi stats calculator</h1>
-              <ng-container>
-                <app-upload></app-upload>
-              </ng-container>
-              <ng-container>
-                <app-game-list [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-game-list>
-              </ng-container>
-          </div>
-        </div>
+        <app-main-panel [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-main-panel>
       </div>
     </div>
   </ng-template>
-
   <ng-template #singlePartDisplay>
-    <div class="content">
-      <div class="header">
-          <h1>Slippi stats calculator</h1>
-          <ng-container>
-            <app-upload></app-upload>
-          </ng-container>
-      </div>
-    </div>
+    <app-main-panel></app-main-panel>
   </ng-template>
 </div>
