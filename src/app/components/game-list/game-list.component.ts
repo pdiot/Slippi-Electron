@@ -115,10 +115,24 @@ export class GameListComponent implements OnInit, OnChanges {
       const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
       const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
       const opponentOveralls = arg.overallFromOpponent as StatsWrapper<Overall>;
-      this.store.set('playerConversions', playerConversions);
-      this.store.set('opponentConversions', opponentConversions);
-      this.store.set('playerOveralls', playerOveralls);
-      this.store.set('opponentOveralls', opponentOveralls);
+      this.store.setMultiple([
+        {
+          key : 'playerConversions',
+          data: playerConversions
+        },
+        {
+          key : 'opponentConversions',
+          data: opponentConversions
+        },
+        {
+          key : 'playerOveralls',
+          data: playerOveralls
+        },
+        {
+          key : 'opponentOveralls',
+          data: opponentOveralls
+        },
+      ]);
     });
 
     const toSend = {

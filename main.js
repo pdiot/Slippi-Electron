@@ -39,7 +39,7 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                getMetadata(returnValue.filePaths).then(result => {
+                enrichGameFiles(returnValue.filePaths).then(result => {
                     event.sender.send('fileOpenedOK', result);
                 })
             }
@@ -126,8 +126,8 @@ app.on('activate', () => {
     } 
 })
 
-async function getMetadata(filepaths) {
-    return await slippiStats.getMetadata(filepaths);
+async function enrichGameFiles(filepaths) {
+    return await slippiStats.enrichGameFiles(filepaths);
 }
 
 // In this file, you can include the rest of your app's 

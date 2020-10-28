@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Conversion, EnrichedGameFile, Metadata, Overall, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter } from 'src/interfaces/types';
 
 export interface Dictionary {
-  'metadata': Metadata,
   'enrichedGameFiles': EnrichedGameFile[],
   'gameFilter': GameFileFilter,
   'playerConversions': StatsWrapper<Conversion[]>,
@@ -14,7 +13,6 @@ export interface Dictionary {
 }
 
 const DictionaryRecord : Record<keyof Dictionary, boolean> = {
-  'metadata': true,
   'enrichedGameFiles': true,
   'gameFilter': true,
   'playerConversions': true,
@@ -42,10 +40,27 @@ export class StoreService {
       this.data.next(this.internalData);
       return true;
     } else {
-      console.error(`Mauvais ajout de données dans le dictionnaire : clé `, key);
-      console.error(`Mauvais ajout de données dans le dictionnaire : data `, data);
+      console.error(`Wrong store write operation : key `, key);
+      console.error(`Wrong store write operation : data `, data);
       return false;
     }
+  }
+
+  public async setMultiple(values : {key: keyof(Dictionary), data: any}[]): Promise<boolean> {
+    let ok = true;
+    for (let value of values) {
+      if (DictionaryRecord[value.key]) {
+        this.internalData[value.key] = value.data;
+      } else {
+        console.error(`Wrong store write operation : key `, value.key);
+        console.error(`Wrong store write operation : data `, value.data);
+        ok = false;
+      }
+    }
+    if (ok) {
+      this.data.next(this.internalData);
+    }
+    return ok;
   }
 
   public getStore(): Subject<Dictionary> {

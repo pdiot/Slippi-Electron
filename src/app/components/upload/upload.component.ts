@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { cpuUsage } from 'process';
 import { ElecService } from 'src/app/elec.service';
-import { EnrichedGameFile, Metadata } from 'src/interfaces/outputs';
+import { EnrichedGameFile } from 'src/interfaces/outputs';
 import { StoreService } from 'src/services/store/store.service';
 
 @Component({
@@ -19,9 +18,7 @@ export class UploadComponent implements OnInit {
   callFileLoader() {
     this.elecService.ipcRenderer.on('fileOpenedOK', (event, arg) => {
       // Callback de main.js => openFile
-      const metadata = arg.metadata as Metadata;
-      const enrichedGameFiles = arg.enrichedGameFiles as EnrichedGameFile[];
-      this.storeService.set('metadata', metadata);
+      const enrichedGameFiles = arg as EnrichedGameFile[];
       this.storeService.set('enrichedGameFiles', enrichedGameFiles);
     });
     this.elecService.ipcRenderer.send('openFile');

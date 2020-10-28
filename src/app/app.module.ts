@@ -9,6 +9,7 @@ import { GameListComponent } from './components/game-list/game-list.component';
 import { SidePanelComponent } from './components/side-panel/side-panel.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FilterFormComponent } from './components/filter-form/filter-form.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     UploadComponent,
     HomeComponent,
     GameListComponent,
-    SidePanelComponent
+    SidePanelComponent,
+    FilterFormComponent
   ],
   imports: [
     BrowserModule,

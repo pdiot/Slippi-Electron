@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Metadata, EnrichedGameFile } from 'src/interfaces/outputs';
+import { EnrichedGameFile } from 'src/interfaces/outputs';
 import { GameFileFilter } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 
@@ -10,7 +10,6 @@ import { StoreService } from 'src/services/store/store.service';
 })
 export class HomeComponent implements OnInit {
 
-  metadata: Metadata;
   enrichedGameFiles: EnrichedGameFile[];
   filter: GameFileFilter;
 
@@ -19,29 +18,27 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.storeService.getStore().subscribe(value => {
       if (value) {
-        if (value.metadata) {
-          this.metadata = value.metadata;
-          this.cd.detectChanges();
-        }
         if (value.enrichedGameFiles) {
+          console.log('Home - Received enrichedGameFiles from store : ', value.enrichedGameFiles);
           this.enrichedGameFiles = value.enrichedGameFiles;
           this.cd.detectChanges();
         }
         if (value.gameFilter) {
+          console.log('Home - Received gameFilter from store : ', value.gameFilter);
           this.filter = value.gameFilter;
           this.cd.detectChanges();
         }
         if (value.playerConversions) {
-          console.log('Home - Received from store : ', value.playerConversions);
+          console.log('Home - Received playerConversions from store : ', value.playerConversions);
         }
         if (value.opponentConversions) {
-          console.log('Home - Received from store : ', value.opponentConversions);
+          console.log('Home - Received opponentConversions from store : ', value.opponentConversions);
         }
         if (value.playerOveralls) {
-          console.log('Home - Received from store : ', value.playerOveralls);
+          console.log('Home - Received playerOveralls from store : ', value.playerOveralls);
         }
         if (value.opponentOveralls) {
-          console.log('Home - Received from store : ', value.opponentOveralls);
+          console.log('Home - Received opponentOveralls from store : ', value.opponentOveralls);
         }
       }
     })

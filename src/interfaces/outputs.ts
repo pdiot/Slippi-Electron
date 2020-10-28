@@ -11,16 +11,6 @@ export interface FirstHits {
     }
 }
 
-export interface Metadata {
-    //key === slippiId
-    [key: string] : {
-        characters: string[],
-        stages: string[],
-        opponentCharacters : string[],
-        gameFiles: string[],
-    }
-}
-
 export interface EnrichedGameFile {
     file: string,
     playerCharacterPairs: {player: string, character: ExternalCharacter}[],
