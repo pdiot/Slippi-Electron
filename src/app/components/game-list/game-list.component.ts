@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { EnrichedGameFile } from 'src/interfaces/outputs';
+import { ElecService } from 'src/app/elec.service';
+import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter } from 'src/interfaces/types';
+import { StoreService } from 'src/services/store/store.service';
 
 @Component({
   selector: 'app-game-list',
@@ -14,13 +16,14 @@ export class GameListComponent implements OnInit, OnChanges {
 
   filteredGameFiles: EnrichedGameFile[];
 
-  constructor(private cd: ChangeDetectorRef) { }
+  constructor(private cd: ChangeDetectorRef,
+    private store: StoreService,
+    private elecService: ElecService) { }
 
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('onChanges, changes : ', changes);
     if (changes?.enrichedGameFiles?.currentValue) {
       this.enrichedGameFiles = changes.enrichedGameFiles.currentValue as unknown as EnrichedGameFile[];
     }
@@ -97,11 +100,35 @@ export class GameListComponent implements OnInit, OnChanges {
         return -1;
       }
     });;
-    console.log('Post filter filteredGameFiles : ', this.filteredGameFiles);
   }
 
   public generateStats(): void {
-    console.log('piou piou les stats piou');
+    this.elecService.ipcRenderer.on('statsProgressTS', (event, arg) => {
+      // Callback pour la gestion de l'avancement du calcul des stats
+      console.log('Game List - Received statsProgressTS', arg)
+    });
+
+    this.elecService.ipcRenderer.on('statsDoneTS', (event, arg) => {
+      // Callback pour la fin du calcul des stats
+      console.log('Game List - Received statsDoneTS', arg);
+      const playerConversions = arg.conversionsOnOpponent as StatsWrapper<Conversion[]>;
+      const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
+      const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
+      const opponentOveralls = arg.overallFromOpponent as StatsWrapper<Overall>;
+      this.store.set('playerConversions', playerConversions);
+      this.store.set('opponentConversions', opponentConversions);
+      this.store.set('playerOveralls', playerOveralls);
+      this.store.set('opponentOveralls', opponentOveralls);
+    });
+
+    const toSend = {
+      games: this.filteredGameFiles,
+      slippiId: this.filter.slippiId,
+      character: this.filter.character
+    }
+
+    console.log('Game List - Starting Stats Calculation process');
+    this.elecService.ipcRenderer.send('calculateStats', toSend);
   }
 
   public isSelected(game: EnrichedGameFile) {

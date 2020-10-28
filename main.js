@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { Worker } = require('worker_threads');
 const slippiStats = require('./slippi-stats');
+const constants = require('./constants');
 
 function createWindow () { 
     // Create the browser window. 
@@ -43,6 +45,60 @@ function createWindow () {
             }
         })); 
     });
+
+    ipcMain.on('calculateStats', (event, data) => {
+        /**
+         * data : {
+         *      games: EnrichedGameFile[],
+         *      slippiId: string
+         *      character: string (shortName)
+         * }
+         */
+        
+        var characters = constants.EXTERNALCHARACTERS;
+        let character = characters.find(ec => ec.shortName === data.character);
+        if (character) {
+            let games = []
+            for (let game of data.games) {
+                if (!game.filteredOut) {
+                    games.push(game.file)
+                }
+            }
+
+            // We need to create a worker so everything doesn't freeze like the huge pile of js that it is
+            const worker = new Worker('./slippi-stats-workerfile.js', {
+                workerData : {
+                    gameFiles: games,
+                    slippiId: data.slippiId,
+                    characterId: character.id,
+                    // sender: event.sender
+                }
+            });
+            worker.on('message', (data) => {
+                if (Object.keys(data).includes('computedStats')) {
+                    // It's the end of stats processing message
+                    event.sender.send('statsDoneTS', data);
+                } else {
+                    // It's the stats pbrocessing advancement message
+                    const processedGamesNb = data.split(' ')[1];
+                    event.sender.send('statsProgressTS', processedGamesNb);
+                }
+            });
+            worker.on('error', (error) => {
+                console.log('Error inside stats calculator worker', error);
+            });
+            worker.on('exit', (code) => {
+                if (code !== 0)
+                console.log(new Error(`Worker stopped with exit code ${code}`));
+            });
+
+            // slippiStats.generateGameStats(games, data.slippiId, character.id, event.sender)
+            // .then(resultStats => {
+            //     event.sender.send('statsDoneTS', resultStats
+            // });
+        }
+    });
+
 } 
 
 // This method will be called when Electron has finished 
@@ -68,14 +124,7 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) { 
         createWindow() 
     } 
-}) 
-
-function makeJSons(filepaths) {
-    slippiStats.generateGameStats(filepaths, 'ANDR#571', 1).then(result => {
-        console.log('result');
-        console.log(result);
-    });
-}
+})
 
 async function getMetadata(filepaths) {
     return await slippiStats.getMetadata(filepaths);

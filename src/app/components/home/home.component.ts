@@ -31,6 +31,18 @@ export class HomeComponent implements OnInit {
           this.filter = value.gameFilter;
           this.cd.detectChanges();
         }
+        if (value.playerConversions) {
+          console.log('Home - Received from store : ', value.playerConversions);
+        }
+        if (value.opponentConversions) {
+          console.log('Home - Received from store : ', value.opponentConversions);
+        }
+        if (value.playerOveralls) {
+          console.log('Home - Received from store : ', value.playerOveralls);
+        }
+        if (value.opponentOveralls) {
+          console.log('Home - Received from store : ', value.opponentOveralls);
+        }
       }
     })
   }

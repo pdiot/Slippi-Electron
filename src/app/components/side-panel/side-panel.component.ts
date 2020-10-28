@@ -64,6 +64,7 @@ export class SidePanelComponent implements OnInit, OnChanges {
       oppCharacters : opponentCharacters,
       stages: filteredStages
     }
+    console.log('Side Panel - Sending filter');
     this.store.set('gameFilter', filter);
   }
 
@@ -111,7 +112,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         }
       );
     }
-    console.log('Selected opponents : ', this.filterForm.controls['opponentIds'].value);
     this.cd.detectChanges();
     this.sendFilter();
   }
@@ -141,8 +141,7 @@ export class SidePanelComponent implements OnInit, OnChanges {
           blacklisted: currentBlacklist
         }
       );
-    }    
-    console.log('Selected opponent Characters : ', this.filterForm.controls['opponentCharacters'].value);
+    }
     this.cd.detectChanges();
     this.sendFilter();
   }
@@ -173,7 +172,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         }
       );
     }
-    console.log('Selected stages : ', this.filterForm.controls['filteredStages'].value);
     this.cd.detectChanges();
     this.sendFilter();
   }
@@ -190,7 +188,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         this.playerIdsData.push(gameFile.playerCharacterPairs[1].player);
       }
     }
-    console.log('playerIdsData', this.playerIdsData);
   }
 
   private processPlayerCharacters(): void {
@@ -202,7 +199,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         this.playerCharacters.push(pc.character.shortName);
       }
     }
-    console.log(`player characters for ${playerId}`, this.playerCharacters);
   }
   
   private processOpponents(): void {
@@ -221,7 +217,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         }
       }
     }
-    console.log('Opponents : ', this.opponentIds);
   }
 
   private processOpponentCharacters(): void {
@@ -240,7 +235,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
         }
       }
     }
-    console.log('Opponent characters : ', this.opponentCharacters);
   }
 
   private processStages() : void {
