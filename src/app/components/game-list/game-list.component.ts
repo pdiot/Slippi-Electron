@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
 import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
-import { GameFileFilter } from 'src/interfaces/types';
+import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 import GameFileUtils from '../utils/gameFile.utils';
 
@@ -127,7 +127,8 @@ export class GameListComponent implements OnInit, OnChanges {
       this.elecService.ipcRenderer.on('statsProgressTS', (event, arg) => {
         // Callback pour la gestion de l'avancement du calcul des stats
         console.log('Game List - Received statsProgressTS', arg)
-      });  
+        this.store.set('statsCalculationProgress', arg as StatsCalculationProgress);
+      });
       this.elecService.ipcRenderer.on('statsDoneTS', (event, arg) => {
         // Callback pour la fin du calcul des stats
         console.log('Game List - Received statsDoneTS', arg);
@@ -152,12 +153,17 @@ export class GameListComponent implements OnInit, OnChanges {
             key : 'opponentOveralls',
             data: opponentOveralls
           },
+          {
+            key : 'statsCalculationDone',
+            data: true
+          },
         ]);
       });
   
       const toSend = this.buildToSend();
   
       console.log('Game List - Starting Stats Calculation process');
+      this.store.set('statsCalculationProgress', {current: 0, total: toSend.games.length} as StatsCalculationProgress);
       this.elecService.ipcRenderer.send('calculateStats', toSend);
     } else {
       alert(`Please select at least one game to generate stats on`);

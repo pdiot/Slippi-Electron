@@ -81,7 +81,8 @@ function createWindow () {
                 } else {
                     // It's the stats pbrocessing advancement message
                     const processedGamesNb = data.split(' ')[1];
-                    event.sender.send('statsProgressTS', processedGamesNb);
+                    const totalGamesNb = data.split(' ')[2];
+                    event.sender.send('statsProgressTS', {current: processedGamesNb, total: totalGamesNb});
                 }
             });
             worker.on('error', (error) => {

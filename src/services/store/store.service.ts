@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
-import { GameFileFilter } from 'src/interfaces/types';
+import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 
 export interface Dictionary {
   'enrichedGameFiles': EnrichedGameFile[],
@@ -11,6 +11,8 @@ export interface Dictionary {
   'opponentConversions': StatsWrapper<Conversion[]>,
   'playerOveralls': StatsWrapper<Overall>,
   'opponentOveralls': StatsWrapper<Overall>,
+  'statsCalculationProgress': StatsCalculationProgress,
+  'statsCalculationDone': boolean,
   'reset': boolean,
 }
 
@@ -22,6 +24,8 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'opponentConversions': true,
   'playerOveralls': true,
   'opponentOveralls': true,
+  'statsCalculationProgress': true,
+  'statsCalculationDone': true,
   'reset': true
 }
 

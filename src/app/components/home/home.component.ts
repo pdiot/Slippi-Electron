@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
-import { GameFileFilter } from 'src/interfaces/types';
+import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 
 @Component({
@@ -14,6 +14,9 @@ export class HomeComponent implements OnInit {
   selectedGames: EnrichedGameFile[];
   filter: GameFileFilter;
   stats: StatsItem;
+
+  showOverlay = false;
+  statsCalculation: StatsCalculationProgress;
 
   constructor(private storeService: StoreService, private cd: ChangeDetectorRef) { }
 
@@ -53,6 +56,19 @@ export class HomeComponent implements OnInit {
           // When we select games in stats-game-select
           this.selectedGames = value.selectedGames;
         }
+        if (value.statsCalculationProgress) {
+          console.log('Home - Received statsCalculationProgress from store : ', value.statsCalculationProgress);
+          this.statsCalculation = value.statsCalculationProgress;
+          if (value.statsCalculationProgress.current !== value.statsCalculationProgress.total) {
+            this.showOverlay = true;
+          } else {
+            this.showOverlay = false;
+          }
+        }
+        if (value.statsCalculationDone) {
+          console.log('Home - Received statsCalculationDone from store : ', value.statsCalculationDone);
+          this.showOverlay = false;
+        }
         if (value.reset) {
           console.log('Home - Received reset from store : ', value.reset);
           this.enrichedGameFiles = [];
@@ -63,7 +79,7 @@ export class HomeComponent implements OnInit {
         }
         this.cd.detectChanges();
       }
-    })
+    });
   }
 
   public resetApp(): void {
@@ -83,5 +99,9 @@ export class HomeComponent implements OnInit {
 
   get hasList(): boolean {
     return this.enrichedGameFiles && this.enrichedGameFiles.length > 0;
+  }
+
+  get statsCalculationProgress(): number {
+    return this.statsCalculation.current / this.statsCalculation.total * 100;
   }
 }

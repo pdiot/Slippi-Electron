@@ -72,7 +72,7 @@ function processGames(gameFiles, slippiId, characterId) {
 
       processedGamesNb ++;
       console.log('WORKER sent statProgress', processedGamesNb);
-      parentPort.postMessage('statsProgress ' + processedGamesNb);
+      parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
   }
 
   const returnValue = {

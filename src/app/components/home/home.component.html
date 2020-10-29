@@ -1,3 +1,9 @@
+<div class="my-overlay" *ngIf="showOverlay">
+  <div class="meter">
+    <p>{{statsCalculationProgress | number:'1.0-0'}} %</p>
+    <span [ngStyle]="{'width': statsCalculationProgress +'%'}"></span>
+  </div>
+</div>
 <div class="mainContainer">
   <div class="row app-header">
     <div class="col-10"></div>

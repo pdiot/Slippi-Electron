@@ -71,3 +71,8 @@ export interface ProcessedOverallList {
   damagePerOpeningMoyenne: number,
   killPercentMoyenne: number,    
 }
+
+export interface StatsCalculationProgress {
+  current: number,
+  total: number,
+}
