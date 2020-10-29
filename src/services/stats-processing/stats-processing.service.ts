@@ -80,11 +80,11 @@ export class StatsProcessingService {
               }
               if (conversion.didKill) {
                   neutralKillFirstHits.push({
-                      moveId: conversion.moves[0].moveId
+                      moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
                   });
               }
               neutralFirstHits.push({
-                  moveId: conversion.moves[0].moveId
+                  moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
               });
           } else if (conversion.openingType === 'counter-attack') {
             // Punish
@@ -100,11 +100,11 @@ export class StatsProcessingService {
             }
             if (conversion.didKill) {
                 punishKillFirstHits.push({
-                    moveId: conversion.moves[0].moveId
+                    moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
                 });
             }
             punishFirstHits.push({
-                moveId: conversion.moves[0].moveId
+                moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
             });
           }
         }
