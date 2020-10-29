@@ -9,6 +9,7 @@ export class StatsLineComponent implements OnInit, OnChanges {
 
   @Input() label: string
   @Input() value: string | number
+  @Input() value2: string | number
 
   constructor(private cd : ChangeDetectorRef) { }
 
@@ -21,6 +22,9 @@ export class StatsLineComponent implements OnInit, OnChanges {
     }
     if (changes?.value?.currentValue) {
       this.value = changes.value.currentValue;
+    }
+    if (changes?.value2?.currentValue) {
+      this.value2 = changes.value2.currentValue;
     }
     this.cd.detectChanges();
   }

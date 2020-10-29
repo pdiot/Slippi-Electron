@@ -35,17 +35,17 @@ export interface IntermediaryStatsWrapper<T> {
   // character shortName
   [key: string] : {
       // stage name
-      [key: string] : T[]
+      [key: string] : T
   }
 }
 
 export interface ProcessedOpenings {
-  processedNeutralWinsConversions: IntermediaryStatsWrapper<ProcessedConversionWrapper>, 
-  processedPunishes: IntermediaryStatsWrapper<ProcessedConversionWrapper>, 
-  processedNeutralWinsFirstHits: IntermediaryStatsWrapper<MostCommonMove>, 
-  processedKillNeutralFirstHits: IntermediaryStatsWrapper<MostCommonMove>,
-  processedPunishesFirstHits: IntermediaryStatsWrapper<MostCommonMove>,
-  processedKillPunishFirstHits: IntermediaryStatsWrapper<MostCommonMove>,
+  processedNeutralWinsConversions: ProcessedConversionWrapper, 
+  processedPunishes: ProcessedConversionWrapper, 
+  processedNeutralWinsFirstHits: MostCommonMove, 
+  processedKillNeutralFirstHits: MostCommonMove,
+  processedPunishesFirstHits: MostCommonMove,
+  processedKillPunishFirstHits: MostCommonMove,
 }
 
 export interface ProcessedConversionWrapper {

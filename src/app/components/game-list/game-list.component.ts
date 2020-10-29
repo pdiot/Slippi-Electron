@@ -3,6 +3,7 @@ import { ElecService } from 'src/app/elec.service';
 import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
+import GameFileUtils from '../utils/gameFile.utils';
 
 @Component({
   selector: 'app-game-list',
@@ -15,6 +16,8 @@ export class GameListComponent implements OnInit, OnChanges {
   @Input() filter: GameFileFilter;
 
   filteredGameFiles: EnrichedGameFile[];
+
+  overrideFilter: {game: EnrichedGameFile, toProcess: boolean}[] = [];
 
   constructor(private cd: ChangeDetectorRef,
     private store: StoreService,
@@ -33,11 +36,28 @@ export class GameListComponent implements OnInit, OnChanges {
     }
   }
 
+  public toggleGame(game: EnrichedGameFile) {
+    const gameIndexInFilter = this.overrideFilter.findIndex(filter => GameFileUtils.niceName(filter.game.file) === GameFileUtils.niceName(game.file));
+    if (gameIndexInFilter !== -1) {
+      if (this.overrideFilter[gameIndexInFilter].toProcess) {
+        // If we were forcing the game in, we now force it out
+        this.overrideFilter[gameIndexInFilter].toProcess = false;
+      } else {
+        // If we were forcing the game out, we now remove it from the filter and let the standard filter do it's job
+        this.overrideFilter = this.overrideFilter.filter(filter => filter.game.file !== game.file);
+      }
+    } else {
+      // If the game isn't in the filter (ie first click) we force it in
+      this.overrideFilter.push({game, toProcess: true});
+    }
+    this.cd.detectChanges();
+  }
+
   private async filterFiles(): Promise<void> {
     const filteredGames = [];
     for (let game of this.enrichedGameFiles) {
       let toFilterOut = false;
-      if (game.playerCharacterPairs.find(pcp => pcp.player === this.filter.slippiId && pcp.character.name === this.filter.character)) {
+      if (!toFilterOut && game.playerCharacterPairs.find(pcp => pcp.player === this.filter.slippiId && pcp.character.name === this.filter.character)) {
         // Player Slippi ID ok && player character ok
         const oppIndex = game.playerCharacterPairs.findIndex(pcp => pcp.player !== this.filter.slippiId);
         if (this.filter.oppSlippiIds) {
@@ -103,59 +123,117 @@ export class GameListComponent implements OnInit, OnChanges {
   }
 
   public generateStats(): void {
-    this.elecService.ipcRenderer.on('statsProgressTS', (event, arg) => {
-      // Callback pour la gestion de l'avancement du calcul des stats
-      console.log('Game List - Received statsProgressTS', arg)
-    });
+    if (this.notAllGamesFilteredOut) {
+      this.elecService.ipcRenderer.on('statsProgressTS', (event, arg) => {
+        // Callback pour la gestion de l'avancement du calcul des stats
+        console.log('Game List - Received statsProgressTS', arg)
+      });  
+      this.elecService.ipcRenderer.on('statsDoneTS', (event, arg) => {
+        // Callback pour la fin du calcul des stats
+        console.log('Game List - Received statsDoneTS', arg);
+        const playerConversions = arg.conversionsOnOpponent as StatsWrapper<Conversion[]>;
+        const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
+        const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
+        const opponentOveralls = arg.overallFromOpponent as StatsWrapper<Overall>;
+        this.store.setMultiple([
+          {
+            key : 'playerConversions',
+            data: playerConversions
+          },
+          {
+            key : 'opponentConversions',
+            data: opponentConversions
+          },
+          {
+            key : 'playerOveralls',
+            data: playerOveralls
+          },
+          {
+            key : 'opponentOveralls',
+            data: opponentOveralls
+          },
+        ]);
+      });
+  
+      const toSend = this.buildToSend();
+  
+      console.log('Game List - Starting Stats Calculation process');
+      this.elecService.ipcRenderer.send('calculateStats', toSend);
+    } else {
+      alert(`Please select at least one game to generate stats on`);
+    }    
+  }
 
-    this.elecService.ipcRenderer.on('statsDoneTS', (event, arg) => {
-      // Callback pour la fin du calcul des stats
-      console.log('Game List - Received statsDoneTS', arg);
-      const playerConversions = arg.conversionsOnOpponent as StatsWrapper<Conversion[]>;
-      const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
-      const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
-      const opponentOveralls = arg.overallFromOpponent as StatsWrapper<Overall>;
-      this.store.setMultiple([
-        {
-          key : 'playerConversions',
-          data: playerConversions
-        },
-        {
-          key : 'opponentConversions',
-          data: opponentConversions
-        },
-        {
-          key : 'playerOveralls',
-          data: playerOveralls
-        },
-        {
-          key : 'opponentOveralls',
-          data: opponentOveralls
-        },
-      ]);
-    });
+  private buildToSend(): {games: EnrichedGameFile[], slippiId: string, character: string} {
+    let games: EnrichedGameFile[] = [];
+    for (let game of this.filteredGameFiles) {
+        if (!game.filteredOut) {
+          // not filteredOut normally : we check whether it's forced out in the overrirde, then we take it or not
+          const fromOverride = this.overrideFilter.find(filter => filter.game.file === game.file);
+          if (fromOverride && !fromOverride.toProcess) {
+            // We don't take it
+          } else {
+            // We take it whether it's forced in or not, because it's not filteredOut
+            games.push(game);
+          }
+      }
+    }
 
-    const toSend = {
-      games: this.filteredGameFiles,
+    for (let filter of this.overrideFilter) {
+      if (filter.toProcess) {
+        // We check whether we already have it. If not, push.
+        const fromOverride = games.find(game => game.file === filter.game.file);
+        if (!fromOverride) {
+          games.push({...filter.game, filteredOut: false});
+        }
+      }
+    }
+
+    return {
+      games,
       slippiId: this.filter.slippiId,
       character: this.filter.character
     }
-
-    console.log('Game List - Starting Stats Calculation process');
-    this.elecService.ipcRenderer.send('calculateStats', toSend);
   }
 
-  public isSelected(game: EnrichedGameFile) {
+  public isSelected(game: EnrichedGameFile): boolean {
     return !game.filteredOut;
+  }
+
+  public isForcedIn(game: EnrichedGameFile): boolean {
+    const gameInFilter = this.overrideFilter.find(filter => GameFileUtils.niceName(filter.game.file) === GameFileUtils.niceName(game.file));
+    if (gameInFilter?.toProcess) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public isForcedOut(game: EnrichedGameFile): boolean {
+    const gameIndexInFilter = this.overrideFilter.findIndex(filter => GameFileUtils.niceName(filter.game.file) === GameFileUtils.niceName(game.file));
+    if (gameIndexInFilter !== -1) {
+      if (this.overrideFilter[gameIndexInFilter].toProcess) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
   get notAllGamesFilteredOut(): boolean {
     let value = false;
     if (this.filteredGameFiles?.length > 0) {
       for (let game of this.filteredGameFiles) {
-        if (!game.filteredOut) value = true;
+        if (!game.filteredOut) {
+          if (!this.overrideFilter.find(filter => filter.game.file === game.file && !filter.toProcess)) {
+            value = true;
+          }
+        }           
       }
     }
+    // TODO update with overrideFilter
     return value;
   }
 

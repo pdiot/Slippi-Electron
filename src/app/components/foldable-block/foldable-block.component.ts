@@ -20,7 +20,6 @@ export class FoldableBlockComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Foldable block - ngOnChanges, changes : ', changes);
     if (changes?.label?.currentValue) {
       this.label = changes.label.currentValue;
     }

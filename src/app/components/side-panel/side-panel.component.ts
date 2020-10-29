@@ -21,7 +21,6 @@ export class SidePanelComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Side Panel - ngOnChanges, changes : ', changes);
     if (changes?.enrichedGameFiles?.currentValue) {
       this.enrichedGameFiles = changes.enrichedGameFiles.currentValue;
     }

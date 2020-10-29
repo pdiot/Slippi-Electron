@@ -14,8 +14,8 @@ export class StatsDisplayComponent implements OnInit {
   @Input() stats: StatsItem;
   @Input() selectedGames: EnrichedGameFile[];
 
-  playerConversions : ProcessedOpenings;
-  opponentConversions: ProcessedOpenings;
+  playerConversions : IntermediaryStatsWrapper<ProcessedOpenings>;
+  opponentConversions: IntermediaryStatsWrapper<ProcessedOpenings>;
   playerOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
   opponentOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
 
@@ -26,7 +26,6 @@ export class StatsDisplayComponent implements OnInit {
   }
   
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Stats Display - ngOnChanges, changes : ', changes);
     if (changes?.stats?.currentValue) {
       this.stats = changes.stats.currentValue as unknown as StatsItem;
     }
@@ -42,7 +41,6 @@ export class StatsDisplayComponent implements OnInit {
   private getProcessedStats(): void {
     // TODO filter this.stats by selectedGames
     const newStats = this.filterStats();
-    console.log('Stats Display - filtered Stats', newStats);
     console.log('Stats Display - getProcessedStats');
     this.statsService.processConversions(newStats.playerConversions).then(result => {
       console.log('Stats Display - got player conversions back', result);
@@ -72,7 +70,6 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of this.selectedGames) {
       niceNamesToKeep.push(GameFileUtils.niceName(game.file));
     }
-    console.log('Stats Display - Filter Stats gamesToKeep', niceNamesToKeep);
     const newStats: StatsItem = {
       playerConversions : undefined,
       opponentConversions: undefined,

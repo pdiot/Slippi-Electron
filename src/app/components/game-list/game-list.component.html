@@ -8,7 +8,9 @@
           <span class="btn btn-secondary" (click)="generateStats()">Générer les stats</span>
         </div>
         <div class="card-body">
-          <div *ngFor="let game of filteredGameFiles" class="row" [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game)}">
+          <div *ngFor="let game of filteredGameFiles" class="row" 
+                [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game), 'forcedIn': isForcedIn(game), 'forcedOut': isForcedOut(game)}" 
+                (click)="toggleGame(game)">
             <div class="col-3 ellipsis">
               <span>{{game.file}}</span>
             </div>

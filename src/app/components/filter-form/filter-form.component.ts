@@ -43,7 +43,6 @@ export class FilterFormComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('filter form - ngOnChanges, changes : ', changes);
     if (changes?.enrichedGameFiles?.currentValue) {
       this.enrichedGameFiles = changes.enrichedGameFiles.currentValue as unknown as EnrichedGameFile[];
       this.processPlayers();

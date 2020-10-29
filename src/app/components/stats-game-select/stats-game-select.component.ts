@@ -22,7 +22,6 @@ export class StatsGameSelectComponent implements OnInit {
   }
   
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Stats Game Select - ngOnChanges, changes : ', changes);
     if (changes?.stats?.currentValue) {
       this.stats = changes.stats.currentValue as unknown as StatsItem;
     }

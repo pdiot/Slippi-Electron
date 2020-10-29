@@ -65,6 +65,20 @@
   border-color: #343a40;
 }
 
+.forcedIn {
+  box-shadow: none;
+  color: #fff;
+  background-color: #0b612f !important;
+  border-color: #343a40;
+}
+
+.forcedOut {
+  box-shadow: none;
+  color: #fff;
+  background-color: #5e1313 !important;
+  border-color: #343a40;
+}
+
 .ellipsis {
   overflow: hidden;
   direction: rtl; 

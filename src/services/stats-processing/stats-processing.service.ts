@@ -9,16 +9,18 @@ import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedO
 export class StatsProcessingService {
   constructor() { }
 
-  public async processConversions(data: StatsWrapper<Conversion[]>): Promise<ProcessedOpenings> {
+  public async processConversions(data: StatsWrapper<Conversion[]>): Promise<IntermediaryStatsWrapper<ProcessedOpenings>> {
+    let conversions = {};
     let processedNeutralWinsConversions = {};
     let processedNeutralWinsFirstHits = {};
     let processedKillNeutralFirstHits = {};
     let processedPunishes = {};
     let processedPunishesFirstHits = {};
     let processedKillPunishFirstHits = {};
+  
     
     // Create an intermediary wrapper without the gameData
-    let conversionsList: IntermediaryStatsWrapper<Conversion> = {};
+    let conversionsList: IntermediaryStatsWrapper<Conversion[]> = {};
     for (const game of Object.keys(data)) {
       for (const character of Object.keys(data[game])) {
         // We'll only have one character each time here (opponent's character)
@@ -39,6 +41,7 @@ export class StatsProcessingService {
         }
       }
     }
+
 
     for (const opponentChar of Object.keys(conversionsList)) {
       processedNeutralWinsConversions[opponentChar]={};
@@ -105,32 +108,31 @@ export class StatsProcessingService {
             });
           }
         }
-        processedNeutralWinsConversions[opponentChar][stage]['multi-hits'] = this.calculMoyenneConversion(neutral);
-        processedNeutralWinsConversions[opponentChar][stage]['single-hit'] = this.calculMoyenneConversion(oneHitOnlyNeutral, true);
-        processedPunishes[opponentChar][stage]['multi-hits'] = this.calculMoyenneConversion(punishes);
-        processedPunishes[opponentChar][stage]['single-hit'] = this.calculMoyenneConversion(oneHitOnlyPunishes, true);
-        processedNeutralWinsFirstHits[opponentChar][stage] = this.calculMostCommonMove(neutralFirstHits);
-        processedKillNeutralFirstHits[opponentChar][stage] = this.calculMostCommonMove(neutralKillFirstHits);
-        processedPunishesFirstHits[opponentChar][stage] = this.calculMostCommonMove(punishFirstHits);
-        processedKillPunishFirstHits[opponentChar][stage] = this.calculMostCommonMove(punishKillFirstHits);
+
+        if (!conversions[opponentChar]) {
+          conversions[opponentChar] = {};
+        }
+        conversions[opponentChar][stage] = {};
+        conversions[opponentChar][stage].processedNeutralWinsConversions = {};
+        conversions[opponentChar][stage].processedPunishes = {};
+        conversions[opponentChar][stage].processedNeutralWinsConversions['multi-hits'] = this.calculMoyenneConversion(neutral);
+        conversions[opponentChar][stage].processedNeutralWinsConversions['single-hit'] = this.calculMoyenneConversion(oneHitOnlyNeutral, true);
+        conversions[opponentChar][stage].processedPunishes['multi-hits'] = this.calculMoyenneConversion(punishes);
+        conversions[opponentChar][stage].processedPunishes['single-hit'] = this.calculMoyenneConversion(oneHitOnlyPunishes, true);
+        conversions[opponentChar][stage].processedNeutralWinsFirstHits = this.calculMostCommonMove(neutralFirstHits);
+        conversions[opponentChar][stage].processedKillNeutralFirstHits = this.calculMostCommonMove(neutralKillFirstHits);
+        conversions[opponentChar][stage].processedPunishesFirstHits = this.calculMostCommonMove(punishFirstHits);
+        conversions[opponentChar][stage].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHits);
       }
     }
     
-    return {
-      processedNeutralWinsConversions, 
-      processedPunishes, 
-      processedNeutralWinsFirstHits, 
-      processedKillNeutralFirstHits,
-      processedPunishesFirstHits,
-      processedKillPunishFirstHits
-    };    
+    return conversions;  
   }
   
   public async processOverallList(data: StatsWrapper<Overall>): Promise<IntermediaryStatsWrapper<ProcessedOverallList>> {
     let processedOverallList = {};
-    
     // Create an intermediary wrapper without the gameData
-    let overallList: IntermediaryStatsWrapper<Overall> = {};
+    let overallList: IntermediaryStatsWrapper<Overall[]> = {};
     for (let game of Object.keys(data)) {
       for (let character of Object.keys(data[game])) {
         // We'll only have one character each time here (opponent's character)
@@ -173,6 +175,7 @@ export class StatsProcessingService {
                 overallDatas.openingsPerKills.push(overall.openingsPerKill.ratio);
                 overallDatas.damagePerOpenings.push(overall.damagePerOpening.ratio);
             }
+
             processedOverallList[opponentChar][stage] = {
                 conversionCountMoyenne: this.calculMoyenneOverall(overallDatas.conversionCounts),
                 totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
@@ -181,7 +184,7 @@ export class StatsProcessingService {
                 damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatas.damagePerOpenings),
                 killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
             }
-        }       
+        }
     }
     return processedOverallList;
   }
