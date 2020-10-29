@@ -1,4 +1,11 @@
 <div class="mainContainer">
+  <div class="row app-header">
+    <div class="col-10"></div>
+    <div class="col-2">
+      <button class="btn btn-danger" (click)="resetApp()">Reset app</button>
+    </div>
+  </div>
+
   <ng-container *ngIf="stats; then hasStats else hasNoStats">
   </ng-container>
   <ng-template #hasNoStats>

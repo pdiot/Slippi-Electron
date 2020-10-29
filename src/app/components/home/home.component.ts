@@ -53,9 +53,21 @@ export class HomeComponent implements OnInit {
           // When we select games in stats-game-select
           this.selectedGames = value.selectedGames;
         }
+        if (value.reset) {
+          console.log('Home - Received reset from store : ', value.reset);
+          this.enrichedGameFiles = [];
+          this.selectedGames = [];
+          this.stats = undefined;
+          this.filter = undefined;
+          this.storeService.set('reset', false);
+        }
         this.cd.detectChanges();
       }
     })
+  }
+
+  public resetApp(): void {
+    this.storeService.reset();
   }
 
   private initStatsIfNeeded() {

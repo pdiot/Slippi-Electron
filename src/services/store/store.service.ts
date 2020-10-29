@@ -11,6 +11,7 @@ export interface Dictionary {
   'opponentConversions': StatsWrapper<Conversion[]>,
   'playerOveralls': StatsWrapper<Overall>,
   'opponentOveralls': StatsWrapper<Overall>,
+  'reset': boolean,
 }
 
 const DictionaryRecord : Record<keyof Dictionary, boolean> = {
@@ -21,6 +22,7 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'opponentConversions': true,
   'playerOveralls': true,
   'opponentOveralls': true,
+  'reset': true
 }
 
 @Injectable({
@@ -34,6 +36,12 @@ export class StoreService {
   constructor() { 
     this.internalData = {};
     this.data = new Subject<Dictionary>();
+  }
+
+  public reset(): void {
+    this.internalData = {};
+    this.internalData['reset'] = true;
+    this.data.next(this.internalData);
   }
 
   public async set(key: keyof(Dictionary), data: any): Promise<boolean> {
