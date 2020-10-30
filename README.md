@@ -6,3 +6,7 @@ This project uses Electron to run
 # To Run : 
 
 npm run electron
+
+# To Install : 
+
+Simply download the appropriate zip in the release tab, extract it and run the exe.
