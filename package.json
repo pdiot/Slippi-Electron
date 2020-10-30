@@ -9,7 +9,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electron": "ng build && electron ."
+    "electron": "ng build && electron .",
+    "package:win32": "electron-packager . Statislipp --platform=win32 --arch=x64 --out=../packages --overwrite",
+    "package:linux": "electron-packager . Statislipp --platform=linux --arch=x64 --out=../packages --overwrite"
   },
   "private": true,
   "dependencies": {
