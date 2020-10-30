@@ -22,10 +22,10 @@ function main() {
   parentPort.postMessage(stats);
 }
 
-function processGames(gameFiles, slippiId, characterId) {
+function processGames(gamesFromMain, slippiId, characterId) {
   let games = [];
-  for (const gameFile of gameFiles) {
-      games.push({game: new SlippiGame(gameFile), gameFile});
+  for (const game of gamesFromMain) {
+      games.push({game: new SlippiGame(game.file), gameFile: game.file, gameFromMain: game});
   }
   let processedGamesNb = 0;
   let conversionsOnOpponent = {};
@@ -41,12 +41,46 @@ function processGames(gameFiles, slippiId, characterId) {
       const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
       const settings = game.getSettings();
       const stage = getMapName(settings.stageId);
-      if (metadata.players[0].names.code === slippiId) {
-          playerPort = 0;
+      let playerPort;
+      let opponentPort;
+      if (metadata.players[2] || 
+        metadata.players[3] || 
+        (metadata.players[0] && !metadata.players[0].names.code) ||
+        (metadata.players[1] && !metadata.players[1].names.code)) {
+        // We're in a local game
+        for (let pcp of gameBlob.gameFromMain.playerCharacterPairs) {
+          console.log('pcp : ', pcp);
+          if (pcp.isCurrentPlayer) {
+            playerPort = pcp.port;
+          } else {
+            opponentPort = pcp.port;
+          }
+        }
+        console.log('playerPort : ', playerPort);
+        console.log('opponentPort : ', opponentPort);
       } else {
-          playerPort = 1;
+        if (metadata.players[0].names.code === slippiId) {
+            playerPort = 0;
+            opponentPort = 1;
+        } else {
+            playerPort = 1;
+            opponentPort = 0;
+        }
       }
-      let opponentCharName = getFullChar(Object.keys(metadata.players[Math.abs(1 - playerPort)].characters)[0]).shortName;
+      let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
+
+      console.log('overall : ', JSON.stringify(stats.overall, null, 4));
+      console.log('playerPort : ', playerPort);
+      console.log('opponentPort : ', opponentPort);
+      const playerOverall = stats.overall.find(overall => overall.playerIndex === playerPort);
+      const opponentOverall = stats.overall.find(overall => overall.playerIndex === opponentPort);
+      const playerConversion = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
+      const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
+      
+      console.log('playerOverall : ', JSON.stringify(playerOverall, null, 4));
+      console.log('opponentOverall : ', JSON.stringify(opponentOverall, null, 4));
+      console.log('playerConversion : ', JSON.stringify(playerConversion, null, 4));
+      console.log('opponentConversions : ', JSON.stringify(opponentConversions, null, 4));
 
       overallOnOpponent[startAt] = {};
       overallOnOpponent[startAt][opponentCharName] = {};
@@ -62,13 +96,13 @@ function processGames(gameFiles, slippiId, characterId) {
       overallFromOpponent[startAt] = {};
       overallFromOpponent[startAt][opponentCharName] = {};
       overallFromOpponent[startAt][opponentCharName][stage] = {
-        ...stats.overall.filter(overall => overall.playerIndex !== playerPort)[0]
+        ...stats.overall.filter(overall => overall.playerIndex === opponentPort)[0]
       };
 
       conversionsFromOpponent[startAt] = {};
       conversionsFromOpponent[startAt][opponentCharName] = {};
       conversionsFromOpponent[startAt][opponentCharName][stage] = [
-        ...stats.conversions.filter(conversion => conversion.playerIndex !== playerPort)];
+        ...stats.conversions.filter(conversion => conversion.playerIndex === opponentPort)];
 
       processedGamesNb ++;
       console.log('WORKER sent statProgress', processedGamesNb);

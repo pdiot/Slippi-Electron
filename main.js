@@ -62,7 +62,7 @@ function createWindow () {
             let games = []
             for (let game of data.games) {
                 if (!game.filteredOut) {
-                    games.push(game.file)
+                    games.push(game)
                 }
             }
 
@@ -75,11 +75,12 @@ function createWindow () {
                 }
             });
             worker.on('message', (data) => {
+                console.log('message : ', data);
                 if (Object.keys(data).includes('computedStats')) {
                     // It's the end of stats processing message
                     event.sender.send('statsDoneTS', data);
                 } else {
-                    // It's the stats pbrocessing advancement message
+                    // It's the stats processing advancement message
                     const processedGamesNb = data.split(' ')[1];
                     const totalGamesNb = data.split(' ')[2];
                     event.sender.send('statsProgressTS', {current: processedGamesNb, total: totalGamesNb});

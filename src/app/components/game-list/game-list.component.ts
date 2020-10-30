@@ -195,6 +195,18 @@ export class GameListComponent implements OnInit, OnChanges {
       }
     }
 
+    for (let game of games) {
+      for (let pcp of game.playerCharacterPairs) {
+        if (pcp.player === this.filter.slippiId) {
+          pcp.isCurrentPlayer = true;
+          pcp.port = this.getPortFromLocalName(pcp.player);
+        } else {
+          pcp.isCurrentPlayer = false;
+          pcp.port = this.getPortFromLocalName(pcp.player);
+        }
+      }
+    }
+
     return {
       games,
       slippiId: this.filter.slippiId,
@@ -241,6 +253,10 @@ export class GameListComponent implements OnInit, OnChanges {
     }
     // TODO update with overrideFilter
     return value;
+  }
+
+  getPortFromLocalName(localName: string): number {
+    return (+localName.slice(-1)) - 1 ;
   }
 
 }

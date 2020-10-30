@@ -13,7 +13,7 @@ export interface FirstHits {
 
 export interface EnrichedGameFile {
     file: string,
-    playerCharacterPairs: {player: string, character: ExternalCharacter}[],
+    playerCharacterPairs: {player: string, character: ExternalCharacter, isCurrentPlayer?:boolean, port?:number }[],
     stage: string,
     filteredOut?: boolean,
 }

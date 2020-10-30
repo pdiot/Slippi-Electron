@@ -218,15 +218,15 @@ export class StatsProcessingService {
             overallDatas.conversionCounts.push(overall.conversionCount);
             overallDatas.totalDamages.push(overall.totalDamage);
             overallDatas.killCounts.push(overall.killCount);
-            overallDatas.openingsPerKills.push(overall.openingsPerKill.ratio);
-            overallDatas.damagePerOpenings.push(overall.damagePerOpening.ratio);
+            overallDatas.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
+            overallDatas.damagePerOpenings.push(overall.damagePerOpening?.ratio ? overall.openingsPerKill?.ratio : undefined);
 
             //All stages
             overallDatasAllStages.conversionCounts.push(overall.conversionCount);
             overallDatasAllStages.totalDamages.push(overall.totalDamage);
             overallDatasAllStages.killCounts.push(overall.killCount);
-            overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill.ratio);
-            overallDatasAllStages.damagePerOpenings.push(overall.damagePerOpening.ratio); 
+            overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
+            overallDatasAllStages.damagePerOpenings.push(overall.damagePerOpening?.ratio ? overall.openingsPerKill?.ratio : undefined);
         }
 
         processedOverallList[opponentChar][stage] = {
