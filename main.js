@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { Worker } = require('worker_threads');
 const slippiStats = require('./slippi-stats');
 const constants = require('./constants');
+const path = require('path');
 
 function createWindow () { 
     // Create the browser window. 
@@ -21,7 +22,7 @@ function createWindow () {
     win.loadFile('dist/ang-electron/index.html') 
 
     // Open the DevTools. 
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
 
     ipcMain.on('openFile', (event, path) => {
         const { dialog } = require('electron');
@@ -66,12 +67,11 @@ function createWindow () {
             }
 
             // We need to create a worker so everything doesn't freeze like the huge pile of js that it is
-            const worker = new Worker('./slippi-stats-workerfile.js', {
+            const worker = new Worker(path.join(__dirname, 'slippi-stats-workerfile.js'), {
                 workerData : {
                     gameFiles: games,
                     slippiId: data.slippiId,
                     characterId: character.id,
-                    // sender: event.sender
                 }
             });
             worker.on('message', (data) => {
@@ -92,14 +92,8 @@ function createWindow () {
                 if (code !== 0)
                 console.log(new Error(`Worker stopped with exit code ${code}`));
             });
-
-            // slippiStats.generateGameStats(games, data.slippiId, character.id, event.sender)
-            // .then(resultStats => {
-            //     event.sender.send('statsDoneTS', resultStats
-            // });
         }
     });
-
 } 
 
 // This method will be called when Electron has finished 
