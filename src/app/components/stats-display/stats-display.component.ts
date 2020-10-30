@@ -118,12 +118,19 @@ export class StatsDisplayComponent implements OnInit {
   }
 
   getMoveName(moveId: number) {
-    console.log('getMoveName, moveId: ', moveId);
-    console.log('getMoveName, BETTERMOVES: ', BETTERMOVES);
-    console.log('getMoveName, find: ', BETTERMOVES.find(bm => bm.id === moveId));
     const move = BETTERMOVES.find(bm => bm.id === moveId);
-    console.log('getMoveName, move: ', move);
     return move ? move.name : 'Weird move';
+  }
+
+  getStageName(stage: string) {
+    console.log('getStageName :', stage);
+    if (stage === 'allStages') {
+      console.log('return all stages');
+      return 'all stages';
+    } else {
+      console.log('return ', stage);
+      return stage;
+    }
   }
 
 }

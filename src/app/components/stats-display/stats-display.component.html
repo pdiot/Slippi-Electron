@@ -1,7 +1,7 @@
 <ng-container *ngIf="playerOverall && opponentOverall && playerConversions && opponentConversions">
   <app-foldable-block *ngFor="let character of getKeys(playerOverall); let i = index;" [label]="'Against ' + character" [collapseId]="i">
     <ng-container>
-      <app-foldable-block *ngFor="let stage of getKeys(playerOverall[character]); let j = index;" [label]="'On ' + stage" [collapseId]=" i + '' + j">
+      <app-foldable-block *ngFor="let stage of getKeys(playerOverall[character]); let j = index;" [label]="'On ' + getStageName(stage)" [collapseId]=" i + '' + j">
         <ng-container>
           <div class="row">
             <div class="col-6">
@@ -11,8 +11,7 @@
                                 [value]="playerOverall[character][stage].damagePerOpeningMoyenne | number:'1.0-1'"
                                 [unit1]="'%'"></app-stats-line>
                 <app-stats-line [label]="'Avg number of kills per game'" 
-                                [value]="playerOverall[character][stage].killCountMoyenne | number:'1.0-1'"
-                                [unit1]="'%'"></app-stats-line>
+                                [value]="playerOverall[character][stage].killCountMoyenne | number:'1.0-1'"></app-stats-line>
                 <app-stats-line [label]="'Avg kill percent'" 
                                 [value]="playerOverall[character][stage].killPercentMoyenne | number:'1.0-1'"
                                 [unit1]="'%'"></app-stats-line>
@@ -28,8 +27,7 @@
                                 [value]="opponentOverall[character][stage].damagePerOpeningMoyenne | number:'1.0-1'"
                                 [unit1]="'%'"></app-stats-line>
                 <app-stats-line [label]="'Avg number of kills per game'" 
-                                [value]="opponentOverall[character][stage].killCountMoyenne | number:'1.0-1'"
-                                [unit1]="'%'"></app-stats-line>
+                                [value]="opponentOverall[character][stage].killCountMoyenne | number:'1.0-1'"></app-stats-line>
                 <app-stats-line [label]="'Avg kill percent'" 
                                 [value]="opponentOverall[character][stage].killPercentMoyenne | number:'1.0-1'"
                                 [unit1]="'%'"></app-stats-line>

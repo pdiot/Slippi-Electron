@@ -49,6 +49,15 @@ export class StatsProcessingService {
       processedPunishes[opponentChar]={};
       processedPunishesFirstHits[opponentChar]={};
       processedKillPunishFirstHits[opponentChar] = {};
+      let neutralAllStages = [];
+      let punishesAllStages = [];
+      let oneHitOnlyNeutralAllStages = [];
+      let oneHitOnlyPunishesAllStages = [];
+      let neutralFirstHitsAllStages = [];
+      let neutralKillFirstHitsAllStages = [];
+      let punishFirstHitsAllStages = [];
+      let punishKillFirstHitsAllStages = [];
+
       for (const stage of Object.keys(conversionsList[opponentChar])) {
         processedNeutralWinsConversions[opponentChar][stage]={};
         processedNeutralWinsFirstHits[opponentChar][stage]={};
@@ -126,9 +135,35 @@ export class StatsProcessingService {
         conversions[opponentChar][stage].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHits);
         conversions[opponentChar][stage].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutral, ...oneHitOnlyNeutral], neutralFirstHits.map(move => move.moveId));
         conversions[opponentChar][stage].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishes, ...oneHitOnlyPunishes], punishFirstHits.map(move => move.moveId));
+                
+        //AllStages
+        neutralAllStages.push(...neutral);
+        oneHitOnlyNeutralAllStages.push(...oneHitOnlyNeutral);
+        neutralKillFirstHitsAllStages.push(...neutralKillFirstHits);
+        neutralFirstHitsAllStages.push(...neutralFirstHits);
+        punishesAllStages.push(...punishes);
+        oneHitOnlyPunishesAllStages.push(...oneHitOnlyPunishes);
+        punishKillFirstHitsAllStages.push(...punishKillFirstHits);
+        punishFirstHitsAllStages.push(...punishFirstHits);
       }
+      
+      if (!conversions[opponentChar]['allStages']) {
+        conversions[opponentChar]['allStages']={};
+      }
+      conversions[opponentChar]['allStages'].processedNeutralWinsConversions = {};
+      conversions[opponentChar]['allStages'].processedPunishes = {};
+      conversions[opponentChar]['allStages'].processedNeutralWinsConversions['multi-hits'] = this.calculMoyenneConversion(neutralAllStages);
+      conversions[opponentChar]['allStages'].processedNeutralWinsConversions['single-hit'] = this.calculMoyenneConversion(oneHitOnlyNeutralAllStages, true);
+      conversions[opponentChar]['allStages'].processedPunishes['multi-hits'] = this.calculMoyenneConversion(punishesAllStages);
+      conversions[opponentChar]['allStages'].processedPunishes['single-hit'] = this.calculMoyenneConversion(oneHitOnlyPunishesAllStages, true);
+      conversions[opponentChar]['allStages'].processedNeutralWinsFirstHits = this.calculMostCommonMove(neutralFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedKillNeutralFirstHits = this.calculMostCommonMove(neutralKillFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedPunishesFirstHits = this.calculMostCommonMove(punishFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutralAllStages, ...oneHitOnlyNeutralAllStages], neutralFirstHitsAllStages.map(move => move.moveId));
+      conversions[opponentChar]['allStages'].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishesAllStages, ...oneHitOnlyPunishesAllStages], punishFirstHitsAllStages.map(move => move.moveId));
+      console.debug('Conversions for ' + opponentChar + ' : ', conversions[opponentChar]);
     }
-    
     return conversions;  
   }
   
@@ -161,40 +196,62 @@ export class StatsProcessingService {
     }
 
     let overallDatas;
+    let overallDatasAllStages;
     for (const opponentChar of Object.keys(overallList)) {
-        processedOverallList[opponentChar] = {};
-        for (const stage of Object.keys(overallList[opponentChar])) {
-            overallDatas = {
-                conversionCounts: [],
-                totalDamages: [],
-                killCounts: [],
-                openingsPerKills: [],
-                damagePerOpenings: [],
-            }
-            for (const overall of overallList[opponentChar][stage]) {
-                overallDatas.conversionCounts.push(overall.conversionCount);
-                overallDatas.totalDamages.push(overall.totalDamage);
-                overallDatas.killCounts.push(overall.killCount);
-                overallDatas.openingsPerKills.push(overall.openingsPerKill.ratio);
-                overallDatas.damagePerOpenings.push(overall.damagePerOpening.ratio);
-            }
-
-            processedOverallList[opponentChar][stage] = {
-                conversionCountMoyenne: this.calculMoyenneOverall(overallDatas.conversionCounts),
-                totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
-                killCountMoyenne: this.calculMoyenneOverall(overallDatas.killCounts),
-                openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatas.openingsPerKills),
-                damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatas.damagePerOpenings),
-                killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
-            }
+      processedOverallList[opponentChar] = {};
+      overallDatasAllStages = {
+          conversionCounts: [],
+          totalDamages: [],
+          killCounts: [],
+          openingsPerKills: [],
+          damagePerOpenings: [],
+      }
+      for (const stage of Object.keys(overallList[opponentChar])) {
+        overallDatas = {
+            conversionCounts: [],
+            totalDamages: [],
+            killCounts: [],
+            openingsPerKills: [],
+            damagePerOpenings: [],
         }
+        for (const overall of overallList[opponentChar][stage]) {
+            overallDatas.conversionCounts.push(overall.conversionCount);
+            overallDatas.totalDamages.push(overall.totalDamage);
+            overallDatas.killCounts.push(overall.killCount);
+            overallDatas.openingsPerKills.push(overall.openingsPerKill.ratio);
+            overallDatas.damagePerOpenings.push(overall.damagePerOpening.ratio);
+
+            //All stages
+            overallDatasAllStages.conversionCounts.push(overall.conversionCount);
+            overallDatasAllStages.totalDamages.push(overall.totalDamage);
+            overallDatasAllStages.killCounts.push(overall.killCount);
+            overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill.ratio);
+            overallDatasAllStages.damagePerOpenings.push(overall.damagePerOpening.ratio); 
+        }
+
+        processedOverallList[opponentChar][stage] = {
+            conversionCountMoyenne: this.calculMoyenneOverall(overallDatas.conversionCounts),
+            totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
+            killCountMoyenne: this.calculMoyenneOverall(overallDatas.killCounts),
+            openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatas.openingsPerKills),
+            damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatas.damagePerOpenings),
+            killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
+        }
+      }
+      // All stages
+      processedOverallList[opponentChar]['allStages'] = {
+        conversionCountMoyenne: this.calculMoyenneOverall(overallDatasAllStages.conversionCounts),
+        totalDamageMoyenne: this.calculMoyenneOverall(overallDatasAllStages.totalDamages),
+        killCountMoyenne: this.calculMoyenneOverall(overallDatasAllStages.killCounts),
+        openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatasAllStages.openingsPerKills),
+        damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatasAllStages.damagePerOpenings),
+        killPercentMoyenne: this.calculMoyenneOverall(overallDatasAllStages.totalDamages) / this.calculMoyenneOverall(overallDatasAllStages.killCounts),
+      }
     }
     return processedOverallList;
   }
 
   private averageDamageForMostCommonStarters(nbMoves: number, conversions: {totalDamage: number, moves: Move[]}[], moveIds: number[]): StartersAverageDamage[] {
-    console.log('averageDamageForMostCommonStarters, conversions : ', conversions);
-    console.log('averageDamageForMostCommonStarters, moveIds : ', moveIds);
     let most = [];
     for (let moveId of moveIds) {
       const index = most.findIndex(m => m.moveId === moveId);
@@ -205,13 +262,11 @@ export class StatsProcessingService {
       }
     }
     const mostUsedMoves = most.sort((m1, m2) => m2.count - m1.count);
-    console.log('moseUsedMoves : ', mostUsedMoves);
     const result = [];
     for (let i = 0; i < mostUsedMoves.length && i < nbMoves; i ++) {
       if (mostUsedMoves[i]) {
         let damage = 0;
         for (let conversion of conversions) {
-          console.log('conversion', conversion);
           if (conversion.moves[0].moveId === mostUsedMoves[i].moveId) {
             damage += conversion.totalDamage;
           }
