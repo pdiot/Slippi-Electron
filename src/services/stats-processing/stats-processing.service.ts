@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EXTERNALMOVES } from 'src/interfaces/const';
-import { Conversion, Overall, StatsWrapper } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedOpenings, ProcessedOverallList } from 'src/interfaces/types';
+import { Conversion, Move, Overall, StatsWrapper } from 'src/interfaces/outputs';
+import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedOpenings, ProcessedOverallList, StartersAverageDamage } from 'src/interfaces/types';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +42,6 @@ export class StatsProcessingService {
       }
     }
 
-
     for (const opponentChar of Object.keys(conversionsList)) {
       processedNeutralWinsConversions[opponentChar]={};
       processedNeutralWinsFirstHits[opponentChar]={};
@@ -70,12 +69,13 @@ export class StatsProcessingService {
               // Neutral Win
               if (conversion.moves.length > 1) {
                   neutral.push({
-                      totalDamage: conversion.endPercent - conversion.startPercent,
+                      totalDamage: conversion.currentPercent - conversion.startPercent,
                       moves: conversion.moves,
                   });
               } else {
                   oneHitOnlyNeutral.push({
-                      totalDamage: conversion.endPercent - conversion.startPercent,
+                      totalDamage: conversion.currentPercent - conversion.startPercent,
+                      moves: conversion.moves,
                   })
               }
               if (conversion.didKill) {
@@ -90,12 +90,13 @@ export class StatsProcessingService {
             // Punish
             if (conversion.moves.length > 1) {
                 punishes.push({
-                    totalDamage: conversion.endPercent - conversion.startPercent,
+                    totalDamage: conversion.currentPercent - conversion.startPercent,
                     moves: conversion.moves,
                 });
             } else {
                 oneHitOnlyPunishes.push({
-                    totalDamage: conversion.endPercent - conversion.startPercent,
+                    totalDamage: conversion.currentPercent - conversion.startPercent,
+                    moves: conversion.moves,
                 });
             }
             if (conversion.didKill) {
@@ -123,6 +124,8 @@ export class StatsProcessingService {
         conversions[opponentChar][stage].processedKillNeutralFirstHits = this.calculMostCommonMove(neutralKillFirstHits);
         conversions[opponentChar][stage].processedPunishesFirstHits = this.calculMostCommonMove(punishFirstHits);
         conversions[opponentChar][stage].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHits);
+        conversions[opponentChar][stage].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutral, ...oneHitOnlyNeutral], neutralFirstHits.map(move => move.moveId));
+        conversions[opponentChar][stage].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishes, ...oneHitOnlyPunishes], punishFirstHits.map(move => move.moveId));
       }
     }
     
@@ -187,6 +190,39 @@ export class StatsProcessingService {
         }
     }
     return processedOverallList;
+  }
+
+  private averageDamageForMostCommonStarters(nbMoves: number, conversions: {totalDamage: number, moves: Move[]}[], moveIds: number[]): StartersAverageDamage[] {
+    console.log('averageDamageForMostCommonStarters, conversions : ', conversions);
+    console.log('averageDamageForMostCommonStarters, moveIds : ', moveIds);
+    let most = [];
+    for (let moveId of moveIds) {
+      const index = most.findIndex(m => m.moveId === moveId);
+      if (index !== -1) {
+        most[index].count += 1;
+      } else {
+        most.push({moveId, count : 1});
+      }
+    }
+    const mostUsedMoves = most.sort((m1, m2) => m2.count - m1.count);
+    console.log('moseUsedMoves : ', mostUsedMoves);
+    const result = [];
+    for (let i = 0; i < mostUsedMoves.length && i < nbMoves; i ++) {
+      if (mostUsedMoves[i]) {
+        let damage = 0;
+        for (let conversion of conversions) {
+          console.log('conversion', conversion);
+          if (conversion.moves[0].moveId === mostUsedMoves[i].moveId) {
+            damage += conversion.totalDamage;
+          }
+        }
+        result.push({
+          moveId : mostUsedMoves[i].moveId,
+          averageDamage: damage / mostUsedMoves[i].count
+        });
+      }
+    }
+    return result;    
   }
   
   private calculMoyenneOverall(array): number {

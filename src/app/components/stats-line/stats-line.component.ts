@@ -7,9 +7,11 @@ import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges }
 })
 export class StatsLineComponent implements OnInit, OnChanges {
 
-  @Input() label: string
-  @Input() value: string | number
-  @Input() value2: string | number
+  @Input() label: string;
+  @Input() value: string | number;
+  @Input() value2: string | number;
+  @Input() unit1: string;
+  @Input() unit2: string;
 
   constructor(private cd : ChangeDetectorRef) { }
 
@@ -25,6 +27,12 @@ export class StatsLineComponent implements OnInit, OnChanges {
     }
     if (changes?.value2?.currentValue) {
       this.value2 = changes.value2.currentValue;
+    }
+    if (changes?.unit1?.currentValue) {
+      this.unit1 = changes.unit1.currentValue;
+    }
+    if (changes?.unit2?.currentValue) {
+      this.unit2 = changes.unit2.currentValue;
     }
     this.cd.detectChanges();
   }

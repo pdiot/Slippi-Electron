@@ -46,11 +46,18 @@ export interface ProcessedOpenings {
   processedKillNeutralFirstHits: MostCommonMove,
   processedPunishesFirstHits: MostCommonMove,
   processedKillPunishFirstHits: MostCommonMove,
+  processedDamageForMostCommonNeutralOpeners: StartersAverageDamage[],
+  processedDamageForMostCommonPunishStarts: StartersAverageDamage[],
 }
 
 export interface ProcessedConversionWrapper {
   // 'multi-hits' or 'single-hit'
   [key: string] : MoyenneConversion
+}
+
+export interface StartersAverageDamage {
+  moveId: number, 
+  averageDamage: number
 }
 
 export interface MoyenneConversion {

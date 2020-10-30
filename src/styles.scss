@@ -1,8 +1,16 @@
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
 
-
 /* You can add global styles to this file, and also import other style files */
+
+body {
+  background-color: #504f5e !important;
+  color: #c5c9cc !important;
+}
+
+.card {
+  background-color: #5e5d68 !important;
+}
 
 .margin25 {
   margin: 25px;
@@ -199,3 +207,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 //   background-color: #f0a3a3;
 //   background-image: linear-gradient(to bottom, #f0a3a3, #f42323);
 // }
+
+// FOLDABLE STUFF IN FOLDABLE-BLOCK.COMPONENT.SCSS
+

@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { BETTERMOVES } from 'src/interfaces/const';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
 import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList } from 'src/interfaces/types';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
@@ -114,6 +115,15 @@ export class StatsDisplayComponent implements OnInit {
 
   getKeys(object): string[] {
     return Object.keys(object);
+  }
+
+  getMoveName(moveId: number) {
+    console.log('getMoveName, moveId: ', moveId);
+    console.log('getMoveName, BETTERMOVES: ', BETTERMOVES);
+    console.log('getMoveName, find: ', BETTERMOVES.find(bm => bm.id === moveId));
+    const move = BETTERMOVES.find(bm => bm.id === moveId);
+    console.log('getMoveName, move: ', move);
+    return move ? move.name : 'Weird move';
   }
 
 }

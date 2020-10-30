@@ -10,10 +10,10 @@
   </ng-template>
   <ng-template #twoValues>
     <div class="col-3">
-      <p>{{value}}</p>
+      <p>{{value}}{{unit1 ? ' ' + unit1 : ''}}</p>
     </div>
     <div class="col-3">
-      <p>{{value2}}</p>
+      <p>{{value2}} {{unit2 ? ' ' + unit2 : ''}}</p>
     </div>
   </ng-template>
 </div>
