@@ -1,3 +1,9 @@
+<div class="row">
+  <div class="col-3">
+    <button class="btn btn-danger" (click)="writeStats()">Export stats to JSON</button>
+  </div>
+  <div class="col-9" *ngIf="writeFeedbackMessage"><p>{{writeFeedbackMessage}}</p></div>
+</div>
 <ng-container *ngIf="playerOverall && opponentOverall && playerConversions && opponentConversions">
   <app-foldable-block *ngFor="let character of getKeys(playerOverall); let i = index;" [label]="'Against ' + character" [collapseId]="i">
     <ng-container>

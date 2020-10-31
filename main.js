@@ -1,8 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { Worker } = require('worker_threads');
+const { Worker, parentPort } = require('worker_threads');
 const slippiStats = require('./slippi-stats');
 const constants = require('./constants');
 const path = require('path');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
 
 function createWindow () { 
     // Create the browser window. 
@@ -95,6 +97,14 @@ function createWindow () {
             });
         }
     });
+
+    ipcMain.on('writeStats', (event, data) => {
+        writeStatsInJson(data).then((writePath) => {
+            event.sender.send('fileWrittenOK', writePath);
+        }).catch((err) => {
+            event.sender.send('filleWrittenKO', err);
+        });
+    })
 } 
 
 // This method will be called when Electron has finished 
@@ -126,6 +136,24 @@ async function enrichGameFiles(filepaths) {
     return await slippiStats.enrichGameFiles(filepaths);
 }
 
-// In this file, you can include the rest of your app's 
-// specific main process code. You can also put them in 
-// separate files and require them here. 
+async function writeStatsInJson(data) {
+    let parentPath = '';
+    for (let i = 0; i < __dirname.split(path.sep).length - 1; i ++) {
+        parentPath = parentPath + __dirname.split(path.sep)[i] + path.sep;
+    }
+    parentPath = parentPath.slice(0, -1);
+    let timeStamp = new Date();
+    timeStamp = timeStamp.toISOString();
+    timeStamp = timeStamp.replace('-', '');
+    timeStamp = timeStamp.replace('-', '');
+    timeStamp = timeStamp.replace(':', '');
+    timeStamp = timeStamp.replace(':', '');
+    timeStamp = timeStamp.replace('.', '');
+    const fileName = `stats${timeStamp}.json`;
+    const writePath = `${parentPath}${path.sep}outputs${path.sep}`;
+    await fs.promises.mkdir(writePath, { recursive: true });
+    await fs.writeFile(`${writePath}${fileName}`, JSON.stringify(data, null, 4), (err) => {
+        if (err) throw err;
+    });
+    return `${writePath}${fileName}`;
+}

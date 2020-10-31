@@ -3,7 +3,6 @@ const { default : SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
-const EXTERNALMOVES = constants.EXTERNALMOVES;
 const STAGES = constants.STAGES;
 
 main();
@@ -49,15 +48,12 @@ function processGames(gamesFromMain, slippiId, characterId) {
         (metadata.players[1] && !metadata.players[1].names.code)) {
         // We're in a local game
         for (let pcp of gameBlob.gameFromMain.playerCharacterPairs) {
-          console.log('pcp : ', pcp);
           if (pcp.isCurrentPlayer) {
             playerPort = pcp.port;
           } else {
             opponentPort = pcp.port;
           }
         }
-        console.log('playerPort : ', playerPort);
-        console.log('opponentPort : ', opponentPort);
       } else {
         if (metadata.players[0].names.code === slippiId) {
             playerPort = 0;
@@ -69,18 +65,10 @@ function processGames(gamesFromMain, slippiId, characterId) {
       }
       let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
 
-      console.log('overall : ', JSON.stringify(stats.overall, null, 4));
-      console.log('playerPort : ', playerPort);
-      console.log('opponentPort : ', opponentPort);
       const playerOverall = stats.overall.find(overall => overall.playerIndex === playerPort);
       const opponentOverall = stats.overall.find(overall => overall.playerIndex === opponentPort);
       const playerConversion = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
       const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
-      
-      console.log('playerOverall : ', JSON.stringify(playerOverall, null, 4));
-      console.log('opponentOverall : ', JSON.stringify(opponentOverall, null, 4));
-      console.log('playerConversion : ', JSON.stringify(playerConversion, null, 4));
-      console.log('opponentConversions : ', JSON.stringify(opponentConversions, null, 4));
 
       overallOnOpponent[startAt] = {};
       overallOnOpponent[startAt][opponentCharName] = {};
@@ -119,49 +107,6 @@ function processGames(gamesFromMain, slippiId, characterId) {
   
   console.log('WORKER end of treatment');
   return returnValue;
-
-
-  // Got all our data, time to process shit.
-  // Processing conversions on opponent
-  // let tmp = processConversionsList(conversionsOnOpponent);
-  // const processedNeutralWinsConversionsOnOpponent = tmp[0];
-  // const processedPunishesOnOpponent = tmp[1];
-  // const processedNeutralWinsFirstHitsOnOpponent = tmp[2];
-  // const processedKillNeutralFirstHitsOnOpponent = tmp[3];
-  // const processedPunishesFirstHitsOnOpponent = tmp[4];
-  // const processedKillPunishFirstHitsOnOpponent = tmp[5];
-
-  // // Processing conversions from opponent
-  // tmp = processConversionsList(conversionsFromOpponent);
-  // const processedNeutralWinsConversionsFromOpponent = tmp[0];
-  // const processedPunishesFromOpponent = tmp[1];
-  // const processedNeutralWinsFirstHitsFromOpponent = tmp[2];
-  // const processedKillNeutralFirstHitsFromOpponent = tmp[3];
-  // const processedPunishesFirstHitsFromOpponent = tmp[4];
-  // const processedKillPunishFirstHitsFromOpponent = tmp[5];
-
-  // const processedOverallOnOpponent = processOverallList(overallOnOpponent);
-  // const processedOverallFromOpponent = processOverallList(overallFromOpponent);
-
-  // const returnValue = {
-  //     computedStats: true,
-  //     neutralWinConversionsOnOpponent : processedNeutralWinsConversionsOnOpponent,
-  //     neutralWinConversionsFromOpponent : processedNeutralWinsConversionsFromOpponent,
-  //     punishesOnOpponent : processedPunishesOnOpponent,
-  //     punishesFromOpponent : processedPunishesFromOpponent,
-  //     neutralWinsFirstHitOnOpponent : processedNeutralWinsFirstHitsOnOpponent,
-  //     neutralWinsFirstHitFromOpponent : processedNeutralWinsFirstHitsFromOpponent,
-  //     neutralKillsFirstHitOnOpponent : processedKillNeutralFirstHitsOnOpponent,
-  //     neutralKillsFirstHitFromOpponent : processedKillNeutralFirstHitsFromOpponent,
-  //     punishesFirstHitOnOpponent : processedPunishesFirstHitsOnOpponent,
-  //     punishesFirstHitFromOpponent : processedPunishesFirstHitsFromOpponent,
-  //     punishKillsFirstHitOnOpponent : processedKillPunishFirstHitsOnOpponent,
-  //     punishKillsFirstHitFromOpponent : processedKillPunishFirstHitsFromOpponent,
-  //     overallOnOpponent : processedOverallOnOpponent,
-  //     overallFromOpponent : processedOverallFromOpponent,
-  // };
-  // console.log('WORKER fin du traitement');
-  // return returnValue;
 }
 
 function getMapName(id) {

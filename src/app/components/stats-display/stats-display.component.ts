@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { ElecService } from 'src/app/elec.service';
 import { BETTERMOVES } from 'src/interfaces/const';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
 import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList } from 'src/interfaces/types';
@@ -20,8 +21,11 @@ export class StatsDisplayComponent implements OnInit {
   playerOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
   opponentOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
 
+  writeFeedbackMessage: string;
+
   constructor(private cd: ChangeDetectorRef,
-    private statsService: StatsProcessingService) { }
+    private statsService: StatsProcessingService,
+    private electron: ElecService) { }
 
   ngOnInit(): void {
   }
@@ -34,6 +38,7 @@ export class StatsDisplayComponent implements OnInit {
       this.selectedGames = changes.selectedGames.currentValue as unknown as EnrichedGameFile[];
     }
     if (this.selectedGames && this.stats) {
+      this.writeFeedbackMessage = undefined;
       this.getProcessedStats();
     }
     this.cd.detectChanges();
@@ -131,6 +136,24 @@ export class StatsDisplayComponent implements OnInit {
       console.log('return ', stage);
       return stage;
     }
+  }
+
+  writeStats() {
+    const stats = {
+      playerConversions: this.playerConversions,
+      opponentConversions: this.opponentConversions,
+      playerOverall: this.playerOverall,
+      opponentOverall: this.opponentOverall,
+    }
+    this.electron.ipcRenderer.on('fileWrittenOK', (event, arg) => {
+      this.writeFeedbackMessage = `Stats written to ${arg}`
+      this.cd.detectChanges();
+    });
+    this.electron.ipcRenderer.on('fileWrittenKO', (event, arg) => {
+      this.writeFeedbackMessage = `Error when trying to write stats to ${arg}`
+      this.cd.detectChanges();
+    });
+    this.electron.ipcRenderer.send('writeStats', stats);
   }
 
 }
