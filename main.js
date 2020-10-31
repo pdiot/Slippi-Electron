@@ -1,10 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { Worker, parentPort } = require('worker_threads');
+const { Worker } = require('worker_threads');
 const slippiStats = require('./slippi-stats');
 const constants = require('./constants');
 const path = require('path');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 
 function createWindow () { 
     // Create the browser window. 
@@ -48,6 +47,27 @@ function createWindow () {
             }
         })); 
     });
+
+    ipcMain.on('openStatsFile', (event, data) => {
+        const { dialog } = require('electron');
+        const fs = require('fs');
+        dialog.showOpenDialog(win, {
+            title: `Choose the ${data} stats file to load`,
+            filters: [
+                {
+                    name: 'Fichiers JSON',
+                    extensions: ['json']
+                }
+            ]
+        }).then((returnValue => {
+            if (!returnValue.canceled) {
+                const value = readFile(returnValue.filePaths[0]);
+                console.log('Value ok for ' + data);
+                console.log(`sending ${data}StatsFileOpenedOK`);
+                event.sender.send(`${data}StatsFileOpenedOK`, value);
+            }
+        })); 
+    })
 
     ipcMain.on('calculateStats', (event, data) => {
         /**
@@ -131,6 +151,14 @@ app.on('activate', () => {
         createWindow() 
     } 
 })
+
+function readFile(filePath) {
+    const value = fs.readFileSync(filePath, (err) => {
+        if (err) throw err;
+        console.log('value read from ', filePath);
+    });
+    return value;
+}
 
 async function enrichGameFiles(filepaths) {
     return await slippiStats.enrichGameFiles(filepaths);

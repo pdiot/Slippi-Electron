@@ -1,0 +1,21 @@
+<div class="my-overlay" *ngIf="showOverlay">
+  <div class="meter">
+    <p>{{statsCalculationProgress | number:'1.0-0'}} %</p>
+    <span [ngStyle]="{'width': statsCalculationProgress +'%'}"></span>
+  </div>
+</div>
+<div class="mainContainer">
+  <div class="row app-header">
+    <div class="col-4"></div>
+    <div class="col-2">
+      <button class="btn btn-danger" (click)="loadFile(1)">Choose first file</button>
+    </div>
+    <div class="col-2">
+      <button class="btn btn-danger" (click)="loadFile(2)">Choose second file</button>
+    </div>
+    <div class="col-4"></div>
+  </div>
+  <ng-container *ngIf="firstFile && secondFile">
+    <div>We have our two files</div>
+  </ng-container>
+</div>
