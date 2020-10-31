@@ -5,6 +5,7 @@ import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
 import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList } from 'src/interfaces/types';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
 import GameFileUtils from '../utils/gameFile.utils';
+import GeneralUtils from '../utils/general.utils';
 
 @Component({
   selector: 'app-stats-display',
@@ -119,23 +120,15 @@ export class StatsDisplayComponent implements OnInit {
   }
 
   getKeys(object): string[] {
-    return Object.keys(object);
+    return GeneralUtils.getKeys(object);
   }
 
   getMoveName(moveId: number) {
-    const move = BETTERMOVES.find(bm => bm.id === moveId);
-    return move ? move.name : 'Weird move';
+    return GeneralUtils.getMoveName(moveId);
   }
 
   getStageName(stage: string) {
-    console.log('getStageName :', stage);
-    if (stage === 'allStages') {
-      console.log('return all stages');
-      return 'all stages';
-    } else {
-      console.log('return ', stage);
-      return stage;
-    }
+    return GeneralUtils.getStageName(stage);
   }
 
   writeStats() {

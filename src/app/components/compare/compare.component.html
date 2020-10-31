@@ -16,6 +16,13 @@
     <div class="col-4"></div>
   </div>
   <ng-container *ngIf="firstFile && secondFile">
-    <div>We have our two files</div>
+    <div class="row">
+      <div class="col-6">
+        <app-stats-compare-display [statsFromJSON]="firstFile" [collapseId]="'first'"></app-stats-compare-display>
+      </div>
+      <div class="col-6">
+        <app-stats-compare-display [statsFromJSON]="secondFile" [collapseId]="'second'"></app-stats-compare-display>
+      </div>
+    </div>
   </ng-container>
 </div>

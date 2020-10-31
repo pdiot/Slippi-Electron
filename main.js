@@ -61,8 +61,8 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                const value = readFile(returnValue.filePaths[0]);
-                console.log('Value ok for ' + data);
+                console.log('returnValue', returnValue);
+                const value = readStatsFile(returnValue.filePaths[0]);
                 console.log(`sending ${data}StatsFileOpenedOK`);
                 event.sender.send(`${data}StatsFileOpenedOK`, value);
             }
@@ -152,11 +152,10 @@ app.on('activate', () => {
     } 
 })
 
-function readFile(filePath) {
-    const value = fs.readFileSync(filePath, (err) => {
+function readStatsFile(filePath) {
+    const value = JSON.parse(fs.readFileSync(filePath, (err) => {
         if (err) throw err;
-        console.log('value read from ', filePath);
-    });
+    }));
     return value;
 }
 

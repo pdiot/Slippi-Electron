@@ -20,12 +20,12 @@ export class CompareComponent implements OnInit {
   loadFile(select: number) {
     this.electron.ipcRenderer.on('firstStatsFileOpenedOK', (event, data) => {
       this.firstFile = data;
-      console.log('gotFirstFile');
+      console.log('Compare - gotFirstFile');
       this.cd.detectChanges();
     });
     this.electron.ipcRenderer.on('secondStatsFileOpenedOK', (event, data) => {
       this.secondFile = data;
-      console.log('gotSecondFile');
+      console.log('Compare - gotSecondFile');
       this.cd.detectChanges();
     });
     switch (select) {
