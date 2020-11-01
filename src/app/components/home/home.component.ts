@@ -51,6 +51,26 @@ export class HomeComponent implements OnInit {
           this.initStatsIfNeeded();
           this.stats.opponentOveralls = value.opponentOveralls;
         }
+        if (value.punishedActionsForPlayer) {
+          console.log('Home - Received punishedActionsForPlayer from store : ', value.punishedActionsForPlayer);
+          this.initStatsIfNeeded();
+          this.stats.punishedActionsForPlayer = value.punishedActionsForPlayer;
+        }
+        if (value.punishedActionsForOpponent) {
+          console.log('Home - Received punishedActionsForOpponent from store : ', value.punishedActionsForOpponent);
+          this.initStatsIfNeeded();
+          this.stats.punishedActionsForOpponent = value.punishedActionsForOpponent;
+        }
+        if (value.lcancelsForPlayer) {
+          console.log('Home - Received lcancelsForPlayer from store : ', value.lcancelsForPlayer);
+          this.initStatsIfNeeded();
+          this.stats.lcancelsForPlayer = value.lcancelsForPlayer;
+        }
+        if (value.lcancelsForOpponent) {
+          console.log('Home - Received lcancelsForOpponent from store : ', value.lcancelsForOpponent);
+          this.initStatsIfNeeded();
+          this.stats.lcancelsForOpponent = value.lcancelsForOpponent;
+        }
         if (value.selectedGames) {
           console.log('Home - Received selectedGames from store : ', value.selectedGames);
           // When we select games in stats-game-select
@@ -93,6 +113,10 @@ export class HomeComponent implements OnInit {
         opponentConversions : undefined,
         playerOveralls : undefined,
         opponentOveralls : undefined,
+        punishedActionsForOpponent: undefined,
+        punishedActionsForPlayer: undefined,
+        lcancelsForPlayer: undefined,
+        lcancelsForOpponent: undefined
       };
     }
   }

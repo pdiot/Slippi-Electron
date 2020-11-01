@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
+import GameFileUtils from '../utils/gameFile.utils';
 
 @Component({
   selector: 'app-compare',
@@ -9,7 +10,9 @@ import { ElecService } from 'src/app/elec.service';
 export class CompareComponent implements OnInit {
 
   firstFile;
+  firstFilePath;
   secondFile;
+  secondFilePath;
   showOverlay = false;
 
   constructor(private electron: ElecService, private cd : ChangeDetectorRef) { }
@@ -19,12 +22,14 @@ export class CompareComponent implements OnInit {
 
   loadFile(select: number) {
     this.electron.ipcRenderer.on('firstStatsFileOpenedOK', (event, data) => {
-      this.firstFile = data;
+      this.firstFile = data.statsFromJSON;
+      this.firstFilePath = data.path;
       console.log('Compare - gotFirstFile');
       this.cd.detectChanges();
     });
     this.electron.ipcRenderer.on('secondStatsFileOpenedOK', (event, data) => {
-      this.secondFile = data;
+      this.secondFile = data.statsFromJSON;
+      this.secondFilePath = data.path;
       console.log('Compare - gotSecondFile');
       this.cd.detectChanges();
     });

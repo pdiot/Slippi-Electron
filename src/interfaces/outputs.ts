@@ -72,9 +72,27 @@ export interface Move {
     damage: number
 }
 
+export interface PunishedActions {
+    punishedAttacks: string[],
+    punishedDefensiveOptions: string[],
+    punishedMovementOptions: string[],
+}
+
+export interface LCancels {
+    lcancels: {
+        successful: number,
+        failed: number
+    },
+    failedMoves: string[],
+}
+
 export interface StatsItem {
     playerConversions: StatsWrapper<Conversion[]>,
     opponentConversions: StatsWrapper<Conversion[]>,
     playerOveralls: StatsWrapper<Overall>,
     opponentOveralls: StatsWrapper<Overall>,
+    punishedActionsForPlayer: StatsWrapper<PunishedActions>,
+    punishedActionsForOpponent: StatsWrapper<PunishedActions>,
+    lcancelsForPlayer: StatsWrapper<LCancels>,
+    lcancelsForOpponent: StatsWrapper<LCancels>
   }

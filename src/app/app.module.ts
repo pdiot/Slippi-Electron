@@ -17,6 +17,7 @@ import { StatsLineComponent } from './components/stats-line/stats-line.component
 import { FoldableBlockComponent } from './components/foldable-block/foldable-block.component';
 import { CompareComponent } from './components/compare/compare.component';
 import { StatsCompareDisplayComponent } from './components/stats-compare-display/stats-compare-display.component';
+import { StatsDisplayBlockComponent } from './components/stats-display-block/stats-display-block.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { StatsCompareDisplayComponent } from './components/stats-compare-display
     StatsLineComponent,
     FoldableBlockComponent,
     CompareComponent,
-    StatsCompareDisplayComponent
+    StatsCompareDisplayComponent,
+    StatsDisplayBlockComponent
   ],
   imports: [
     BrowserModule,

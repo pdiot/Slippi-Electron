@@ -2,6 +2,7 @@ const {parentPort, workerData} = require ('worker_threads');
 const { default : SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 const node_utils = require('./node_utils');
+// const fs = require('fs');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
@@ -32,14 +33,20 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let conversionsFromOpponent = {};
   let overallOnOpponent = {};
   let overallFromOpponent = {};
-  let punishedActionsAndLCancelsForPlayer = {};
-  let punishedActionsAndLCancelsForOpponent = {};
+  let punishedActionsForPlayer = {};
+  let punishedActionsForOpponent = {};
+  let lcancelsForPlayer = {};
+  let lcancelsForOpponent = {};
   // Getting the data we want
   for (const gameBlob of games) {
       const game = gameBlob.game;
       const stats = game.getStats();
       const metadata = game.getMetadata();
       const frames = game.getFrames();
+      // fs.writeFile('frames.json', JSON.stringify(frames, null, 4), err => {
+      //   if (err) throw err;
+      //   console.log('wrote frames in frames.json');
+      // })
       const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
       const settings = game.getSettings();
       const stage = getMapName(settings.stageId);
@@ -70,9 +77,11 @@ function processGames(gamesFromMain, slippiId, characterId) {
 
       const playerConversions = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
       const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
-      const playerPunishedActionsAndLCancels = getPunishedActions(frames, playerPort, opponentConversions);
-      const opponentPunishedActionsAndLCancels = getPunishedActions(frames, opponentPort, playerConversions);
-
+      const playerPunishedActions = getPunishedActions(frames, playerPort, opponentConversions);
+      const opponentPunishedActions = getPunishedActions(frames, opponentPort, playerConversions);
+      const LCancels = getLCancels(frames, playerPort, opponentPort);
+      const playerLCancels = LCancels.player;
+      const opponentLCancels = LCancels.opponent;
 
       overallOnOpponent[startAt] = {};
       overallOnOpponent[startAt][opponentCharName] = {};
@@ -96,14 +105,22 @@ function processGames(gamesFromMain, slippiId, characterId) {
       conversionsFromOpponent[startAt][opponentCharName][stage] = [
         ...stats.conversions.filter(conversion => conversion.playerIndex === opponentPort)];
 
-      punishedActionsAndLCancelsForPlayer[startAt] = {};
-      punishedActionsAndLCancelsForPlayer[startAt][opponentCharName] = {};
-      punishedActionsAndLCancelsForPlayer[startAt][opponentCharName][stage] = playerPunishedActionsAndLCancels;
+      punishedActionsForPlayer[startAt] = {};
+      punishedActionsForPlayer[startAt][opponentCharName] = {};
+      punishedActionsForPlayer[startAt][opponentCharName][stage] = playerPunishedActions;
       
-      punishedActionsAndLCancelsForOpponent[startAt] = {};
-      punishedActionsAndLCancelsForOpponent[startAt][opponentCharName] = {};
-      punishedActionsAndLCancelsForOpponent[startAt][opponentCharName][stage] = opponentPunishedActionsAndLCancels;
+      punishedActionsForOpponent[startAt] = {};
+      punishedActionsForOpponent[startAt][opponentCharName] = {};
+      punishedActionsForOpponent[startAt][opponentCharName][stage] = opponentPunishedActions;
 
+      lcancelsForPlayer[startAt] = {};
+      lcancelsForPlayer[startAt][opponentCharName] = {};
+      lcancelsForPlayer[startAt][opponentCharName][stage] = playerLCancels;
+
+      lcancelsForOpponent[startAt] = {};
+      lcancelsForOpponent[startAt][opponentCharName] = {};
+      lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
+    
       processedGamesNb ++;
       console.log('WORKER sent statProgress', processedGamesNb);
       parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
@@ -115,8 +132,10 @@ function processGames(gamesFromMain, slippiId, characterId) {
     conversionsFromOpponent,
     overallOnOpponent,
     overallFromOpponent,
-    punishedActionsAndLCancelsForPlayer,
-    punishedActionsAndLCancelsForOpponent
+    punishedActionsForPlayer,
+    punishedActionsForOpponent,
+    lcancelsForPlayer,
+    lcancelsForOpponent
   }
   
   console.log('WORKER end of treatment');
@@ -170,4 +189,44 @@ function getPunishedActions(frames, playerPort, opponentConversions) {
   return {
     punishedAttacks, punishedDefensiveOptions, punishedMovementOptions
   };
+}
+
+function getLCancels(frames, playerPort, opponentPort) {
+  let playerLCancels = {successful: 0, failed: 0};
+  let playerFailedMoves = [];
+  let oppLCancels = {successful: 0, failed: 0};
+  let oppFailedMoves = [];
+  for (let frameKey of Object.keys(frames)) {
+    const playerPostFrameUpdate = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).post;
+    const playerAttack = node_utils.getAttackAction(playerPostFrameUpdate.actionStateId);
+    const oppPostFrameUpdate = frames[frameKey].players.find(player => player.pre.playerIndex === opponentPort).post;
+    const oppAttack = node_utils.getAttackAction(oppPostFrameUpdate.actionStateId);
+    if (playerAttack) {
+      if (playerPostFrameUpdate.lCancelStatus === 1) {
+        playerLCancels.successful ++;
+      } else if (playerPostFrameUpdate.lCancelStatus === 2) {
+        playerLCancels.failed ++;
+        playerFailedMoves.push(playerAttack);
+      }
+    }
+    if (oppAttack) {
+      if (oppPostFrameUpdate.lCancelStatus === 1) {
+        oppLCancels.successful ++;
+      } else if (oppPostFrameUpdate.lCancelStatus === 2) {
+        oppLCancels.failed ++;
+        oppFailedMoves.push(oppAttack);
+      }
+    }
+  }
+  const returnValue = {
+    player: {
+      lcancels: playerLCancels,
+      failedMoves: playerFailedMoves
+    },
+    opponent: {
+      lcancels: oppLCancels,
+      failedMoves: oppFailedMoves
+    }
+  };
+  return returnValue;
 }

@@ -6,14 +6,24 @@
 </div>
 <div class="mainContainer">
   <div class="row app-header">
-    <div class="col-4"></div>
+    <div class="col-1">
+      <p *ngIf="firstFilePath">First file : </p>
+    </div>
+    <div class="col-3">
+      <p *ngIf="firstFilePath" class="ellipsis">{{firstFilePath}}</p>
+    </div>
     <div class="col-2">
       <button class="btn btn-danger" (click)="loadFile(1)">Choose first file</button>
     </div>
     <div class="col-2">
       <button class="btn btn-danger" (click)="loadFile(2)">Choose second file</button>
     </div>
-    <div class="col-4"></div>
+    <div class="col-1">
+      <p *ngIf="secondFilePath">Second file : </p>
+    </div>
+    <div class="col-3">
+      <p *ngIf="secondFilePath" class="ellipsis">{{secondFilePath}}</p>
+    </div>
   </div>
   <ng-container *ngIf="firstFile && secondFile">
     <div class="row">

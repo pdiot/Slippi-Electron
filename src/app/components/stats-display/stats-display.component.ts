@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
-import { BETTERMOVES } from 'src/interfaces/const';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedLCancels, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
 import GameFileUtils from '../utils/gameFile.utils';
 import GeneralUtils from '../utils/general.utils';
@@ -21,7 +20,11 @@ export class StatsDisplayComponent implements OnInit {
   opponentConversions: IntermediaryStatsWrapper<ProcessedOpenings>;
   playerOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
   opponentOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
-
+  punishedActionsForPlayer: IntermediaryStatsWrapper<ProcessedPunishedOptions>;
+  punishedActionsForOpponent: IntermediaryStatsWrapper<ProcessedPunishedOptions>;
+  lcancelsForPlayer: IntermediaryStatsWrapper<ProcessedLCancels>;
+  lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
+  collapseId = 'collapse';
   writeFeedbackMessage: string;
 
   constructor(private cd: ChangeDetectorRef,
@@ -34,11 +37,20 @@ export class StatsDisplayComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.stats?.currentValue) {
       this.stats = changes.stats.currentValue as unknown as StatsItem;
+      console.log('Stats Display - got Stats : ', this.stats);
     }
     if (changes?.selectedGames?.currentValue) {
       this.selectedGames = changes.selectedGames.currentValue as unknown as EnrichedGameFile[];
     }
-    if (this.selectedGames && this.stats) {
+    if (this.selectedGames && 
+      this.stats?.punishedActionsForPlayer &&
+      this.stats?.punishedActionsForOpponent &&
+      this.stats?.lcancelsForOpponent &&
+      this.stats?.lcancelsForPlayer &&
+      this.stats?.opponentConversions &&
+      this.stats?.playerConversions &&
+      this.stats?.playerOveralls &&
+      this.stats?.opponentOveralls) {
       this.writeFeedbackMessage = undefined;
       this.getProcessedStats();
     }
@@ -69,6 +81,26 @@ export class StatsDisplayComponent implements OnInit {
       this.opponentOverall = result;
       this.cd.detectChanges();
     });
+    this.statsService.processPunishedActions(newStats.punishedActionsForPlayer).then(result => {
+      console.log('Stats Display - got player punishedActions back', result);
+      this.punishedActionsForPlayer = result;
+      this.cd.detectChanges();
+    })
+    this.statsService.processPunishedActions(newStats.punishedActionsForOpponent).then(result => {
+      console.log('Stats Display - got opponent punishedActions back', result);
+      this.punishedActionsForOpponent = result;
+      this.cd.detectChanges();
+    })
+    this.statsService.processLCancels(newStats.lcancelsForPlayer).then(result => {
+      console.log('Stats Display - got player lcancels back', result);
+      this.lcancelsForPlayer = result;
+      this.cd.detectChanges();
+    })
+    this.statsService.processLCancels(newStats.lcancelsForOpponent).then(result => {
+      console.log('Stats Display - got opponent lcancels back', result);
+      this.lcancelsForOpponent = result;
+      this.cd.detectChanges();
+    })
   }
 
   private filterStats(): StatsItem {
@@ -79,9 +111,13 @@ export class StatsDisplayComponent implements OnInit {
     }
     const newStats: StatsItem = {
       playerConversions : undefined,
-      opponentConversions: undefined,
-      playerOveralls: undefined,
-      opponentOveralls: undefined,
+      opponentConversions : undefined,
+      playerOveralls : undefined,
+      opponentOveralls : undefined,
+      punishedActionsForOpponent: undefined,
+      punishedActionsForPlayer: undefined,
+      lcancelsForPlayer: undefined,
+      lcancelsForOpponent: undefined
     };
     for (let game of Object.keys(this.stats.playerConversions)) {
       if (niceNamesToKeep.includes(game)) {
@@ -115,6 +151,38 @@ export class StatsDisplayComponent implements OnInit {
         newStats.opponentOveralls[game] = this.stats.opponentOveralls[game];
       }
     }
+    for (let game of Object.keys(this.stats.lcancelsForOpponent)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.lcancelsForOpponent) {
+          newStats.lcancelsForOpponent={};
+        }
+        newStats.lcancelsForOpponent[game] = this.stats.lcancelsForOpponent[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.lcancelsForPlayer)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.lcancelsForPlayer) {
+          newStats.lcancelsForPlayer={};
+        }
+        newStats.lcancelsForPlayer[game] = this.stats.lcancelsForPlayer[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.punishedActionsForOpponent)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.punishedActionsForOpponent) {
+          newStats.punishedActionsForOpponent={};
+        }
+        newStats.punishedActionsForOpponent[game] = this.stats.punishedActionsForOpponent[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.punishedActionsForPlayer)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.punishedActionsForPlayer) {
+          newStats.punishedActionsForPlayer={};
+        }
+        newStats.punishedActionsForPlayer[game] = this.stats.punishedActionsForPlayer[game];
+      }
+    }
 
     return newStats;
   }
@@ -137,6 +205,10 @@ export class StatsDisplayComponent implements OnInit {
       opponentConversions: this.opponentConversions,
       playerOverall: this.playerOverall,
       opponentOverall: this.opponentOverall,
+      punishedActionsForPlayer: this.punishedActionsForPlayer,
+      punishedActionsForOpponent: this.punishedActionsForOpponent,
+      lcancelsForPlayer: this.lcancelsForPlayer,
+      lcancelsForOpponent: this.lcancelsForOpponent,
     }
     this.electron.ipcRenderer.on('fileWrittenOK', (event, arg) => {
       this.writeFeedbackMessage = `Stats written to ${arg}`

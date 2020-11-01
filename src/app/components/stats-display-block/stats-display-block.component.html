@@ -1,0 +1,214 @@
+<ng-container *ngIf="playerOverall && opponentOverall 
+                    && playerConversions && opponentConversions 
+                    && punishedActionsForPlayer && punishedActionsForOpponent 
+                    && lcancelsForPlayer && lcancelsForOpponent 
+                    && collapseId">
+  <app-foldable-block *ngFor="let character of getKeys(playerOverall); let i = index;" [label]="'Against ' + character" [collapseId]="collapseId + '' + i">
+    <ng-container>
+      <app-foldable-block *ngFor="let stage of getKeys(playerOverall[character]); let j = index;" [label]="'On ' + getStageName(stage)" [collapseId]="collapseId + '' + i + '' + j">
+        <ng-container>
+          <div class="row"> <!-- Overall stats -->
+            <div class="col-6"> <!-- Player overall stats -->
+              <app-foldable-block [label]="'Player overall stats'" [collapseId]="collapseId + '' + i + '' + j + '1'">
+                <app-stats-line [label]="'Avg dmg per conversion (with single hits)'" 
+                                [value]="playerOverall[character][stage].damagePerOpeningMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Avg number of kills per game'" 
+                                [value]="playerOverall[character][stage].killCountMoyenne | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Avg kill percent'" 
+                                [value]="playerOverall[character][stage].killPercentMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Avg openings per kill'" [value]="playerOverall[character][stage].openingsPerKillMoyenne | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Avg damage done per game'" [value]="playerOverall[character][stage].totalDamageMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+              </app-foldable-block>
+            </div>
+            <div class="col-6"> <!-- Opponent overall stats -->
+              <app-foldable-block [label]="'Opponent overall stats'" [collapseId]="collapseId + '' + i + '' + j + '2'">  
+                <app-stats-line [label]="'Avg dmg per conversion (with single hits)'" 
+                                [value]="opponentOverall[character][stage].damagePerOpeningMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Avg number of kills per game'" 
+                                [value]="opponentOverall[character][stage].killCountMoyenne | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Avg kill percent'" 
+                                [value]="opponentOverall[character][stage].killPercentMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Avg openings per kill'" [value]="opponentOverall[character][stage].openingsPerKillMoyenne | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Avg damage done per game'" [value]="opponentOverall[character][stage].totalDamageMoyenne | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+              </app-foldable-block>          
+            </div>
+          </div>
+          <div class="row"> <!-- Conversion -->
+            <div class="col-6"> <!-- Player conversions -->
+              <app-foldable-block [label]="'Player conversions'" [collapseId]="collapseId + '' + i + '' + j + '3'">
+                <app-stats-line [label]="'Neutral win conversions average length (excluding single hits)'" 
+                                [value]="playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Neutral win conversions average damage (excluding single hits)'" 
+                                [value]="playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Single hit neutral wins average damage'" 
+                                [value]="playerConversions[character][stage].processedNeutralWinsConversions['single-hit'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Punish conversions average length (excluding single hits)'" 
+                                [value]="playerConversions[character][stage].processedPunishes['multi-hits'].averageLength | number:'1.0-1'" ></app-stats-line>
+                <app-stats-line [label]="'Punish conversions average damage (excluding single hits)'" 
+                                [value]="playerConversions[character][stage].processedPunishes['multi-hits'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Single hit punishes average damage'" 
+                                [value]="playerConversions[character][stage].processedPunishes['single-hit'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Most frequent neutral opener'" 
+                                [value]="playerConversions[character][stage].processedNeutralWinsFirstHits?.move ? playerConversions[character][stage].processedNeutralWinsFirstHits.move  : 'N/A'" 
+                                [value2]="playerConversions[character][stage].processedNeutralWinsFirstHits?.count ? playerConversions[character][stage].processedNeutralWinsFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent punish option'" 
+                                [value]="playerConversions[character][stage].processedPunishesFirstHits?.move ? playerConversions[character][stage].processedPunishesFirstHits.move : 'N/A'" 
+                                [value2]="playerConversions[character][stage].processedPunishesFirstHits?.count ? playerConversions[character][stage].processedPunishesFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent neutral opener for conversions into kills'" 
+                                [value]="playerConversions[character][stage].processedKillNeutralFirstHits?.move ? playerConversions[character][stage].processedKillNeutralFirstHits.move : 'N/A'" 
+                                [value2]="playerConversions[character][stage].processedKillNeutralFirstHits?.count ? playerConversions[character][stage].processedKillNeutralFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent punish option for conversions into kills'" 
+                                [value]="playerConversions[character][stage].processedKillPunishFirstHits?.move ? playerConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'" 
+                                [value2]="playerConversions[character][stage].processedKillPunishFirstHits?.count ? playerConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Average damage for most common neutral starters'"></app-stats-line>
+                <ng-container *ngFor="let mostUsed of playerConversions[character][stage].processedDamageForMostCommonNeutralOpeners">
+                  <app-stats-line [label]="getMoveName(mostUsed.moveId)" 
+                                  [value]="mostUsed.averageDamage | number:'1.0-1'" 
+                                  [unit1]="'%'" ></app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Average damage for most common punish starters'"></app-stats-line>
+                <ng-container *ngFor="let mostUsed of playerConversions[character][stage].processedDamageForMostCommonPunishStarts">
+                  <app-stats-line [label]="getMoveName(mostUsed.moveId)" 
+                                  [value]="mostUsed.averageDamage | number:'1.0-1'" 
+                                  [unit1]="'%'" ></app-stats-line>
+                </ng-container>
+              </app-foldable-block> 
+            </div>
+            <div class="col-6"> <!-- Opponent conversions --> 
+              <app-foldable-block [label]="'Opponent conversions'" [collapseId]="collapseId + '' + i + '' + j + '4'">
+                <app-stats-line [label]="'Neutral win conversions average length (excluding single hits)'" 
+                                [value]="opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength | number:'1.0-1'"></app-stats-line>
+                <app-stats-line [label]="'Neutral win conversions average damage (excluding single hits)'" 
+                                [value]="opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage | number:'1.0-1'"
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Single hit neutral wins average damage'" 
+                                [value]="opponentConversions[character][stage].processedNeutralWinsConversions['single-hit'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Punish conversions average length (excluding single hits)'" 
+                                [value]="opponentConversions[character][stage].processedPunishes['multi-hits'].averageLength | number:'1.0-1'" ></app-stats-line>
+                <app-stats-line [label]="'Punish conversions average damage (excluding single hits)'" 
+                                [value]="opponentConversions[character][stage].processedPunishes['multi-hits'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Single hit punishes average damage'" 
+                                [value]="opponentConversions[character][stage].processedPunishes['single-hit'].averageDamage | number:'1.0-1'" 
+                                [unit1]="'%'"></app-stats-line>
+                <app-stats-line [label]="'Most frequent neutral opener'" 
+                                [value]="opponentConversions[character][stage].processedNeutralWinsFirstHits?.move ? opponentConversions[character][stage].processedNeutralWinsFirstHits.move  : 'N/A'" 
+                                [value2]="opponentConversions[character][stage].processedNeutralWinsFirstHits?.count ? opponentConversions[character][stage].processedNeutralWinsFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent punish option'" 
+                                [value]="opponentConversions[character][stage].processedPunishesFirstHits?.move ? opponentConversions[character][stage].processedPunishesFirstHits.move : 'N/A'" 
+                                [value2]="opponentConversions[character][stage].processedPunishesFirstHits?.count ? opponentConversions[character][stage].processedPunishesFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent neutral opener for conversions into kills'" 
+                                [value]="opponentConversions[character][stage].processedKillNeutralFirstHits?.move ? opponentConversions[character][stage].processedKillNeutralFirstHits.move : 'N/A'" 
+                                [value2]="opponentConversions[character][stage].processedKillNeutralFirstHits?.count ? opponentConversions[character][stage].processedKillNeutralFirstHits.count : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Most frequent punish option for conversions into kills'" 
+                                [value]="opponentConversions[character][stage].processedKillPunishFirstHits?.move ? opponentConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'" 
+                                [value2]="opponentConversions[character][stage].processedKillPunishFirstHits?.count ? opponentConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'" ></app-stats-line>
+                <app-stats-line [label]="'Average damage for most common neutral starters'"></app-stats-line>
+                <ng-container *ngFor="let mostUsed of opponentConversions[character][stage].processedDamageForMostCommonNeutralOpeners">
+                  <app-stats-line [label]="getMoveName(mostUsed.moveId)" 
+                                  [value]="mostUsed.averageDamage | number:'1.0-1'" 
+                                  [unit1]="'%'" ></app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Average damage for most common punish starters'"></app-stats-line>
+                <ng-container *ngFor="let mostUsed of opponentConversions[character][stage].processedDamageForMostCommonPunishStarts">
+                  <app-stats-line [label]="getMoveName(mostUsed.moveId)" 
+                                  [value]="mostUsed.averageDamage | number:'1.0-1'" 
+                                  [unit1]="'%'" ></app-stats-line>
+                </ng-container>
+              </app-foldable-block> 
+            </div>
+          </div>
+          <div class="row"> <!-- Punished moves -->
+            <div class="col-6"> <!-- Player punished moves -->
+              <app-foldable-block [label]="'Player punished moves'" [collapseId]="collapseId + '' + i + '' + j + '5'">
+                <app-stats-line [label]="'Player attacks most punished by opponent'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Player defensive options most punished by opponent'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonDefensiveOptions(punishedActionsForPlayer[character][stage].punishedDefensiveOptions)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Player movement options most punished by opponent'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonMovementOptions(punishedActionsForPlayer[character][stage].punishedMovementOptions)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+              </app-foldable-block>
+            </div>
+            <div class="col-6"> <!-- Opponent punished moves -->
+              <app-foldable-block [label]="'Opponent punished moves'" [collapseId]="collapseId + '' + i + '' + j + '6'">  
+                <app-stats-line [label]="'Opponent attacks most punished by player'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Opponent defensive options most punished by player'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonDefensiveOptions(punishedActionsForOpponent[character][stage].punishedDefensiveOptions)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+                <app-stats-line [label]="'Opponent movement options most punished by player'"></app-stats-line>
+                <ng-container *ngFor="let mostPunished of getTop3MostCommonMovementOptions(punishedActionsForOpponent[character][stage].punishedMovementOptions)">
+                  <app-stats-line [label]="mostPunished.move" 
+                                  [value]="mostPunished.count">
+                                </app-stats-line>
+                </ng-container>
+              </app-foldable-block>          
+            </div>
+          </div>
+          <div class="row"> <!-- Lcancels -->
+            <div class="col-6"> <!-- Player Lcancels -->
+              <app-foldable-block [label]="'Player L-Cancels'" [collapseId]="collapseId + '' + i + '' + j + '7'">
+                <app-stats-line [label]="'Player L-Cancel rate'"></app-stats-line>
+                <app-stats-line [label]="'Successful L-Cancel rate'" 
+                                [value]="getLCancelRatio(lcancelsForPlayer[character][stage].lcancels).ratio * 100 | number:'1.0-1'"
+                                [unit1]="'%'">
+                              </app-stats-line>
+                <app-stats-line [label]="'Player top missed l-cancel moves'"></app-stats-line>
+                <ng-container *ngFor="let mostMissed of getTop3MostCommonLCancel(lcancelsForPlayer[character][stage].failedMoves)">
+                  <app-stats-line [label]="removeLanding(mostMissed.move)"
+                                  [value]="mostMissed.count">
+                                </app-stats-line>
+                </ng-container>
+              </app-foldable-block>
+            </div>
+            <div class="col-6"> <!-- Opponent Lcancels -->
+              <app-foldable-block [label]="'Opponent L-Cancels'" [collapseId]="collapseId + '' + i + '' + j + '8'">
+                <app-stats-line [label]="'Opponent L-Cancel rate'"></app-stats-line>
+                <app-stats-line [label]="'Successful L-Cancel rate'" 
+                                [value]="getLCancelRatio(lcancelsForOpponent[character][stage].lcancels).ratio * 100 | number:'1.0-1'"
+                                [unit1]="'%'">
+                              </app-stats-line>
+                <app-stats-line [label]="'Opponent top missed l-cancel moves'"></app-stats-line>
+                <ng-container *ngFor="let mostMissed of getTop3MostCommonLCancel(lcancelsForOpponent[character][stage].failedMoves)">
+                  <app-stats-line [label]="removeLanding(mostMissed.move)"
+                                  [value]="mostMissed.count">
+                                </app-stats-line>
+                </ng-container>
+              </app-foldable-block>
+            </div>
+          </div>
+        </ng-container>      
+      </app-foldable-block>
+    </ng-container>  
+  </app-foldable-block>
+</ng-container>

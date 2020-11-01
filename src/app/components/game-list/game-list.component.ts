@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
-import { Conversion, EnrichedGameFile, Overall, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, LCancels, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 import GameFileUtils from '../utils/gameFile.utils';
@@ -136,6 +136,10 @@ export class GameListComponent implements OnInit, OnChanges {
         const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
         const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
         const opponentOveralls = arg.overallFromOpponent as StatsWrapper<Overall>;
+        const punishedActionsForPlayer = arg.punishedActionsForPlayer as StatsWrapper<PunishedActions>;
+        const punishedActionsForOpponent = arg.punishedActionsForOpponent as StatsWrapper<PunishedActions>;
+        const lcancelsForPlayer = arg.lcancelsForPlayer as StatsWrapper<LCancels>;
+        const lcancelsForOpponent = arg.lcancelsForOpponent as StatsWrapper<LCancels>;
         this.store.setMultiple([
           {
             key : 'playerConversions',
@@ -152,6 +156,22 @@ export class GameListComponent implements OnInit, OnChanges {
           {
             key : 'opponentOveralls',
             data: opponentOveralls
+          },
+          {
+            key : 'punishedActionsForPlayer',
+            data: punishedActionsForPlayer
+          },
+          {
+            key : 'punishedActionsForOpponent',
+            data: punishedActionsForOpponent
+          },
+          {
+            key : 'lcancelsForPlayer',
+            data: lcancelsForPlayer
+          },
+          {
+            key : 'lcancelsForOpponent',
+            data: lcancelsForOpponent
           },
           {
             key : 'statsCalculationDone',

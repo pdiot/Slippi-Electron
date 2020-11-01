@@ -62,7 +62,11 @@ function createWindow () {
         }).then((returnValue => {
             if (!returnValue.canceled) {
                 console.log('returnValue', returnValue);
-                const value = readStatsFile(returnValue.filePaths[0]);
+                const value = 
+                {
+                    path: returnValue.filePaths[0],
+                    statsFromJSON : readStatsFile(returnValue.filePaths[0])
+                }
                 console.log(`sending ${data}StatsFileOpenedOK`);
                 event.sender.send(`${data}StatsFileOpenedOK`, value);
             }

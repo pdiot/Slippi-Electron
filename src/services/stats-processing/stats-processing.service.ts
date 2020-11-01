@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EXTERNALMOVES } from 'src/interfaces/const';
-import { Conversion, Move, Overall, StatsWrapper } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedOpenings, ProcessedOverallList, StartersAverageDamage } from 'src/interfaces/types';
+import { Conversion, LCancels, Move, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, StartersAverageDamage } from 'src/interfaces/types';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,6 @@ export class StatsProcessingService {
     let processedPunishesFirstHits = {};
     let processedKillPunishFirstHits = {};
   
-    
     // Create an intermediary wrapper without the gameData
     let conversionsList: IntermediaryStatsWrapper<Conversion[]> = {};
     for (const game of Object.keys(data)) {
@@ -251,6 +250,201 @@ export class StatsProcessingService {
     return processedOverallList;
   }
 
+  public async processPunishedActions(data: StatsWrapper<PunishedActions>): Promise<IntermediaryStatsWrapper<ProcessedPunishedOptions>> {
+    let processedPunishedActionsList = {};
+    let punishedActions;
+    let punishedActionsAllStages;
+    
+    // Create an intermediary wrapper without the gameData
+    let punishedActionsList: IntermediaryStatsWrapper<PunishedActions> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (punishedActionsList[character]) {
+          for (const stage of Object.keys(data[game][character])) {
+            // Same here, we'll only have one stage each time here
+            if (punishedActionsList[character][stage]) {
+              punishedActionsList[character][stage] = {
+                punishedAttacks: [
+                  ...punishedActionsList[character][stage].punishedAttacks,
+                  ...data[game][character][stage].punishedAttacks
+                ],
+                punishedDefensiveOptions: [
+                  ...punishedActionsList[character][stage].punishedDefensiveOptions,
+                  ...data[game][character][stage].punishedDefensiveOptions
+                ],
+                punishedMovementOptions: [
+                  ...punishedActionsList[character][stage].punishedMovementOptions,
+                  ...data[game][character][stage].punishedMovementOptions
+                ],
+              };
+            } else {
+              punishedActionsList[character][stage] = data[game][character][stage];
+            }
+          }
+        } else {
+          // First game with this character
+          punishedActionsList[character] = data[game][character];
+        }
+      }
+    }
+
+    for (let character of Object.keys(punishedActionsList)) {
+      processedPunishedActionsList[character] = {};
+      punishedActionsAllStages = {
+        punishedAttacks: [],
+        punishedDefensiveOptions: [],
+        punishedMovementOptions: []
+      }
+      for (let stage of Object.keys(punishedActionsList[character])) {
+        punishedActions = {
+          punishedAttacks: [],
+          punishedDefensiveOptions: [],
+          punishedMovementOptions: []
+        }
+
+        punishedActions.punishedAttacks = punishedActionsList[character][stage].punishedAttacks;
+        punishedActions.punishedDefensiveOptions = punishedActionsList[character][stage].punishedDefensiveOptions;
+        punishedActions.punishedMovementOptions = punishedActionsList[character][stage].punishedMovementOptions;
+
+        punishedActionsAllStages.punishedAttacks.push(...punishedActionsList[character][stage].punishedAttacks);
+        punishedActionsAllStages.punishedDefensiveOptions.push(...punishedActionsList[character][stage].punishedDefensiveOptions);
+        punishedActionsAllStages.punishedMovementOptions.push(...punishedActionsList[character][stage].punishedMovementOptions);
+        
+        // Process Data for current stage
+        processedPunishedActionsList[character][stage] = {
+          punishedAttacks: this.countOptions(punishedActions.punishedAttacks).map(
+            (countOption) => {
+              return {
+                attack: countOption.option,
+                count: countOption.count
+              }
+            }
+          ),
+          punishedDefensiveOptions: this.countOptions(punishedActions.punishedDefensiveOptions).map(
+            (countOption) => {
+              return {
+                defensiveOption: countOption.option,
+                count: countOption.count
+              }
+            }
+          ),
+          punishedMovementOptions: this.countOptions(punishedActions.punishedMovementOptions).map(
+            (countOption) => {
+              return {
+                movementOption: countOption.option,
+                count: countOption.count
+              }
+            }
+          )
+        };
+      }
+      // Process Data for all stages
+      processedPunishedActionsList[character]['allStages'] = {
+        punishedAttacks: this.countOptions(punishedActionsAllStages.punishedAttacks).map(
+          (countOption) => {
+            return {
+              attack: countOption.option,
+              count: countOption.count
+            }
+          }
+        ),
+        punishedDefensiveOptions: this.countOptions(punishedActionsAllStages.punishedDefensiveOptions).map(
+          (countOption) => {
+            return {
+              defensiveOption: countOption.option,
+              count: countOption.count
+            }
+          }
+        ),
+        punishedMovementOptions: this.countOptions(punishedActionsAllStages.punishedMovementOptions).map(
+          (countOption) => {
+            return {
+              movementOption: countOption.option,
+              count: countOption.count
+            }
+          }
+        )
+
+      };
+    }    
+    return processedPunishedActionsList;
+  }
+
+  public async processLCancels(data: StatsWrapper<LCancels>): Promise<IntermediaryStatsWrapper<ProcessedLCancels>> {
+    let processedLCancels = {};
+    let lcancels;
+    let lcancelsAllStages;
+
+    // Create an intermediary wrapper without the gameData
+    let lcancelsList: IntermediaryStatsWrapper<LCancels> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (lcancelsList[character]) {
+          for (const stage of Object.keys(data[game][character])) {
+            // Same here, we'll only have one stage each time here
+            if (lcancelsList[character][stage]) {
+              lcancelsList[character][stage] = {
+                failedMoves: [
+                  ...lcancelsList[character][stage].failedMoves,
+                  ...data[game][character][stage].failedMoves
+                ],
+                lcancels: {
+                  successful: lcancelsList[character][stage].lcancels.successful + data[game][character][stage].lcancels.successful,
+                  failed: lcancelsList[character][stage].lcancels.failed + data[game][character][stage].lcancels.failed,                  
+                }
+              };
+            } else {
+              lcancelsList[character][stage] = data[game][character][stage];
+            }
+          }
+        } else {
+          // First game with this character
+          lcancelsList[character] = data[game][character];
+        }
+      }
+    }
+    for (let character of Object.keys(lcancelsList)) {
+      processedLCancels[character] = {};
+      lcancelsAllStages = {
+        lcancels : [],
+        failedMoves: []
+      };
+      for (let stage of Object.keys(lcancelsList[character])) {
+        lcancels = lcancelsList[character][stage];
+        lcancelsAllStages.lcancels.push(lcancelsList[character][stage].lcancels)
+        lcancelsAllStages.failedMoves.push(...lcancelsList[character][stage].failedMoves)
+
+        // Process data for current stage
+        processedLCancels[character][stage]= {
+          lcancels : lcancels.lcancels,
+          failedMoves : this.countOptions(lcancels.failedMoves).map(
+            (countOption) => {
+              return {
+                move: countOption.option,
+                count: countOption.count,
+              }
+            }
+          )
+        };
+      }
+      // Process data for all stages
+      processedLCancels[character]['allStages'] = {
+        lcancels : this.sumLcancels(lcancelsAllStages.lcancels),
+        failedMoves : this.countOptions(lcancelsAllStages.failedMoves).map(
+          (countOption) => {
+            return {
+              move: countOption.option,
+              count: countOption.count,
+            }
+          }
+        )
+      };
+    }
+    return processedLCancels;
+  }
+
   private averageDamageForMostCommonStarters(nbMoves: number, conversions: {totalDamage: number, moves: Move[]}[], moveIds: number[]): StartersAverageDamage[] {
     let most = [];
     for (let moveId of moveIds) {
@@ -328,5 +522,31 @@ export class StatsProcessingService {
     }
     return undefined;    
   }
+
+  private countOptions(options: string[]): {option: string, count: number}[] {
+    let returnValue = [];
+    for (let option of options) {
+      const rvIndex = returnValue.findIndex(rv => rv.option === option);
+      if (rvIndex !== -1) {
+        returnValue[rvIndex].count ++;
+      } else {
+        returnValue.push({option: option, count: 1});
+      }
+    }
+    return returnValue;
+  }
+
+  private sumLcancels(lcancels: {successful: number, failed: number}[]): {successful: number, failed: number} {
+    let returnValue = {
+      successful: 0,
+      failed: 0
+    };
+    for (let lcancel of lcancels) {
+      returnValue.failed += lcancel.failed;
+      returnValue.successful +=lcancel.successful;
+    }
+    return returnValue;
+  }
+
 
 }

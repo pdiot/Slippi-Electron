@@ -1,3 +1,7 @@
+const fs = require('fs');
+
+let logString = '';
+
 // Lists of common action states to be used to process whiff / hit / shield punishes
 // Source https://docs.google.com/spreadsheets/d/1JX2w-r2fuvWuNgGb6D3Cs4wHQKLFegZe2jhbBuIhCG8/preview#gid=13
 const ATTACKACTIONSTATES = {
@@ -112,6 +116,18 @@ function getAttackAction(id) {
   } else {
     return undefined;
   }
+}
+
+function addToLog(stringValue) {
+  logString = `${logString}
+  ${stringValue}`;
+}
+
+function printLog(path) {
+  fs.writeFile(path, stringValue, err => {
+    if (err) throw err;
+    console.log(`Wrote ${path}`);
+  })
 }
 
 

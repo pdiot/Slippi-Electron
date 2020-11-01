@@ -83,3 +83,33 @@ export interface StatsCalculationProgress {
   current: number,
   total: number,
 }
+
+export interface ProcessedPunishedOptions {
+  punishedAttacks : ProcessedAttack[],
+  punishedDefensiveOptions : ProcessedDefensiveOption[],
+  punishedMovementOptions : ProcessedMovementOption[],
+}
+
+export interface ProcessedAttack {
+  attack: string,
+  count: number
+}
+export interface ProcessedDefensiveOption {
+  defensiveOption: string,
+  count: number
+}
+export interface ProcessedMovementOption {
+  movementOption: string,
+  count: number
+}
+
+export interface ProcessedLCancels {
+  lcancels: {
+    sucessful: number,
+    failed: number,
+  }, 
+  failedMoves: {
+    move: string,
+    count: number
+  }[]
+}

@@ -1,4 +1,5 @@
 import { BETTERMOVES } from 'src/interfaces/const';
+import { ProcessedAttack } from 'src/interfaces/types';
 
 export default class GeneralUtils {
 
@@ -13,14 +14,20 @@ export default class GeneralUtils {
   }
 
   static getStageName(stage: string) {
-    console.log('getStageName :', stage);
     if (stage === 'allStages') {
-      console.log('return all stages');
       return 'all stages';
     } else {
-      console.log('return ', stage);
       return stage;
     }
+  }
+
+  static getTop3MostCommonMoves(moves: {move: string, count: number}[]): {move: string, count: number}[] {
+    let returnValue = [];
+    let sortedMoves = moves.sort((moveA, moveB) => moveB.count - moveA.count);
+    for (let i = 0; i < moves.length && i < 3; i ++) {
+      returnValue.push(sortedMoves[i]);
+    }
+    return returnValue;
   }
 }
   
