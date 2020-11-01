@@ -1,6 +1,8 @@
 const {parentPort, workerData} = require ('worker_threads');
 const { default : SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
+const node_utils = require('./node_utils');
+const fs = require('fs');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
@@ -31,12 +33,14 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let conversionsFromOpponent = {};
   let overallOnOpponent = {};
   let overallFromOpponent = {};
-  let playerPort = {};
+  let punishedActionsAndLCancelsForPlayer = {};
+  let punishedActionsAndLCancelsForOpponent = {};
   // Getting the data we want
   for (const gameBlob of games) {
       const game = gameBlob.game;
       const stats = game.getStats();
       const metadata = game.getMetadata();
+      const frames = game.getFrames();
       const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
       const settings = game.getSettings();
       const stage = getMapName(settings.stageId);
@@ -65,10 +69,11 @@ function processGames(gamesFromMain, slippiId, characterId) {
       }
       let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
 
-      const playerOverall = stats.overall.find(overall => overall.playerIndex === playerPort);
-      const opponentOverall = stats.overall.find(overall => overall.playerIndex === opponentPort);
-      const playerConversion = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
+      const playerConversions = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
       const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
+      const playerPunishedActionsAndLCancels = getPunishedActions(frames, playerPort, opponentConversions);
+      const opponentPunishedActionsAndLCancels = getPunishedActions(frames, opponentPort, playerConversions);
+
 
       overallOnOpponent[startAt] = {};
       overallOnOpponent[startAt][opponentCharName] = {};
@@ -92,6 +97,14 @@ function processGames(gamesFromMain, slippiId, characterId) {
       conversionsFromOpponent[startAt][opponentCharName][stage] = [
         ...stats.conversions.filter(conversion => conversion.playerIndex === opponentPort)];
 
+      punishedActionsAndLCancelsForPlayer[startAt] = {};
+      punishedActionsAndLCancelsForPlayer[startAt][opponentCharName] = {};
+      punishedActionsAndLCancelsForPlayer[startAt][opponentCharName][stage] = playerPunishedActionsAndLCancels;
+      
+      punishedActionsAndLCancelsForOpponent[startAt] = {};
+      punishedActionsAndLCancelsForOpponent[startAt][opponentCharName] = {};
+      punishedActionsAndLCancelsForOpponent[startAt][opponentCharName][stage] = opponentPunishedActionsAndLCancels;
+
       processedGamesNb ++;
       console.log('WORKER sent statProgress', processedGamesNb);
       parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
@@ -103,6 +116,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
     conversionsFromOpponent,
     overallOnOpponent,
     overallFromOpponent,
+    punishedActionsAndLCancelsForPlayer,
+    punishedActionsAndLCancelsForOpponent
   }
   
   console.log('WORKER end of treatment');
@@ -115,4 +130,45 @@ function getMapName(id) {
 
 function getFullChar(id) {
   return EXTERNALCHARACTERS.find(char => char.id === +id);
+}
+
+function getPunishedActions(frames, playerPort, opponentConversions) {
+  let punishedAttacks = [];
+  let punishedDefensiveOptions = [];
+  let punishedMovementOptions = [];
+  for (let conversion of opponentConversions) {
+    const startFrame = conversion.moves[0].frame;
+    let hasFoundMove = false;
+    let currentFrame = startFrame - 1;
+    while(!hasFoundMove) {
+      const players = frames[currentFrame].players;
+      const correctPlayerData = players.find(player => player.pre.playerIndex === playerPort);
+      const postFrameUpdate = correctPlayerData.post;
+      const attack = node_utils.getAttackAction(postFrameUpdate.actionStateId);
+      const defensiveOption = node_utils.getDefensiveAction(postFrameUpdate.actionStateId);
+      const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
+      if (attack) {
+        // TODO : check whether the attack hit, whiffed, or got shielded
+        punishedAttacks.push(attack);
+        // if (postFrameUpdate.lCancelStatus === 1) {
+        //   lCancels.successful ++;
+        // } else if (postFrameUpdate.lCancelStatus === 2) {
+        //   lCancels.missed ++;
+        // } Doesn't seem to work like that
+        hasFoundMove = true;
+      }
+      if (defensiveOption) {
+        punishedDefensiveOptions.push(defensiveOption);
+        hasFoundMove = true;
+      }
+      if (movementOption) {
+        punishedMovementOptions.push(movementOption);
+        hasFoundMove = true;
+      }
+      currentFrame --;
+    }
+  }
+  return {
+    punishedAttacks, punishedDefensiveOptions, punishedMovementOptions
+  };
 }
