@@ -2,7 +2,6 @@ const {parentPort, workerData} = require ('worker_threads');
 const { default : SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 const node_utils = require('./node_utils');
-const fs = require('fs');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
