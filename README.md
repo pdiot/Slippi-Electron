@@ -10,3 +10,7 @@ npm run electron
 # To Install : 
 
 Simply download the appropriate zip in the release tab, extract it and run the exe.
+
+# Roadmap :
+Add a differenciation between moves punished on hit / on shield / on whiff
+Make it pretty
