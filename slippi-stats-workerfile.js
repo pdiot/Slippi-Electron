@@ -155,35 +155,32 @@ function getPunishedActions(frames, playerPort, opponentConversions) {
   let punishedDefensiveOptions = [];
   let punishedMovementOptions = [];
   for (let conversion of opponentConversions) {
-    const startFrame = conversion.moves[0].frame;
-    let hasFoundMove = false;
-    let currentFrame = startFrame - 1;
-    while(!hasFoundMove) {
-      const players = frames[currentFrame].players;
-      const correctPlayerData = players.find(player => player.pre.playerIndex === playerPort);
-      const postFrameUpdate = correctPlayerData.post;
-      const attack = node_utils.getAttackAction(postFrameUpdate.actionStateId);
-      const defensiveOption = node_utils.getDefensiveAction(postFrameUpdate.actionStateId);
-      const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
-      if (attack) {
-        // TODO : check whether the attack hit, whiffed, or got shielded
-        punishedAttacks.push(attack);
-        // if (postFrameUpdate.lCancelStatus === 1) {
-        //   lCancels.successful ++;
-        // } else if (postFrameUpdate.lCancelStatus === 2) {
-        //   lCancels.missed ++;
-        // } Doesn't seem to work like that
-        hasFoundMove = true;
+    if (conversion.moves?.length > 0) { // Apparently that can happen ?
+      const startFrame = conversion.moves[0].frame;
+      let hasFoundMove = false;
+      let currentFrame = startFrame - 1;
+      while(!hasFoundMove) {
+        const players = frames[currentFrame].players;
+        const correctPlayerData = players.find(player => player.pre.playerIndex === playerPort);
+        const postFrameUpdate = correctPlayerData.post;
+        const attack = node_utils.getAttackAction(postFrameUpdate.actionStateId);
+        const defensiveOption = node_utils.getDefensiveAction(postFrameUpdate.actionStateId);
+        const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
+        if (attack) {
+          // TODO : check whether the attack hit, whiffed, or got shielded
+          punishedAttacks.push(attack);
+          hasFoundMove = true;
+        }
+        if (defensiveOption) {
+          punishedDefensiveOptions.push(defensiveOption);
+          hasFoundMove = true;
+        }
+        if (movementOption) {
+          punishedMovementOptions.push(movementOption);
+          hasFoundMove = true;
+        }
+        currentFrame --;
       }
-      if (defensiveOption) {
-        punishedDefensiveOptions.push(defensiveOption);
-        hasFoundMove = true;
-      }
-      if (movementOption) {
-        punishedMovementOptions.push(movementOption);
-        hasFoundMove = true;
-      }
-      currentFrame --;
     }
   }
   return {

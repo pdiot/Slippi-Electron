@@ -461,9 +461,13 @@ export class StatsProcessingService {
       if (mostUsedMoves[i]) {
         let damage = 0;
         for (let conversion of conversions) {
-          if (conversion.moves[0].moveId === mostUsedMoves[i].moveId) {
-            damage += conversion.totalDamage;
-          }
+          if (conversion.moves?.length > 0) { // Same as for slippi-stats-workerfile, apparently this can happen
+            if (conversion.moves[0].moveId === mostUsedMoves[i].moveId) {
+              damage += conversion.totalDamage;
+            }
+          } else {
+            console.log('DEBUG : the weird conversion ', conversion);
+          }          
         }
         result.push({
           moveId : mostUsedMoves[i].moveId,
