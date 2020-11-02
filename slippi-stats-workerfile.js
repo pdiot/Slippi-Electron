@@ -174,19 +174,25 @@ function getPunishedActions(frames, playerPort, opponentConversions, playerConve
           let whiffShieldPLHit = undefined;
           while (isAttackOngoing && !hasFoundCollision) {
             // To detect a shield hit : we want to find i such that frames[i] has a shieldStun stateId and frames[i-1] doesn't
-            // To detect a powershield hit : we want to find i such that frames[i] has a powershield stateId and frames[i-1] doesn't
             // To detect a hit : We look for the startup frame of the attack, and look it up in our conversions somewhere. 
             // Either it was part of a conversion, and it was a hit (unsafe on hit, crouch, etc), or it wasn't and it's a whiff
-            // If we don't detect any of the above : it's a whiff
             const currentPlayerPost = frames[i].players.find(player => player.pre.playerIndex === playerPort).post;
             if (node_utils.getAttackAction(currentPlayerPost.actionStateId) === attack) {
               const previousOpponentPost = frames[i-1].players.find(player => player.pre.playerIndex !== playerPort).post;
               const previousOpponentActionStateId = previousOpponentPost.actionStateId;
               const currentOpponentPost = frames[i].players.find(player => player.pre.playerIndex !== playerPort).post;
               const currentOpponentActionStateId = currentOpponentPost.actionStateId;
-              // here we will check if we detect a new shieldstun or powershield "event"
+              // here we will check if we detect a new shieldstun "event"
               if (node_utils.isNewShield(currentOpponentActionStateId, previousOpponentActionStateId)) {
-                whiffShieldPLHit = 'Shield';
+                // We have detected a shieldstun, now we want to know if it was a regular shield or a powershield
+                // Since non projectile attacks don't trigger a specific powershield actionStateId, we need to parse some frames
+                // We need to parse the previous frame
+                // If previouspost.shieldSize is equal to currentpost.shieldSize, it's a powershield else it's a shield
+                if (currentOpponentPost.shieldSize === previousOpponentPost.shieldSize) {
+                  whiffShieldPLHit = 'Powershield';
+                } else {
+                  whiffShieldPLHit = 'Shield';
+                }
                 hasFoundCollision = true;
               }
               i --;

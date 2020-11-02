@@ -396,6 +396,18 @@ export class StatsProcessingService {
               }
             }
           ),
+          onPShield: this.countOptions(
+            punishedActionsAllStages.punishedAttacks
+              .filter(punishedAttack => punishedAttack.status === 'Powershield')
+              .map(punishedAttack => punishedAttack.name)
+            ).map(
+            (countOption) => {
+              return {
+                attack: countOption.option,
+                count: countOption.count
+              }
+            }
+          ),
           onWhiff: this.countOptions(
             punishedActionsAllStages.punishedAttacks
               .filter(punishedAttack => punishedAttack.status === 'Whiff')

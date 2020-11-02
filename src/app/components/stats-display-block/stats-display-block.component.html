@@ -149,6 +149,14 @@
                                   </app-stats-line>
                   </ng-container>
                 </ng-container>
+                <ng-container *ngIf="punishedActionsForPlayer[character][stage].punishedAttacks.onPShield?.length > 0">
+                  <app-stats-line [label]="'On Powershield'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks.onPShield)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
                 <ng-container *ngIf="punishedActionsForPlayer[character][stage].punishedAttacks.onWhiff?.length > 0">
                   <app-stats-line [label]="'On whiff'"></app-stats-line>
                   <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks.onWhiff)">
@@ -185,6 +193,14 @@
                 <ng-container *ngIf="punishedActionsForOpponent[character][stage].punishedAttacks.onShield?.length > 0">
                   <app-stats-line [label]="'On Shield'"></app-stats-line>
                   <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks.onShield)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="punishedActionsForOpponent[character][stage].punishedAttacks.onPShield?.length > 0">
+                  <app-stats-line [label]="'On Powershield'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks.onPShield)">
                     <app-stats-line [label]="mostPunished.move"
                                     [value]="mostPunished.count">
                                   </app-stats-line>
