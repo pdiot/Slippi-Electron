@@ -77,8 +77,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
 
       const playerConversions = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
       const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
-      const playerPunishedActions = getPunishedActions(frames, playerPort, opponentConversions);
-      const opponentPunishedActions = getPunishedActions(frames, opponentPort, playerConversions);
+      const playerPunishedActions = getPunishedActions(frames, playerPort, opponentConversions, playerConversions);
+      const opponentPunishedActions = getPunishedActions(frames, opponentPort, playerConversions, opponentConversions);
       const LCancels = getLCancels(frames, playerPort, opponentPort);
       const playerLCancels = LCancels.player;
       const opponentLCancels = LCancels.opponent;
@@ -150,7 +150,7 @@ function getFullChar(id) {
   return EXTERNALCHARACTERS.find(char => char.id === +id);
 }
 
-function getPunishedActions(frames, playerPort, opponentConversions) {
+function getPunishedActions(frames, playerPort, opponentConversions, playerConversions) {
   let punishedAttacks = [];
   let punishedDefensiveOptions = [];
   let punishedMovementOptions = [];
@@ -168,7 +168,46 @@ function getPunishedActions(frames, playerPort, opponentConversions) {
         const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
         if (attack) {
           // TODO : check whether the attack hit, whiffed, or got shielded
-          punishedAttacks.push(attack);
+          let isAttackOngoing = true;
+          let i = currentFrame - 1;
+          let hasFoundCollision = false;
+          let whiffShieldPLHit = undefined;
+          while (isAttackOngoing && !hasFoundCollision) {
+            // To detect a shield hit : we want to find i such that frames[i] has a shieldStun stateId and frames[i-1] doesn't
+            // To detect a powershield hit : we want to find i such that frames[i] has a powershield stateId and frames[i-1] doesn't
+            // To detect a hit : We look for the startup frame of the attack, and look it up in our conversions somewhere. 
+            // Either it was part of a conversion, and it was a hit (unsafe on hit, crouch, etc), or it wasn't and it's a whiff
+            // If we don't detect any of the above : it's a whiff
+            const currentPlayerPost = frames[i].players.find(player => player.pre.playerIndex === playerPort).post;
+            if (node_utils.getAttackAction(currentPlayerPost.actionStateId) === attack) {
+              const previousOpponentPost = frames[i-1].players.find(player => player.pre.playerIndex !== playerPort).post;
+              const previousOpponentActionStateId = previousOpponentPost.actionStateId;
+              const currentOpponentPost = frames[i].players.find(player => player.pre.playerIndex !== playerPort).post;
+              const currentOpponentActionStateId = currentOpponentPost.actionStateId;
+              // here we will check if we detect a new shieldstun or powershield "event"
+              if (node_utils.isNewShield(currentOpponentActionStateId, previousOpponentActionStateId)) {
+                whiffShieldPLHit = 'Shield';
+                hasFoundCollision = true;
+              }
+              i --;
+            } else {
+              isAttackOngoing = false;
+              // Here we check if it hit or not
+              // The attack wasn't ongoing at frame i, so it started on frame i+1
+              // We want to check the player's conversions and see if we can see a move that started at frame i+1. If we do, it's a hit, else it was a whiff
+              for (let conv of playerConversions) {
+                if (conv.moves.find(move => move.frame === i + 1)) {
+                  whiffShieldPLHit = 'Hit';
+                  break;
+                }
+              }
+              if (!whiffShieldPLHit) {
+                whiffShieldPLHit = 'Whiff'
+              }
+            }
+          }
+          //TODO : add the result of whiffShieldPLHit to the return value
+          punishedAttacks.push({name: attack, status: whiffShieldPLHit});
           hasFoundMove = true;
         }
         if (defensiveOption) {

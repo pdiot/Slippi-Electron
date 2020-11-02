@@ -133,10 +133,29 @@
             <div class="col-6"> <!-- Player punished moves -->
               <app-foldable-block [label]="'Player punished moves'" [collapseId]="collapseId + '' + i + '' + j + '5'">
                 <app-stats-line [label]="'Player attacks most punished by opponent'"></app-stats-line>
-                <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks)">
-                  <app-stats-line [label]="mostPunished.move" 
-                                  [value]="mostPunished.count">
-                                </app-stats-line>
+                <ng-container *ngIf="punishedActionsForPlayer[character][stage].punishedAttacks.onHit?.length > 0">
+                  <app-stats-line [label]="'On hit'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks.onHit)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="punishedActionsForPlayer[character][stage].punishedAttacks.onShield?.length > 0">
+                  <app-stats-line [label]="'On Shield'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks.onShield)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="punishedActionsForPlayer[character][stage].punishedAttacks.onWhiff?.length > 0">
+                  <app-stats-line [label]="'On whiff'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForPlayer[character][stage].punishedAttacks.onWhiff)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
                 </ng-container>
                 <app-stats-line [label]="'Player defensive options most punished by opponent'"></app-stats-line>
                 <ng-container *ngFor="let mostPunished of getTop3MostCommonDefensiveOptions(punishedActionsForPlayer[character][stage].punishedDefensiveOptions)">
@@ -155,10 +174,29 @@
             <div class="col-6"> <!-- Opponent punished moves -->
               <app-foldable-block [label]="'Opponent punished moves'" [collapseId]="collapseId + '' + i + '' + j + '6'">  
                 <app-stats-line [label]="'Opponent attacks most punished by player'"></app-stats-line>
-                <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks)">
-                  <app-stats-line [label]="mostPunished.move" 
-                                  [value]="mostPunished.count">
-                                </app-stats-line>
+                <ng-container *ngIf="punishedActionsForOpponent[character][stage].punishedAttacks.onHit?.length > 0">
+                  <app-stats-line [label]="'On hit'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks.onHit)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="punishedActionsForOpponent[character][stage].punishedAttacks.onShield?.length > 0">
+                  <app-stats-line [label]="'On Shield'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks.onShield)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="punishedActionsForOpponent[character][stage].punishedAttacks.onWhiff?.length > 0">
+                  <app-stats-line [label]="'On whiff'"></app-stats-line>
+                  <ng-container *ngFor="let mostPunished of getTop3MostCommonAttacks(punishedActionsForOpponent[character][stage].punishedAttacks.onWhiff)">
+                    <app-stats-line [label]="mostPunished.move"
+                                    [value]="mostPunished.count">
+                                  </app-stats-line>
+                  </ng-container>
                 </ng-container>
                 <app-stats-line [label]="'Opponent defensive options most punished by player'"></app-stats-line>
                 <ng-container *ngFor="let mostPunished of getTop3MostCommonDefensiveOptions(punishedActionsForOpponent[character][stage].punishedDefensiveOptions)">

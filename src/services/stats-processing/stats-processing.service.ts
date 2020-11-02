@@ -313,14 +313,44 @@ export class StatsProcessingService {
         
         // Process Data for current stage
         processedPunishedActionsList[character][stage] = {
-          punishedAttacks: this.countOptions(punishedActions.punishedAttacks).map(
-            (countOption) => {
-              return {
-                attack: countOption.option,
-                count: countOption.count
+          punishedAttacks: {
+            onHit: this.countOptions(
+                punishedActions.punishedAttacks
+                .filter(punishedAttack => punishedAttack.status === 'Hit')
+                .map(punishedAttack => punishedAttack.name)
+              ).map(
+              (countOption) => {
+                return {
+                  attack: countOption.option,
+                  count: countOption.count
+                }
               }
-            }
-          ),
+            ),
+            onShield: this.countOptions(
+                punishedActions.punishedAttacks
+                .filter(punishedAttack => punishedAttack.status === 'Shield')
+                .map(punishedAttack => punishedAttack.name)
+              ).map(
+              (countOption) => {
+                return {
+                  attack: countOption.option,
+                  count: countOption.count
+                }
+              }
+            ),
+            onWhiff: this.countOptions(
+                punishedActions.punishedAttacks
+                .filter(punishedAttack => punishedAttack.status === 'Whiff')
+                .map(punishedAttack => punishedAttack.name)
+              ).map(
+              (countOption) => {
+                return {
+                  attack: countOption.option,
+                  count: countOption.count
+                }
+              }
+            ),
+          },
           punishedDefensiveOptions: this.countOptions(punishedActions.punishedDefensiveOptions).map(
             (countOption) => {
               return {
@@ -341,14 +371,44 @@ export class StatsProcessingService {
       }
       // Process Data for all stages
       processedPunishedActionsList[character]['allStages'] = {
-        punishedAttacks: this.countOptions(punishedActionsAllStages.punishedAttacks).map(
-          (countOption) => {
-            return {
-              attack: countOption.option,
-              count: countOption.count
+        punishedAttacks: {
+          onHit: this.countOptions(
+            punishedActionsAllStages.punishedAttacks
+              .filter(punishedAttack => punishedAttack.status === 'Hit')
+              .map(punishedAttack => punishedAttack.name)
+            ).map(
+            (countOption) => {
+              return {
+                attack: countOption.option,
+                count: countOption.count
+              }
             }
-          }
-        ),
+          ),
+          onShield: this.countOptions(
+            punishedActionsAllStages.punishedAttacks
+              .filter(punishedAttack => punishedAttack.status === 'Shield')
+              .map(punishedAttack => punishedAttack.name)
+            ).map(
+            (countOption) => {
+              return {
+                attack: countOption.option,
+                count: countOption.count
+              }
+            }
+          ),
+          onWhiff: this.countOptions(
+            punishedActionsAllStages.punishedAttacks
+              .filter(punishedAttack => punishedAttack.status === 'Whiff')
+              .map(punishedAttack => punishedAttack.name)
+            ).map(
+            (countOption) => {
+              return {
+                attack: countOption.option,
+                count: countOption.count
+              }
+            }
+          ),
+        },
         punishedDefensiveOptions: this.countOptions(punishedActionsAllStages.punishedDefensiveOptions).map(
           (countOption) => {
             return {

@@ -57,28 +57,37 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
   }
 
   getTop3MostCommonAttacks(attacks: ProcessedAttack[]): {move: string, count: number}[] {
-    return GeneralUtils.getTop3MostCommonMoves(attacks.map(move => {
-      return {
-        move: move.attack,
-        count: move.count
-      }
-    }));
+    if (attacks?.length > 0) {
+      return GeneralUtils.getTop3MostCommonMoves(attacks.map(move => {
+        return {
+          move: move.attack,
+          count: move.count
+        }
+      }));
+    }
+    return [];
   }
   getTop3MostCommonDefensiveOptions(defenses: ProcessedDefensiveOption[]): {move: string, count: number}[] {
-    return GeneralUtils.getTop3MostCommonMoves(defenses.map(move => {
-      return {
-        move: move.defensiveOption,
-        count: move.count
-      }
-    }));
+    if (defenses?.length > 0) {
+      return GeneralUtils.getTop3MostCommonMoves(defenses.map(move => {
+        return {
+          move: move.defensiveOption,
+          count: move.count
+        }
+      }));
+    }
+    return [];
   }
   getTop3MostCommonMovementOptions(movements: ProcessedMovementOption[]): {move: string, count: number}[] {
-    return GeneralUtils.getTop3MostCommonMoves(movements.map(move => {
-      return {
-        move: move.movementOption,
-        count: move.count
-      }
-    }));
+    if (movements?.length > 0) {
+      return GeneralUtils.getTop3MostCommonMoves(movements.map(move => {
+        return {
+          move: move.movementOption,
+          count: move.count
+        }
+      }));
+    }
+    return [];
   }
   getTop3MostCommonLCancel(moves: {move: string, count: number}[]): {move: string, count: number}[] {
     return GeneralUtils.getTop3MostCommonMoves(moves);

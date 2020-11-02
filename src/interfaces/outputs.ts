@@ -73,7 +73,7 @@ export interface Move {
 }
 
 export interface PunishedActions {
-    punishedAttacks: string[],
+    punishedAttacks: {name: string, status: string}[],
     punishedDefensiveOptions: string[],
     punishedMovementOptions: string[],
 }

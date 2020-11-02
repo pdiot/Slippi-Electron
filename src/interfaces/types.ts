@@ -85,7 +85,11 @@ export interface StatsCalculationProgress {
 }
 
 export interface ProcessedPunishedOptions {
-  punishedAttacks : ProcessedAttack[],
+  punishedAttacks : {
+    onShield: ProcessedAttack[],
+    onHit: ProcessedAttack[],
+    onWhiff: ProcessedAttack[],
+  },
   punishedDefensiveOptions : ProcessedDefensiveOption[],
   punishedMovementOptions : ProcessedMovementOption[],
 }

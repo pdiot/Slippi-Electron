@@ -79,7 +79,9 @@ const DEFENSIVEACTIONSTATES = {
   197 : {id: 197, name: 'DownBackD', niceName: 'Misstech roll back '},
   199 : {id: 199, name: 'Passive', niceName: 'Neutral Tech'},
   200 : {id: 200, name: 'PassiveStandF', niceName: 'Tech forward'},
-  201 : {id: 201, name: 'PassiveStandB', niceName: 'Tech back '},
+  201 : {id: 201, name: 'PassiveStandB', niceName: 'Tech back'},
+  202 : {id: 202, name: 'PassiveWall', niceName: 'Wall tech'},
+  203 : {id: 203, name: 'PassiveWallJump', niceName: 'Wall jump'},
   233 : {id: 233, name: 'EscapeF', niceName: 'Roll forward'},
   234 : {id: 234, name: 'EscapeB', niceName: 'Roll back'},
   235 : {id: 235, name: 'Escape', niceName: 'Spotdodge'},
@@ -94,6 +96,28 @@ const DEFENSIVEACTIONSTATES = {
   261 : {id: 261, name: 'CliffJumpSlow2', niceName: 'Ledge jump/tournament winner (100%+)'},
   262 : {id: 262, name: 'CliffJumpQuick1', niceName: 'Ledge jump/tournament winner (<100%)'},
   263 : {id: 263, name: 'CliffJumpQuick2', niceName: 'Ledge jump/tournament winner (<100%)'},
+}
+
+const GENERICSTATES = {
+  181: {id: 181, name: 'GuardSetOff', nameForOpponentAttackStats: 'Shield'},
+  182: {id: 182, name: 'GardReflect', nameForOpponentAttackStats: 'Powershield'},
+  75: {id:75, name: 'DamageHi1', nameForOpponentAttackStats: 'Hit'},		
+	76: {id:76, name: 'DamageHi2', nameForOpponentAttackStats: 'Hit'},		
+	77: {id:77, name: 'DamageHi3	', nameForOpponentAttackStats: 'Hit'},		
+	78: {id:78, name: 'DamageN1', nameForOpponentAttackStats: 'Hit'},		
+	79: {id:79, name: 'DamageN2	', nameForOpponentAttackStats: 'Hit'},		
+	80: {id:80, name: 'DamageN3', nameForOpponentAttackStats: 'Hit'},		
+	81: {id:81, name: 'DamageLw1	', nameForOpponentAttackStats: 'Hit'},
+	82: {id:82, name: 'DamageLw2	', nameForOpponentAttackStats: 'Hit'},
+	83: {id:83, name: 'DamageLw3', nameForOpponentAttackStats: 'Hit'},
+	84: {id:84, name: 'DamageAir1', nameForOpponentAttackStats: 'Hit'},
+	85: {id:85, name: 'DamageAir2', nameForOpponentAttackStats: 'Hit'},
+	86: {id:86, name: 'DamageAir3', nameForOpponentAttackStats: 'Hit'},
+	87: {id:87, name: 'DamageFlyHi', nameForOpponentAttackStats: 'Hit'},
+	88: {id:88, name: 'DamageFlyN', nameForOpponentAttackStats: 'Hit'},
+	89: {id:89, name: 'DamageFlyLw', nameForOpponentAttackStats: 'Hit'},
+	90: {id:90, name: 'DamageFlyTop', nameForOpponentAttackStats: 'Hit'},
+	91: {id:91, name: 'DamageFlyRoll', nameForOpponentAttackStats: 'Hit'},
 }
 
 function getDefensiveAction(id) {
@@ -118,6 +142,33 @@ function getAttackAction(id) {
   }
 }
 
+function isNewShield(currentStateId, PreviousStateId) {
+  if (GENERICSTATES[currentStateId]?.nameForOpponentAttackStats === 'Shield') {
+    if (GENERICSTATES[PreviousStateId]?.nameForOpponentAttackStats !== 'Shield') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+
+function isNewPowerShield(currentStateId, PreviousStateId) {
+  if (GENERICSTATES[currentStateId]?.nameForOpponentAttackStats === 'Powershield') {
+    if (GENERICSTATES[PreviousStateId]?.nameForOpponentAttackStats !== 'Powershield') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
 function addToLog(stringValue) {
   logString = `${logString}
   ${stringValue}`;
@@ -134,5 +185,7 @@ function printLog(path) {
 module.exports = {
   getAttackAction: getAttackAction,
   getMovementAction: getMovementAction,
-  getDefensiveAction: getDefensiveAction
+  getDefensiveAction: getDefensiveAction,
+  isNewShield: isNewShield,
+  isNewPowerShield: isNewPowerShield,
 }
