@@ -1,9 +1,10 @@
+@use '../../../variables' as variables;
 
 input[type="checkbox"] {
   display: none;
 }
 .wrap-collabsible {
-  margin: 1.2rem 0;
+  margin: 0;
 }
 
 .wrap-collabsible .label {
@@ -14,19 +15,20 @@ input[type="checkbox"] {
   display: block;
   font-weight: bold;
   font-family: monospace;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-transform: uppercase;
-  padding: 1rem;
-  color: #ddd;
-  background: #545e6d;
-  border: 2px solid white;
+  color: variables.$white;
+  border: 2px solid variables.$white;
   cursor: pointer;
   transition: all 0.25s ease-out;
+  padding-top: 5px;
+  padding-bottom: 2px;
+  padding-left: 10px;
 }
 
 .lbl-toggle:hover {
-  color: #fff;
-  border: 2px solid #5286ce;
+  color: variables.$white;
+  border: 2px solid variables.$lightBlue;
 }
 
 .lbl-toggle::before { // The triangle thingy
@@ -56,10 +58,12 @@ input[type="checkbox"] {
   border-bottom-left-radius: 0;
 }
 .collapsible-content .content-inner {
-  background: #b4b5d257;
-  color: #212529;
-  padding: 0.5rem 1rem;
-}
-.collapsible-content p {
-  margin-bottom: 0;
+  background: variables.$lightBG;
+  color: variables.$black;
+  display: flex;
+  flex-direction: column;
+  width: 99.6%;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin: auto;
 }

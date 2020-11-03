@@ -18,6 +18,7 @@ export interface Dictionary {
   'statsCalculationProgress': StatsCalculationProgress,
   'statsCalculationDone': boolean,
   'reset': boolean,
+  'visibleMenu': boolean,
 }
 
 const DictionaryRecord : Record<keyof Dictionary, boolean> = {
@@ -34,7 +35,8 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'lcancelsForOpponent': true,
   'statsCalculationProgress': true,
   'statsCalculationDone': true,
-  'reset': true
+  'reset': true,
+  'visibleMenu': true,
 }
 
 @Injectable({
@@ -53,6 +55,7 @@ export class StoreService {
   public reset(): void {
     this.internalData = {};
     this.internalData['reset'] = true;
+    this.internalData['visibleMenu'] = false;
     this.data.next(this.internalData);
   }
 

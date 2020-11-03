@@ -8,8 +8,8 @@ import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges }
 export class StatsLineComponent implements OnInit, OnChanges {
 
   @Input() label: string;
-  @Input() value: string | number;
-  @Input() value2: string | number;
+  @Input() value: string;
+  @Input() value2: string;
   @Input() unit1: string;
   @Input() unit2: string;
 

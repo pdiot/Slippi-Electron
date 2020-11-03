@@ -1,7 +1,5 @@
-<div class="wrapper">
-  <div class="row">
-    <button class="btn btn-danger" routerLink="">Main module</button>
-    <button class="btn btn-danger" routerLink="/compare">Stats compare module</button>
-  </div>
+<div>
+  <button class="menu-button" (click)="toggleMenu()">ミ</button>
+  <app-menu [style.visibility]="isMenuVisible ? 'visible' : 'hidden'"></app-menu>
   <router-outlet></router-outlet>
 </div>

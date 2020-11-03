@@ -102,10 +102,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  public resetApp(): void {
-    this.storeService.reset();
-  }
-
   private initStatsIfNeeded() {
     if (!this.stats) {
       this.stats = {

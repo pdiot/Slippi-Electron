@@ -1,0 +1,29 @@
+.lineOneValue {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  height: 30px;
+  .label {
+    width: 70%;
+    margin: 0;
+  } 
+  .value {
+    width: 30%;
+    margin: 0;
+  }
+}
+
+.lineTwoValues {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  height: 30px;
+  .label {
+    width: 50%;
+    margin: 0;
+  }
+  .value {
+    width: 25%;
+    margin: 0;
+  }
+}

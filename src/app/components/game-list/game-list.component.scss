@@ -1,0 +1,45 @@
+@use '../../../variables' as variables;
+
+.noFilterDisplay {
+  margin-top: 30px;
+
+  .gameLinesContainer {
+    height: 600px;
+    overflow-y: scroll;
+  }
+
+  app-game-line {
+    display: flex;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-bottom: 10px;
+    padding-top: 10px;  
+    border-bottom: variables.$white 1px solid;
+  }
+}
+
+
+.filteredDisplay {
+  margin-top: 30px;
+
+  .generateStats {
+    width: 200px;
+    height: 40px;
+    margin: auto;
+    font-size: 26px;
+  }
+
+  .gameLinesContainer {
+    height: 600px;
+    overflow-y: scroll;
+  }
+
+  app-game-line {
+    display: flex;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 10px;
+    padding-top: 10px;  
+    border-bottom: variables.$white 1px solid;
+  }
+}

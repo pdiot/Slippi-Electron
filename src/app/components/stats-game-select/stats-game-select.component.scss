@@ -1,0 +1,21 @@
+@use '../../../variables' as variables;
+
+app-game-line {
+  display: flex;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 8px;
+  padding-top: 8px;
+  border-bottom: variables.$white 1px solid;
+}
+
+.gameListWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  .gameLineWrapper {
+    width: 48%;
+  }
+  .left {
+    border-right: variables.$white 1px solid;
+  }
+}

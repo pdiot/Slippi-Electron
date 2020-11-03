@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ElecService } from './elec.service';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { StoreService } from 'src/services/store/store.service';
 
 @Component({
   selector: 'app-root',
@@ -7,13 +7,21 @@ import { ElecService } from './elec.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ang-electron';
-  // Creating Instances through Dependency Injection 
-  constructor(private elecService: ElecService) {} 
+  title = 'Statislipp';
 
-  openWindow() { 
-  // Accessing the Shell API from ElecService 
-  this.elecService.shell 
-    .openExternal('https://www.geeksforgeeks.org/'); 
+  isMenuVisible: boolean = false;
+
+  constructor(private cd: ChangeDetectorRef, private store: StoreService) {
+    this.store.getStore().subscribe(value => {
+      if (value?.visibleMenu === false) {
+        this.toggleMenu(false);
+      }
+    });
+  } 
+
+  toggleMenu(value = !this.isMenuVisible) {
+    this.isMenuVisible = value;
+    this.cd.detectChanges();
   }
+
 }

@@ -286,6 +286,14 @@ export class FilterFormComponent implements OnInit, OnChanges {
     return this.icons.getStageMiniatureName(stage).miniature;
   }
 
+  public isSelectedPlayerId(value: string): boolean {
+    return (this.filterForm.controls['playerId'].value === value);
+  }
+
+  public isSelectedPlayerCharacter(value: string): boolean {
+    return (this.filterForm.controls['playerCharacter'].value === value);
+  }
+
   public isActiveOpponent(value: string): boolean {
     return (this.filterForm.controls['opponentIds'].value.whitelisted as string[]).includes(value);
   }
@@ -308,77 +316,6 @@ export class FilterFormComponent implements OnInit, OnChanges {
 
   public isIgnoredStage(value: string): boolean {
     return (this.filterForm.controls['filteredStages'].value.blacklisted as string[]).includes(value);
-  }
-
-  get playerIdColSize(): string {
-    switch (this.playerIdsData.length) {
-      case 1:
-        return 'col';
-      case 2:
-        return 'col-6';
-      case 3:
-        return 'col-4';
-      case 4:
-        return 'col-3';
-      default:
-        return 'col-3';
-    }
-  }
-  get playerCharacterColSize(): string {
-    switch (this.playerCharacters.length) {
-      case 1:
-        return 'col';
-      case 2:
-        return 'col-6';
-      case 3:
-        return 'col-4';
-      case 4:
-        return 'col-3';
-      default:
-        return 'col-3';
-    }
-  }
-  get oppIdColSize(): string {
-    switch (this.opponentIds.length) {
-      case 1:
-        return 'col';
-      case 2:
-        return 'col-6';
-      case 3:
-        return 'col-4';
-      case 4:
-        return 'col-3';
-      default:
-        return 'col-3';
-    }
-  }
-  get oppCharacterColSize(): string {
-    switch (this.opponentCharacters.length) {
-      case 1:
-        return 'col';
-      case 2:
-        return 'col-6';
-      case 3:
-        return 'col-4';
-      case 4:
-        return 'col-3';
-      default:
-        return 'col-3';
-    }
-  }
-  get stageColSize(): string {
-    switch (this.filteredStages.length) {
-      case 1:
-        return 'col';
-      case 2:
-        return 'col-6';
-      case 3:
-        return 'col-4';
-      case 4:
-        return 'col-3';
-      default:
-        return 'col-3';
-    }
   }
 
 

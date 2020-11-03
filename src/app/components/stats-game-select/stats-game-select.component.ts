@@ -79,9 +79,14 @@ export class StatsGameSelectComponent implements OnInit {
             shortName: GameFileUtils.niceName(eGame.file),
             enrichedGameFile: eGame
           });
+          console.log('wtf filtered games ', this.filteredEnrichedGameFiles);
         }
       }
     }
+  }
+
+  public isLeft(i: number): boolean {
+    return (i%2 === 0);
   }
 
 }
