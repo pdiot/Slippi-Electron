@@ -1,0 +1,21 @@
+.gameFile {
+  width: 20%;
+  overflow: hidden;
+  direction: rtl;
+  margin-left: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.playerId {
+  text-align: center;
+  width: 15%;
+}
+
+.characterName {
+  width: 15%;
+}
+
+.stageName {
+  width: 20%;
+}

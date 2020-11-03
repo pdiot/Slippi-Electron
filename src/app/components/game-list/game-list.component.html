@@ -1,74 +1,31 @@
-
-<div class="row margin25">
-  <div class="col">
-    <ng-container *ngIf="filteredGameFiles; then filteredDisplay else noFilterDisplay"></ng-container>
-    <ng-template #filteredDisplay>
-      <div *ngIf="filteredGameFiles && filteredGameFiles.length > 0 && notAllGamesFilteredOut; else noExistingGameDisplay" class="card">
-        <div>
-          <span class="btn btn-secondary" (click)="generateStats()">Générer les stats</span>
-        </div>
-        <div class="card-body">
-          <div *ngFor="let game of filteredGameFiles" class="row" 
-                [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game), 'forcedIn': isForcedIn(game), 'forcedOut': isForcedOut(game)}" 
-                (click)="toggleGame(game)">
-            <div class="col-3 ellipsis">
-              <span>{{game.file}}</span>
-            </div>
-            <div class="col-2">
-              <span>{{game.playerCharacterPairs[0].player}}</span>
-            </div>
-            <div class="col-1">
-              <span class="badge badge-secondary">{{game.playerCharacterPairs[0].character.name}} </span>       
-            </div>
-            <div class="col-2">
-              <span>{{game.playerCharacterPairs[1].player}}</span>
-            </div>
-            <div class="col-1">
-              <span class="badge badge-secondary">{{game.playerCharacterPairs[1].character.name}}</span>
-            </div>
-            <div class="col-2">
-              <span>{{game.stage}}</span>
-            </div>
-          </div>
-        </div>
+<ng-container *ngIf="filteredGameFiles; then filteredDisplay else noFilterDisplay"></ng-container>
+<ng-template #filteredDisplay>
+  <div class="filteredDisplay">
+    <div *ngIf="filteredGameFiles && filteredGameFiles.length > 0 && notAllGamesFilteredOut; else noExistingGameDisplay">
+      <div class="generateStats fakeButton" (click)="generateStats()">Générer les stats</div>
+      <div class="gameLinesContainer">
+        <ng-container *ngFor="let game of filteredGameFiles">
+          <app-game-line
+            [ngClass]="{'selected': isSelected(game), 'filteredOut': !isSelected(game), 'forcedIn': isForcedIn(game), 'forcedOut': isForcedOut(game)}"
+            (click)="toggleGame(game)" [game]="game">
+          </app-game-line>
+        </ng-container>
       </div>
-      <ng-template #noExistingGameDisplay>
-        <div class="card">
-          <div class="card-body ignored">
-            <h1>NO MATCHING GAMES</h1>
-          </div>
-        </div>
-      </ng-template>
-    </ng-template>
-    <ng-template #noFilterDisplay>
-      <div *ngIf="enrichedGameFiles && enrichedGameFiles.length > 0" class="card">
-        <div class="card-body">
-          <div *ngFor="let game of enrichedGameFiles" class="row">
-            <div class="col-3 ellipsis">
-              <span>{{game.file}}</span>
-            </div>
-            <div class="col-2">
-              <span>{{game.playerCharacterPairs[0].player}}</span>
-            </div>
-            <div class="col-1">
-              <span class="badge badge-secondary">{{game.playerCharacterPairs[0].character.name}} </span>       
-            </div>
-            <div class="col-2">
-              <span>{{game.playerCharacterPairs[1].player}}</span>
-            </div>
-            <div class="col-1">
-              <span class="badge badge-secondary">{{game.playerCharacterPairs[1].character.name}}</span>
-            </div>
-            <div class="col-2">
-              <span>{{game.stage}}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-template>    
+    </div>
   </div>
-</div>
-
-
-
-
+  <ng-template #noExistingGameDisplay>
+    <div class="noGames ignored">
+      <h1>NO MATCHING GAMES</h1>
+    </div>
+  </ng-template>
+</ng-template>
+<ng-template #noFilterDisplay>
+  <div class="noFilterDisplay">
+    <div *ngIf="enrichedGameFiles && enrichedGameFiles.length > 0" class="gameLinesContainer">
+      <div *ngFor="let game of enrichedGameFiles" class="filteredOut">
+        <app-game-line [game]="game">
+        </app-game-line>
+      </div>
+    </div>
+  </div>
+</ng-template>

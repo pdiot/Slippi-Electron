@@ -1,24 +1,15 @@
-/* Importing Bootstrap SCSS file. */
-@import '~bootstrap/scss/bootstrap';
-
+@use './variables' as variables;
 /* You can add global styles to this file, and also import other style files */
 
 body {
-  background-color: #504f5e !important;
-  color: #c5c9cc !important;
-}
-
-.card {
-  background-color: #5e5d68 !important;
-}
-
-.margin25 {
-  margin: 25px;
+  background-color: variables.$bodyBG;
+  color: variables.$white;
 }
 
 .upload {
   cursor: pointer;
 }
+
 .header {
   text-align: center;
 }
@@ -29,82 +20,40 @@ body {
   font-family: 'Times New Roman';
 }
 
-.content {
-  margin: 100px;
-}
-
-.col-8 .content {
-  margin: 20px;
-}
-
-.btn-character {
-  width: fit-content;
-}
-
-.btn-stage {
-  width: fit-content;
-}
-
-.blank {
-  width: 120px;
-  height: 94px;
-}
-
-/** Nique ta mère bootstrap dégage avec tes focus de con **/
-
 .selected {
   box-shadow: none;
-  color: #fff;
-  background-color: #5bba83 !important;
-  border-color: #343a40;
+  color: variables.$white;
+  background-color: variables.$lightGreen;
+  border-color: variables.$darkBorder;
 }
 
 .ignored {
   box-shadow: none;
-  color: #fff;
-  background-color: #8d2f2f !important;
-  border-color: #343a40;
+  color: variables.$white;
+  background-color: variables.$lightRed;
+  border-color: variables.$darkBorder;
 }
 
 .filteredOut {
   box-shadow: none;
-  color: rgba(255, 255, 255, 0.527);
-  background-color: #312f2f !important;
-  border-color: #343a40;
+  color: variables.$white;
+  background-color: variables.$greyBG;
+  border-color: variables.$darkBorder;
 }
 
 .forcedIn {
   box-shadow: none;
-  color: #fff;
-  background-color: #0b612f !important;
-  border-color: #343a40;
+  color: variables.$white;
+  background-color: variables.$darkGreen;
+  border-color: variables.$darkBorder;
 }
 
 .forcedOut {
   box-shadow: none;
-  color: #fff;
-  background-color: #5e1313 !important;
-  border-color: #343a40;
+  color: variables.$white;
+  background-color: variables.$darkRed;
+  border-color: variables.$darkBorder;
 }
-
-.ellipsis {
-  overflow: hidden;
-  direction: rtl; 
-  margin-left: 15px;
-  white-space: nowrap;
-}
-
-.wrapper {
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
-.row {
-  margin-left: -10px !important;
-  margin-right: -10px!important;
-}
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 // Overlay
 
@@ -129,7 +78,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   height: 20px;  /* Can be anything */
   width: 400px;
 	position: relative;
-	background: #555;
+	background: variables.$bodyBG;
 	-moz-border-radius: 25px;
 	-webkit-border-radius: 25px;
 	border-radius: 25px;
@@ -140,7 +89,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .meter p {
-  color: white;
+  color: variables.$white;
   text-shadow:
    -1px -1px 0 #000,  
     1px -1px 0 #000,
@@ -198,15 +147,47 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   overflow: hidden;
 }
 
-// .orange > span {
-//   background-color: #f1a165;
-//   background-image: linear-gradient(to bottom, #f1a165, #f36d0a);
-// }
-
-// .red > span {
-//   background-color: #f0a3a3;
-//   background-image: linear-gradient(to bottom, #f0a3a3, #f42323);
-// }
-
 // FOLDABLE STUFF IN FOLDABLE-BLOCK.COMPONENT.SCSS
 
+// Floating menu in menu.component.scss
+
+.menu-button {
+  border: none;
+  background: none;
+  font-size: 44px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  color: variables.$orange;
+  cursor: pointer;
+}
+
+.menu-button:focus {
+  outline: none;
+}
+
+// Scrollbars
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 3px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+// Buttons 
+
+.fakeButton {
+  text-align: center;
+  border: variables.$white 1px solid;
+  padding-top: 10px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}

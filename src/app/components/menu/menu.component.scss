@@ -1,0 +1,35 @@
+@use '../../../variables' as variables;
+
+.floating-menu {
+  top: 0;
+  left: 0;
+  font-family: sans-serif;
+  background: variables.$menuBackground;
+  padding: 5px;
+  width: 200px;
+  height: 100%;
+  z-index: 100;
+  position: fixed;
+}
+
+.inner-menu {
+  padding: 5px;
+
+  div:first-of-type {
+    margin-top: 65px;
+  }
+
+  .menuButton {
+    width: 150px;
+    height: 40px;
+    font-size: 22px;
+  }
+}
+
+.inner-menu h3 {
+  position: absolute;
+  right: 0;
+  font-size: 42px;
+  margin: 0 0.5em;
+  color: variables.$white;
+}

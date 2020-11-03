@@ -4,41 +4,34 @@
     <span [ngStyle]="{'width': statsCalculationProgress +'%'}"></span>
   </div>
 </div>
-<div class="mainContainer">
-  <div class="row app-header">
-    <div class="col-10"></div>
-    <div class="col-2">
-      <button class="btn btn-danger" (click)="resetApp()">Reset app</button>
-    </div>
-  </div>
-
-  <ng-container *ngIf="stats; then hasStats else hasNoStats">
-  </ng-container>
-  <ng-template #hasNoStats>
+<ng-container *ngIf="stats; then hasStats else hasNoStats">
+</ng-container>
+<ng-template #hasNoStats>
+  <div class="noStatsContainer">
     <ng-container *ngIf="hasList; then twoPartDisplayNoStats else singlePartDisplayNoStats">
-    </ng-container>  
+    </ng-container>
     <ng-template #twoPartDisplayNoStats>
-      <div class="row">
-        <div class="col-3 sidePanel">
-          <app-side-panel [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
-        </div>
-        <div class="col-8">
-          <app-main-panel [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-main-panel>
-        </div>
+      <div class="sidePanelTwoParts">
+        <app-side-panel [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
+      </div>
+      <div class="mainPanelTwoParts">
+        <app-main-panel [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-main-panel>
       </div>
     </ng-template>
     <ng-template #singlePartDisplayNoStats>
-      <app-main-panel></app-main-panel>
+      <div class="mainPanelOnePart">
+        <app-main-panel></app-main-panel>
+      </div>
     </ng-template>
-  </ng-template>
-  <ng-template #hasStats>
-    <div class="row">
-      <div class="col-3 sidePanel">
-        <app-side-panel [stats]="stats" [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
-      </div>
-      <div class="col-8">
-        <app-main-panel [stats]="stats" [selectedGames]="selectedGames"></app-main-panel>
-      </div>
+  </div>
+</ng-template>
+<ng-template #hasStats>
+  <div class="statsContainer">
+    <div class="gamesPanel">
+      <app-side-panel [stats]="stats" [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
     </div>
-  </ng-template>
-</div>
+    <div class="statsPanel">
+      <app-main-panel [stats]="stats" [selectedGames]="selectedGames"></app-main-panel>
+    </div>
+  </div>
+</ng-template>

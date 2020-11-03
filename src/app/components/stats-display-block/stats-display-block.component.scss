@@ -1,0 +1,40 @@
+@use '../../../variables' as variables;
+
+.statsDisplayCharacterWrapper {
+  display: flex;
+  flex-direction: column;
+
+  .characterBlock {
+    width: 100%;
+
+    .statsDisplayStageWrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      .stageBlock {
+        width: 100%;
+        .subsectionWrapper {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          .subsectionBlock {
+            width: 50%;
+            text-align: left;
+
+            app-stats-line:first-of-type {
+              margin-top: 5px;
+            }
+
+            p {
+              margin-top: 0;
+              margin-left: 2px;
+              margin-bottom: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

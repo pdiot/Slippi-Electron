@@ -1,0 +1,13 @@
+@use '../../../variables' as variables;
+
+.input-group {
+  width: 25%;
+  height: 50px;
+  margin: auto;
+  border: variables.$white 1px solid;
+
+  .custom-file-label {
+    font-size: 42px;
+    color: variables.$white;
+  }
+}
