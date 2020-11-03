@@ -186,8 +186,10 @@ body {
 
 .fakeButton {
   text-align: center;
+  height: fit-content;
   border: variables.$white 1px solid;
   padding-top: 10px;
+  padding-bottom: 10px;
   margin-bottom: 15px;
   cursor: pointer;
 }

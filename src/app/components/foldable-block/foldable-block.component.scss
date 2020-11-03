@@ -24,6 +24,7 @@ input[type="checkbox"] {
   padding-top: 5px;
   padding-bottom: 2px;
   padding-left: 10px;
+  background-color: variables.$foldableBG;
 }
 
 .lbl-toggle:hover {

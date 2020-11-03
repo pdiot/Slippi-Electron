@@ -17,6 +17,8 @@ export interface Dictionary {
   'lcancelsForOpponent': StatsWrapper<LCancels>,
   'statsCalculationProgress': StatsCalculationProgress,
   'statsCalculationDone': boolean,
+  'firstFile': any,
+  'secondFile': any,
   'reset': boolean,
   'visibleMenu': boolean,
 }
@@ -35,6 +37,8 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'lcancelsForOpponent': true,
   'statsCalculationProgress': true,
   'statsCalculationDone': true,
+  'firstFile': true,
+  'secondFile': true,
   'reset': true,
   'visibleMenu': true,
 }
