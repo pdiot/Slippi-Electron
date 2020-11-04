@@ -1,0 +1,26 @@
+@use '../../../variables' as variables;
+
+.upperDiv {
+  margin-left: 50px;
+  margin-bottom: 20px;
+  .fakeButton {
+    width: 500px;
+    height: 40px;
+    font-size: 32px;
+    margin: auto;
+  }
+}
+
+.subsectionWrapper {
+  display: flex;
+  flex-direction: column;
+
+  .subsectionBlock {
+    width: 100%;
+    .subsection {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-foldable-block',
@@ -12,6 +12,11 @@ export class FoldableBlockComponent implements OnInit, OnChanges {
 
   @Input()
   collapseId: string;
+
+  @Output()
+  toggledEmit = new EventEmitter<boolean>();
+
+  public toggled: boolean = false;
   
   constructor(private cd: ChangeDetectorRef) {
   }
@@ -26,6 +31,12 @@ export class FoldableBlockComponent implements OnInit, OnChanges {
     if (changes?.collapseId?.currentValue) {
       this.collapseId = changes.collapseId.currentValue;
     }
+    this.cd.detectChanges();
+  }
+
+  toggleDisplay() {
+    this.toggled = !this.toggled;
+    this.toggledEmit.emit(this.toggled);
     this.cd.detectChanges();
   }
 

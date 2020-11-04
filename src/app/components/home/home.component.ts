@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
@@ -18,7 +19,7 @@ export class HomeComponent implements OnInit {
   showOverlay = false;
   statsCalculation: StatsCalculationProgress;
 
-  constructor(private storeService: StoreService, private cd: ChangeDetectorRef) { }
+  constructor(private storeService: StoreService, private cd: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
     this.storeService.getStore().subscribe(value => {
@@ -96,6 +97,7 @@ export class HomeComponent implements OnInit {
           this.stats = undefined;
           this.filter = undefined;
           this.storeService.set('reset', false);
+          this.router.navigate(['']);
         }
         this.cd.detectChanges();
       }

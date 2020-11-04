@@ -16,7 +16,7 @@ export class StatsDisplayComponent implements OnInit {
   @Input() stats: StatsItem;
   @Input() selectedGames: EnrichedGameFile[];
 
-  playerConversions : IntermediaryStatsWrapper<ProcessedOpenings>;
+  playerConversions: IntermediaryStatsWrapper<ProcessedOpenings>;
   opponentConversions: IntermediaryStatsWrapper<ProcessedOpenings>;
   playerOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
   opponentOverall: IntermediaryStatsWrapper<ProcessedOverallList>;
@@ -27,7 +27,7 @@ export class StatsDisplayComponent implements OnInit {
   collapseId = 'collapse';
   writeFeedbackMessage: string;
 
-  statsDates : Date[];
+  statsDates: Date[];
 
   constructor(private cd: ChangeDetectorRef,
     private statsService: StatsProcessingService,
@@ -35,7 +35,7 @@ export class StatsDisplayComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.stats?.currentValue) {
       this.stats = changes.stats.currentValue as unknown as StatsItem;
@@ -44,7 +44,7 @@ export class StatsDisplayComponent implements OnInit {
     if (changes?.selectedGames?.currentValue) {
       this.selectedGames = changes.selectedGames.currentValue as unknown as EnrichedGameFile[];
     }
-    if (this.selectedGames && 
+    if (this.selectedGames &&
       this.stats?.punishedActionsForPlayer &&
       this.stats?.punishedActionsForOpponent &&
       this.stats?.lcancelsForOpponent &&
@@ -78,46 +78,62 @@ export class StatsDisplayComponent implements OnInit {
     const newStats = this.filterStats();
     this.statsDates = this.getStatsDates();
     console.log('Stats Display - getProcessedStats');
-    this.statsService.processConversions(newStats.playerConversions).then(result => {
-      console.log('Stats Display - got player conversions back', result);
-      this.playerConversions = result;
-      this.cd.detectChanges();
-    });
-    this.statsService.processConversions(newStats.opponentConversions).then(result => {
-      console.log('Stats Display - got opponent conversions back', result);
-      this.opponentConversions = result;
-      this.cd.detectChanges();
-    });
-    this.statsService.processOverallList(newStats.playerOveralls).then(result => {
-      console.log('Stats Display - got player overall back', result);
-      this.playerOverall = result;
-      this.cd.detectChanges();
-    });
-    this.statsService.processOverallList(newStats.opponentOveralls).then(result => {
-      console.log('Stats Display - got opponent overall back', result);
-      this.opponentOverall = result;
-      this.cd.detectChanges();
-    });
-    this.statsService.processPunishedActions(newStats.punishedActionsForPlayer).then(result => {
-      console.log('Stats Display - got player punishedActions back', result);
-      this.punishedActionsForPlayer = result;
-      this.cd.detectChanges();
-    })
-    this.statsService.processPunishedActions(newStats.punishedActionsForOpponent).then(result => {
-      console.log('Stats Display - got opponent punishedActions back', result);
-      this.punishedActionsForOpponent = result;
-      this.cd.detectChanges();
-    })
-    this.statsService.processLCancels(newStats.lcancelsForPlayer).then(result => {
-      console.log('Stats Display - got player lcancels back', result);
-      this.lcancelsForPlayer = result;
-      this.cd.detectChanges();
-    })
-    this.statsService.processLCancels(newStats.lcancelsForOpponent).then(result => {
-      console.log('Stats Display - got opponent lcancels back', result);
-      this.lcancelsForOpponent = result;
-      this.cd.detectChanges();
-    })
+    if (newStats.playerConversions) {
+      this.statsService.processConversions(newStats.playerConversions).then(result => {
+        console.log('Stats Display - got player conversions back', result);
+        this.playerConversions = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.opponentConversions) {
+      this.statsService.processConversions(newStats.opponentConversions).then(result => {
+        console.log('Stats Display - got opponent conversions back', result);
+        this.opponentConversions = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.playerOveralls) {
+      this.statsService.processOverallList(newStats.playerOveralls).then(result => {
+        console.log('Stats Display - got player overall back', result);
+        this.playerOverall = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.opponentOveralls) {
+      this.statsService.processOverallList(newStats.opponentOveralls).then(result => {
+        console.log('Stats Display - got opponent overall back', result);
+        this.opponentOverall = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.punishedActionsForPlayer) {
+      this.statsService.processPunishedActions(newStats.punishedActionsForPlayer).then(result => {
+        console.log('Stats Display - got player punishedActions back', result);
+        this.punishedActionsForPlayer = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.punishedActionsForOpponent) {
+      this.statsService.processPunishedActions(newStats.punishedActionsForOpponent).then(result => {
+        console.log('Stats Display - got opponent punishedActions back', result);
+        this.punishedActionsForOpponent = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.lcancelsForPlayer) {
+      this.statsService.processLCancels(newStats.lcancelsForPlayer).then(result => {
+        console.log('Stats Display - got player lcancels back', result);
+        this.lcancelsForPlayer = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.lcancelsForOpponent) {
+      this.statsService.processLCancels(newStats.lcancelsForOpponent).then(result => {
+        console.log('Stats Display - got opponent lcancels back', result);
+        this.lcancelsForOpponent = result;
+        this.cd.detectChanges();
+      });
+    }
   }
 
   private filterStats(): StatsItem {
@@ -127,10 +143,10 @@ export class StatsDisplayComponent implements OnInit {
       niceNamesToKeep.push(GameFileUtils.niceName(game.file));
     }
     const newStats: StatsItem = {
-      playerConversions : undefined,
-      opponentConversions : undefined,
-      playerOveralls : undefined,
-      opponentOveralls : undefined,
+      playerConversions: undefined,
+      opponentConversions: undefined,
+      playerOveralls: undefined,
+      opponentOveralls: undefined,
       punishedActionsForOpponent: undefined,
       punishedActionsForPlayer: undefined,
       lcancelsForPlayer: undefined,
@@ -139,7 +155,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.playerConversions)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.playerConversions) {
-          newStats.playerConversions={};
+          newStats.playerConversions = {};
         }
         newStats.playerConversions[game] = this.stats.playerConversions[game];
       }
@@ -147,7 +163,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.opponentConversions)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.opponentConversions) {
-          newStats.opponentConversions={};
+          newStats.opponentConversions = {};
         }
         newStats.opponentConversions[game] = this.stats.opponentConversions[game];
       }
@@ -155,7 +171,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.playerOveralls)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.playerOveralls) {
-          newStats.playerOveralls={};
+          newStats.playerOveralls = {};
         }
         newStats.playerOveralls[game] = this.stats.playerOveralls[game];
       }
@@ -163,7 +179,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.opponentOveralls)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.opponentOveralls) {
-          newStats.opponentOveralls={};
+          newStats.opponentOveralls = {};
         }
         newStats.opponentOveralls[game] = this.stats.opponentOveralls[game];
       }
@@ -171,7 +187,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.lcancelsForOpponent)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.lcancelsForOpponent) {
-          newStats.lcancelsForOpponent={};
+          newStats.lcancelsForOpponent = {};
         }
         newStats.lcancelsForOpponent[game] = this.stats.lcancelsForOpponent[game];
       }
@@ -179,7 +195,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.lcancelsForPlayer)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.lcancelsForPlayer) {
-          newStats.lcancelsForPlayer={};
+          newStats.lcancelsForPlayer = {};
         }
         newStats.lcancelsForPlayer[game] = this.stats.lcancelsForPlayer[game];
       }
@@ -187,7 +203,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.punishedActionsForOpponent)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.punishedActionsForOpponent) {
-          newStats.punishedActionsForOpponent={};
+          newStats.punishedActionsForOpponent = {};
         }
         newStats.punishedActionsForOpponent[game] = this.stats.punishedActionsForOpponent[game];
       }
@@ -195,7 +211,7 @@ export class StatsDisplayComponent implements OnInit {
     for (let game of Object.keys(this.stats.punishedActionsForPlayer)) {
       if (niceNamesToKeep.includes(game)) {
         if (!newStats.punishedActionsForPlayer) {
-          newStats.punishedActionsForPlayer={};
+          newStats.punishedActionsForPlayer = {};
         }
         newStats.punishedActionsForPlayer[game] = this.stats.punishedActionsForPlayer[game];
       }

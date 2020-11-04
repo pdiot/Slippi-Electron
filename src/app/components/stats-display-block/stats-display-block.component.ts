@@ -20,6 +20,8 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
   @Input() lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
   @Input() collapseId: string;
   
+  toggled : any = {};
+  
   constructor(private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -92,7 +94,6 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
   getTop3MostCommonLCancel(moves: {move: string, count: number}[]): {move: string, count: number}[] {
     return GeneralUtils.getTop3MostCommonMoves(moves);
   }
-
   getLCancelRatio(lcancels: {successful: number, failed: number}): {successful: number, failed: number, ratio: number} {
     return {
       successful: lcancels.successful,
@@ -100,9 +101,22 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
       ratio: lcancels.successful / (lcancels.successful + lcancels.failed)
     };
   }
-
   removeLanding(landing: string): string {
     return landing.split(' ')[0];
+  }
+  public handleToggleEmit(character, stage, block, value) {
+    if (!this.toggled[character]) {
+      this.toggled[character] = {};
+    }
+    if (!this.toggled[character][stage]) {
+      this.toggled[character][stage] = {};
+    }
+    this.toggled[character][stage][block] = value;
+    this.cd.detectChanges();
+  }
+
+  public buildDOM(character, stage, block) {
+    return this.toggled && this.toggled[character] && this.toggled[character][stage] && this.toggled[character][stage][block];
   }
 
 }

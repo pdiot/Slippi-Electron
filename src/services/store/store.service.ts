@@ -19,6 +19,7 @@ export interface Dictionary {
   'statsCalculationDone': boolean,
   'firstFile': any,
   'secondFile': any,
+  'statsFilesForGraphs': any,
   'reset': boolean,
   'visibleMenu': boolean,
 }
@@ -39,6 +40,7 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'statsCalculationDone': true,
   'firstFile': true,
   'secondFile': true,
+  'statsFilesForGraphs': true,
   'reset': true,
   'visibleMenu': true,
 }

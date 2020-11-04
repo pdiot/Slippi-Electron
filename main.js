@@ -29,10 +29,10 @@ function createWindow () {
         const { dialog } = require('electron');
         const fs = require('fs');
         dialog.showOpenDialog(win, {
-            title: 'Choisir les replays Slippi à charger',
+            title: 'Choose the slippi replay files to load',
             filters: [
                 {
-                    name: 'Fichiers Slippi',
+                    name: 'Slippi files',
                     extensions: ['slp']
                 }
             ],
@@ -50,12 +50,11 @@ function createWindow () {
 
     ipcMain.on('openStatsFile', (event, data) => {
         const { dialog } = require('electron');
-        const fs = require('fs');
         dialog.showOpenDialog(win, {
             title: `Choose the ${data} stats file to load`,
             filters: [
                 {
-                    name: 'Fichiers JSON',
+                    name: 'JSON Files',
                     extensions: ['json']
                 }
             ]
@@ -71,6 +70,33 @@ function createWindow () {
                 event.sender.send(`${data}StatsFileOpenedOK`, value);
             }
         })); 
+    })
+
+    ipcMain.on('openStatsFilesForGraphs', (event, data) => {
+        const { dialog } = require('electron');
+        dialog.showOpenDialog(win, {
+            title: `Choose the computed stats files to load`,
+            filters: [
+                {
+                    name: 'JSON files',
+                    extensions: ['json']
+                }
+            ],
+            properties: [
+                'multiSelections'
+            ]
+        }).then((returnValue => {
+            if (!returnValue.canceled) {
+                console.log('returnValue', returnValue);
+                value = [];
+                for (let filePath of returnValue.filePaths) {
+                    value.push(readStatsFile(filePath));
+                }
+                console.log(`sending statsFilesForGraphsOpened`);
+                event.sender.send(`statsFilesForGraphsOpened`, value);
+            }
+        })); 
+
     })
 
     ipcMain.on('calculateStats', (event, data) => {
