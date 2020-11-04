@@ -27,6 +27,8 @@ export class StatsDisplayComponent implements OnInit {
   collapseId = 'collapse';
   writeFeedbackMessage: string;
 
+  statsDates : Date[];
+
   constructor(private cd: ChangeDetectorRef,
     private statsService: StatsProcessingService,
     private electron: ElecService) { }
@@ -57,9 +59,24 @@ export class StatsDisplayComponent implements OnInit {
     this.cd.detectChanges();
   }
 
+  private getStatsDates(): Date[] {
+    let dates = [];
+    for (let gameTag of Object.keys(this.stats.playerOveralls)) {
+      const year = +gameTag.substr(0, 4);
+      const month = +gameTag.substr(4, 2);
+      const day = +gameTag.substr(6, 2);
+      const date = new Date(year, month, day);
+      if (!dates.find(dateFromArray => date.getTime() === dateFromArray.getTime())) {
+        dates.push(date);
+      }
+    }
+    return dates;
+  }
+
   private getProcessedStats(): void {
     // TODO filter this.stats by selectedGames
     const newStats = this.filterStats();
+    this.statsDates = this.getStatsDates();
     console.log('Stats Display - getProcessedStats');
     this.statsService.processConversions(newStats.playerConversions).then(result => {
       console.log('Stats Display - got player conversions back', result);
@@ -209,6 +226,7 @@ export class StatsDisplayComponent implements OnInit {
       punishedActionsForOpponent: this.punishedActionsForOpponent,
       lcancelsForPlayer: this.lcancelsForPlayer,
       lcancelsForOpponent: this.lcancelsForOpponent,
+      dates: this.statsDates,
     }
     this.electron.ipcRenderer.on('fileWrittenOK', (event, arg) => {
       this.writeFeedbackMessage = `Stats written to ${arg}`

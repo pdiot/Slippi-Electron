@@ -19,6 +19,7 @@ export class UploadComponent implements OnInit {
     this.elecService.ipcRenderer.on('fileOpenedOK', (event, arg) => {
       // Callback de main.js => openFile
       const enrichedGameFiles = arg as EnrichedGameFile[];
+      this.storeService.reset();
       this.storeService.set('enrichedGameFiles', enrichedGameFiles);
     });
     this.elecService.ipcRenderer.send('openFile');
