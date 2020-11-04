@@ -108,7 +108,7 @@
                           </app-stats-line>
                           <app-stats-line [label]="'Most frequent punish option for conversions into kills'"
                             [value]="playerConversions[character][stage].processedKillPunishFirstHits?.move ? playerConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'"
-                            [value2]="playerConversions[character][stage].processedKillPunishFirstHits?.count ? playerConversions[character][stage].processedKillPunishFirstHits.move : 'N/A'">
+                            [value2]="playerConversions[character][stage].processedKillPunishFirstHits?.count ? playerConversions[character][stage].processedKillPunishFirstHits.count : 'N/A'">
                           </app-stats-line>
                           <p class="label">Average damage for most common neutral starters</p>
                           <ng-container
