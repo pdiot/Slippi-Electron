@@ -199,51 +199,45 @@ export class StatsProcessingService {
     for (const opponentChar of Object.keys(overallList)) {
       processedOverallList[opponentChar] = {};
       overallDatasAllStages = {
-          conversionCounts: [],
           totalDamages: [],
+          conversionsRatio: [],
           killCounts: [],
           openingsPerKills: [],
-          damagePerOpenings: [],
       }
       for (const stage of Object.keys(overallList[opponentChar])) {
         overallDatas = {
-            conversionCounts: [],
             totalDamages: [],
+            conversionsRatio: [],
             killCounts: [],
             openingsPerKills: [],
-            damagePerOpenings: [],
         }
         for (const overall of overallList[opponentChar][stage]) {
-            overallDatas.conversionCounts.push(overall.conversionCount);
             overallDatas.totalDamages.push(overall.totalDamage);
             overallDatas.killCounts.push(overall.killCount);
+            overallDatas.conversionsRatio.push(overall.conversionsRatio);
             overallDatas.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
-            overallDatas.damagePerOpenings.push(overall.damagePerOpening?.ratio ? overall.openingsPerKill?.ratio : undefined);
 
             //All stages
-            overallDatasAllStages.conversionCounts.push(overall.conversionCount);
             overallDatasAllStages.totalDamages.push(overall.totalDamage);
             overallDatasAllStages.killCounts.push(overall.killCount);
+            overallDatasAllStages.conversionsRatio.push(overall.conversionsRatio);
             overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
-            overallDatasAllStages.damagePerOpenings.push(overall.damagePerOpening?.ratio ? overall.openingsPerKill?.ratio : undefined);
         }
 
         processedOverallList[opponentChar][stage] = {
-            conversionCountMoyenne: this.calculMoyenneOverall(overallDatas.conversionCounts),
             totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
             killCountMoyenne: this.calculMoyenneOverall(overallDatas.killCounts),
+            conversionsRatio: this.calculMoyenneOverall(overallDatas.conversionsRatio),
             openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatas.openingsPerKills),
-            damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatas.damagePerOpenings),
             killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
         }
       }
       // All stages
       processedOverallList[opponentChar]['allStages'] = {
-        conversionCountMoyenne: this.calculMoyenneOverall(overallDatasAllStages.conversionCounts),
         totalDamageMoyenne: this.calculMoyenneOverall(overallDatasAllStages.totalDamages),
         killCountMoyenne: this.calculMoyenneOverall(overallDatasAllStages.killCounts),
+        conversionsRatio: this.calculMoyenneOverall(overallDatasAllStages.conversionsRatio),
         openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatasAllStages.openingsPerKills),
-        damagePerOpeningMoyenne: this.calculMoyenneOverall(overallDatasAllStages.damagePerOpenings),
         killPercentMoyenne: this.calculMoyenneOverall(overallDatasAllStages.totalDamages) / this.calculMoyenneOverall(overallDatasAllStages.killCounts),
       }
     }
@@ -574,6 +568,7 @@ export class StatsProcessingService {
   }
   
   private calculMostCommonMove(movesArray): MostCommonMove {
+    let totalMovesCounted = 0;
     if (movesArray.length > 0) {
         let moves = {};
         for (const move of movesArray) {
@@ -582,6 +577,7 @@ export class StatsProcessingService {
             } else {
                 moves[move.moveId] = 1;
             }
+            totalMovesCounted ++;
         }
         let maxMoveId;
         for (const moveId of Object.keys(moves)) {
@@ -594,19 +590,26 @@ export class StatsProcessingService {
             }
         }
         const move = EXTERNALMOVES[maxMoveId];
-        return {move: move ? move.name : 'Weird move', count: moves[maxMoveId]};
+        return {move: move ? move.name : 'Weird move', count: moves[maxMoveId] / totalMovesCounted * 100};
     }
-    return undefined;    
+    return undefined;
   }
 
   private countOptions(options: string[]): {option: string, count: number}[] {
     let returnValue = [];
-    for (let option of options) {
-      const rvIndex = returnValue.findIndex(rv => rv.option === option);
-      if (rvIndex !== -1) {
-        returnValue[rvIndex].count ++;
-      } else {
-        returnValue.push({option: option, count: 1});
+    let totalOptionsCounted = 0;
+    if (options?.length > 0) {
+      for (let option of options) {
+        const rvIndex = returnValue.findIndex(rv => rv.option === option);
+        if (rvIndex !== -1) {
+          returnValue[rvIndex].count ++;
+        } else {
+          returnValue.push({option: option, count: 1});
+        }
+        totalOptionsCounted ++;
+      }
+      for (let value of returnValue) {
+        value.count = value.count/totalOptionsCounted * 100;
       }
     }
     return returnValue;

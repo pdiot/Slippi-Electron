@@ -82,28 +82,31 @@ function processGames(gamesFromMain, slippiId, characterId) {
       const LCancels = getLCancels(frames, playerPort, opponentPort);
       const playerLCancels = LCancels.player;
       const opponentLCancels = LCancels.opponent;
+      const playerOverall = stats.overall.filter(overall => overall.playerIndex === playerPort)[0];
+      playerOverall.conversionsRatio = getOpeningRatio(playerConversions, opponentConversions);
+      const opponentOverall = stats.overall.filter(overall => overall.playerIndex === opponentPort)[0];
+      opponentOverall.conversionsRatio = getOpeningRatio(opponentConversions, playerConversions);
 
       overallOnOpponent[startAt] = {};
       overallOnOpponent[startAt][opponentCharName] = {};
       overallOnOpponent[startAt][opponentCharName][stage] = {
-        ...stats.overall.filter(overall => overall.playerIndex === playerPort)[0]};
+        ...playerOverall};
       
       conversionsOnOpponent[startAt] = {};
       conversionsOnOpponent[startAt][opponentCharName] = {};
       conversionsOnOpponent[startAt][opponentCharName][stage] = [
-        ...stats.conversions.filter(conversion => conversion.playerIndex === playerPort)];
+        ...playerConversions];
       
       
       overallFromOpponent[startAt] = {};
       overallFromOpponent[startAt][opponentCharName] = {};
       overallFromOpponent[startAt][opponentCharName][stage] = {
-        ...stats.overall.filter(overall => overall.playerIndex === opponentPort)[0]
-      };
+        ...opponentOverall};
 
       conversionsFromOpponent[startAt] = {};
       conversionsFromOpponent[startAt][opponentCharName] = {};
       conversionsFromOpponent[startAt][opponentCharName][stage] = [
-        ...stats.conversions.filter(conversion => conversion.playerIndex === opponentPort)];
+        ...opponentConversions];
 
       punishedActionsForPlayer[startAt] = {};
       punishedActionsForPlayer[startAt][opponentCharName] = {};
@@ -140,6 +143,13 @@ function processGames(gamesFromMain, slippiId, characterId) {
   
   console.log('WORKER end of treatment');
   return returnValue;
+}
+
+function getOpeningRatio(playerConversions, opponentConversions) {
+  if ((playerConversions.length + opponentConversions.length) !== 0) {
+    return playerConversions.length / (playerConversions.length + opponentConversions.length) * 100;
+  }
+  return 0;
 }
 
 function getMapName(id) {

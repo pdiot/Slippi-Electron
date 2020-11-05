@@ -33,6 +33,7 @@ export interface Overall {
     playerIndex: number,
     successfulConversions: RatioBasedValue,
     totalDamage: number,
+    conversionsRatio: number,
 }
 
 export interface StatsWrapper<T> {
