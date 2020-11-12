@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import GeneralUtils from 'src/app/components/utils/general.utils';
 import { EXTERNALMOVES } from 'src/interfaces/const';
-import { Conversion, LCancels, Move, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, StartersAverageDamage } from 'src/interfaces/types';
+import { Conversion, LCancels, Ledgedashes, Move, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, StartersAverageDamage } from 'src/interfaces/types';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class StatsProcessingService {
     let processedPunishes = {};
     let processedPunishesFirstHits = {};
     let processedKillPunishFirstHits = {};
-  
+
     // Create an intermediary wrapper without the gameData
     let conversionsList: IntermediaryStatsWrapper<Conversion[]> = {};
     for (const game of Object.keys(data)) {
@@ -42,11 +43,11 @@ export class StatsProcessingService {
     }
 
     for (const opponentChar of Object.keys(conversionsList)) {
-      processedNeutralWinsConversions[opponentChar]={};
-      processedNeutralWinsFirstHits[opponentChar]={};
+      processedNeutralWinsConversions[opponentChar] = {};
+      processedNeutralWinsFirstHits[opponentChar] = {};
       processedKillNeutralFirstHits[opponentChar] = {};
-      processedPunishes[opponentChar]={};
-      processedPunishesFirstHits[opponentChar]={};
+      processedPunishes[opponentChar] = {};
+      processedPunishesFirstHits[opponentChar] = {};
       processedKillPunishFirstHits[opponentChar] = {};
       let neutralAllStages = [];
       let punishesAllStages = [];
@@ -58,12 +59,12 @@ export class StatsProcessingService {
       let punishKillFirstHitsAllStages = [];
 
       for (const stage of Object.keys(conversionsList[opponentChar])) {
-        processedNeutralWinsConversions[opponentChar][stage]={};
-        processedNeutralWinsFirstHits[opponentChar][stage]={};
-        processedKillNeutralFirstHits[opponentChar][stage]={};
-        processedPunishes[opponentChar][stage]={};
-        processedPunishesFirstHits[opponentChar][stage]={};
-        processedKillPunishFirstHits[opponentChar][stage]={};
+        processedNeutralWinsConversions[opponentChar][stage] = {};
+        processedNeutralWinsFirstHits[opponentChar][stage] = {};
+        processedKillNeutralFirstHits[opponentChar][stage] = {};
+        processedPunishes[opponentChar][stage] = {};
+        processedPunishesFirstHits[opponentChar][stage] = {};
+        processedKillPunishFirstHits[opponentChar][stage] = {};
         let neutral = [];
         let punishes = [];
         let oneHitOnlyNeutral = [];
@@ -74,46 +75,46 @@ export class StatsProcessingService {
         let punishKillFirstHits = [];
         for (const conversion of conversionsList[opponentChar][stage]) {
           if (conversion.openingType === 'neutral-win') {
-              // Neutral Win
-              if (conversion.moves.length > 1) {
-                  neutral.push({
-                      totalDamage: conversion.currentPercent - conversion.startPercent,
-                      moves: conversion.moves,
-                  });
-              } else {
-                  oneHitOnlyNeutral.push({
-                      totalDamage: conversion.currentPercent - conversion.startPercent,
-                      moves: conversion.moves,
-                  })
-              }
-              if (conversion.didKill) {
-                  neutralKillFirstHits.push({
-                      moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
-                  });
-              }
-              neutralFirstHits.push({
-                  moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
+            // Neutral Win
+            if (conversion.moves.length > 1) {
+              neutral.push({
+                totalDamage: conversion.currentPercent - conversion.startPercent,
+                moves: conversion.moves,
               });
+            } else {
+              oneHitOnlyNeutral.push({
+                totalDamage: conversion.currentPercent - conversion.startPercent,
+                moves: conversion.moves,
+              })
+            }
+            if (conversion.didKill) {
+              neutralKillFirstHits.push({
+                moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
+              });
+            }
+            neutralFirstHits.push({
+              moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
+            });
           } else if (conversion.openingType === 'counter-attack') {
             // Punish
             if (conversion.moves.length > 1) {
-                punishes.push({
-                    totalDamage: conversion.currentPercent - conversion.startPercent,
-                    moves: conversion.moves,
-                });
+              punishes.push({
+                totalDamage: conversion.currentPercent - conversion.startPercent,
+                moves: conversion.moves,
+              });
             } else {
-                oneHitOnlyPunishes.push({
-                    totalDamage: conversion.currentPercent - conversion.startPercent,
-                    moves: conversion.moves,
-                });
+              oneHitOnlyPunishes.push({
+                totalDamage: conversion.currentPercent - conversion.startPercent,
+                moves: conversion.moves,
+              });
             }
             if (conversion.didKill) {
-                punishKillFirstHits.push({
-                    moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
-                });
+              punishKillFirstHits.push({
+                moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
+              });
             }
             punishFirstHits.push({
-                moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
+              moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
             });
           }
         }
@@ -134,7 +135,7 @@ export class StatsProcessingService {
         conversions[opponentChar][stage].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHits);
         conversions[opponentChar][stage].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutral, ...oneHitOnlyNeutral], neutralFirstHits.map(move => move.moveId));
         conversions[opponentChar][stage].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishes, ...oneHitOnlyPunishes], punishFirstHits.map(move => move.moveId));
-                
+
         //AllStages
         neutralAllStages.push(...neutral);
         oneHitOnlyNeutralAllStages.push(...oneHitOnlyNeutral);
@@ -145,9 +146,9 @@ export class StatsProcessingService {
         punishKillFirstHitsAllStages.push(...punishKillFirstHits);
         punishFirstHitsAllStages.push(...punishFirstHits);
       }
-      
+
       if (!conversions[opponentChar]['allStages']) {
-        conversions[opponentChar]['allStages']={};
+        conversions[opponentChar]['allStages'] = {};
       }
       conversions[opponentChar]['allStages'].processedNeutralWinsConversions = {};
       conversions[opponentChar]['allStages'].processedPunishes = {};
@@ -163,9 +164,9 @@ export class StatsProcessingService {
       conversions[opponentChar]['allStages'].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishesAllStages, ...oneHitOnlyPunishesAllStages], punishFirstHitsAllStages.map(move => move.moveId));
       console.debug('Conversions for ' + opponentChar + ' : ', conversions[opponentChar]);
     }
-    return conversions;  
+    return conversions;
   }
-  
+
   public async processOverallList(data: StatsWrapper<Overall>): Promise<IntermediaryStatsWrapper<ProcessedOverallList>> {
     let processedOverallList = {};
     // Create an intermediary wrapper without the gameData
@@ -189,7 +190,7 @@ export class StatsProcessingService {
           overallList[character] = {};
           for (let stage of Object.keys(data[game][character])) {
             overallList[character][stage] = [data[game][character][stage]];
-          }            
+          }
         }
       }
     }
@@ -199,37 +200,37 @@ export class StatsProcessingService {
     for (const opponentChar of Object.keys(overallList)) {
       processedOverallList[opponentChar] = {};
       overallDatasAllStages = {
+        totalDamages: [],
+        conversionsRatio: [],
+        killCounts: [],
+        openingsPerKills: [],
+      }
+      for (const stage of Object.keys(overallList[opponentChar])) {
+        overallDatas = {
           totalDamages: [],
           conversionsRatio: [],
           killCounts: [],
           openingsPerKills: [],
-      }
-      for (const stage of Object.keys(overallList[opponentChar])) {
-        overallDatas = {
-            totalDamages: [],
-            conversionsRatio: [],
-            killCounts: [],
-            openingsPerKills: [],
         }
         for (const overall of overallList[opponentChar][stage]) {
-            overallDatas.totalDamages.push(overall.totalDamage);
-            overallDatas.killCounts.push(overall.killCount);
-            overallDatas.conversionsRatio.push(overall.conversionsRatio);
-            overallDatas.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
+          overallDatas.totalDamages.push(overall.totalDamage);
+          overallDatas.killCounts.push(overall.killCount);
+          overallDatas.conversionsRatio.push(overall.conversionsRatio);
+          overallDatas.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
 
-            //All stages
-            overallDatasAllStages.totalDamages.push(overall.totalDamage);
-            overallDatasAllStages.killCounts.push(overall.killCount);
-            overallDatasAllStages.conversionsRatio.push(overall.conversionsRatio);
-            overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
+          //All stages
+          overallDatasAllStages.totalDamages.push(overall.totalDamage);
+          overallDatasAllStages.killCounts.push(overall.killCount);
+          overallDatasAllStages.conversionsRatio.push(overall.conversionsRatio);
+          overallDatasAllStages.openingsPerKills.push(overall.openingsPerKill?.ratio ? overall.openingsPerKill?.ratio : undefined);
         }
 
         processedOverallList[opponentChar][stage] = {
-            totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
-            killCountMoyenne: this.calculMoyenneOverall(overallDatas.killCounts),
-            conversionsRatio: this.calculMoyenneOverall(overallDatas.conversionsRatio),
-            openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatas.openingsPerKills),
-            killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
+          totalDamageMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages),
+          killCountMoyenne: this.calculMoyenneOverall(overallDatas.killCounts),
+          conversionsRatio: this.calculMoyenneOverall(overallDatas.conversionsRatio),
+          openingsPerKillMoyenne: this.calculMoyenneOverall(overallDatas.openingsPerKills),
+          killPercentMoyenne: this.calculMoyenneOverall(overallDatas.totalDamages) / this.calculMoyenneOverall(overallDatas.killCounts),
         }
       }
       // All stages
@@ -248,7 +249,7 @@ export class StatsProcessingService {
     let processedPunishedActionsList = {};
     let punishedActions;
     let punishedActionsAllStages;
-    
+
     // Create an intermediary wrapper without the gameData
     let punishedActionsList: IntermediaryStatsWrapper<PunishedActions> = {};
     for (const game of Object.keys(data)) {
@@ -304,15 +305,15 @@ export class StatsProcessingService {
         punishedActionsAllStages.punishedAttacks.push(...punishedActionsList[character][stage].punishedAttacks);
         punishedActionsAllStages.punishedDefensiveOptions.push(...punishedActionsList[character][stage].punishedDefensiveOptions);
         punishedActionsAllStages.punishedMovementOptions.push(...punishedActionsList[character][stage].punishedMovementOptions);
-        
+
         // Process Data for current stage
         processedPunishedActionsList[character][stage] = {
           punishedAttacks: {
             onHit: this.countOptions(
-                punishedActions.punishedAttacks
+              punishedActions.punishedAttacks
                 .filter(punishedAttack => punishedAttack.status === 'Hit')
                 .map(punishedAttack => punishedAttack.name)
-              ).map(
+            ).map(
               (countOption) => {
                 return {
                   attack: countOption.option,
@@ -321,10 +322,10 @@ export class StatsProcessingService {
               }
             ),
             onShield: this.countOptions(
-                punishedActions.punishedAttacks
+              punishedActions.punishedAttacks
                 .filter(punishedAttack => punishedAttack.status === 'Shield')
                 .map(punishedAttack => punishedAttack.name)
-              ).map(
+            ).map(
               (countOption) => {
                 return {
                   attack: countOption.option,
@@ -333,10 +334,10 @@ export class StatsProcessingService {
               }
             ),
             onWhiff: this.countOptions(
-                punishedActions.punishedAttacks
+              punishedActions.punishedAttacks
                 .filter(punishedAttack => punishedAttack.status === 'Whiff')
                 .map(punishedAttack => punishedAttack.name)
-              ).map(
+            ).map(
               (countOption) => {
                 return {
                   attack: countOption.option,
@@ -370,7 +371,7 @@ export class StatsProcessingService {
             punishedActionsAllStages.punishedAttacks
               .filter(punishedAttack => punishedAttack.status === 'Hit')
               .map(punishedAttack => punishedAttack.name)
-            ).map(
+          ).map(
             (countOption) => {
               return {
                 attack: countOption.option,
@@ -382,7 +383,7 @@ export class StatsProcessingService {
             punishedActionsAllStages.punishedAttacks
               .filter(punishedAttack => punishedAttack.status === 'Shield')
               .map(punishedAttack => punishedAttack.name)
-            ).map(
+          ).map(
             (countOption) => {
               return {
                 attack: countOption.option,
@@ -394,7 +395,7 @@ export class StatsProcessingService {
             punishedActionsAllStages.punishedAttacks
               .filter(punishedAttack => punishedAttack.status === 'Powershield')
               .map(punishedAttack => punishedAttack.name)
-            ).map(
+          ).map(
             (countOption) => {
               return {
                 attack: countOption.option,
@@ -406,7 +407,7 @@ export class StatsProcessingService {
             punishedActionsAllStages.punishedAttacks
               .filter(punishedAttack => punishedAttack.status === 'Whiff')
               .map(punishedAttack => punishedAttack.name)
-            ).map(
+          ).map(
             (countOption) => {
               return {
                 attack: countOption.option,
@@ -433,7 +434,7 @@ export class StatsProcessingService {
         )
 
       };
-    }    
+    }
     return processedPunishedActionsList;
   }
 
@@ -458,7 +459,7 @@ export class StatsProcessingService {
                 ],
                 lcancels: {
                   successful: lcancelsList[character][stage].lcancels.successful + data[game][character][stage].lcancels.successful,
-                  failed: lcancelsList[character][stage].lcancels.failed + data[game][character][stage].lcancels.failed,                  
+                  failed: lcancelsList[character][stage].lcancels.failed + data[game][character][stage].lcancels.failed,
                 }
               };
             } else {
@@ -474,7 +475,7 @@ export class StatsProcessingService {
     for (let character of Object.keys(lcancelsList)) {
       processedLCancels[character] = {};
       lcancelsAllStages = {
-        lcancels : [],
+        lcancels: [],
         failedMoves: []
       };
       for (let stage of Object.keys(lcancelsList[character])) {
@@ -483,9 +484,9 @@ export class StatsProcessingService {
         lcancelsAllStages.failedMoves.push(...lcancelsList[character][stage].failedMoves)
 
         // Process data for current stage
-        processedLCancels[character][stage]= {
-          lcancels : lcancels.lcancels,
-          failedMoves : this.countOptions(lcancels.failedMoves).map(
+        processedLCancels[character][stage] = {
+          lcancels: lcancels.lcancels,
+          failedMoves: this.countOptions(lcancels.failedMoves).map(
             (countOption) => {
               return {
                 move: countOption.option,
@@ -497,8 +498,8 @@ export class StatsProcessingService {
       }
       // Process data for all stages
       processedLCancels[character]['allStages'] = {
-        lcancels : this.sumLcancels(lcancelsAllStages.lcancels),
-        failedMoves : this.countOptions(lcancelsAllStages.failedMoves).map(
+        lcancels: this.sumLcancels(lcancelsAllStages.lcancels),
+        failedMoves: this.countOptions(lcancelsAllStages.failedMoves).map(
           (countOption) => {
             return {
               move: countOption.option,
@@ -511,19 +512,185 @@ export class StatsProcessingService {
     return processedLCancels;
   }
 
-  private averageDamageForMostCommonStarters(nbMoves: number, conversions: {totalDamage: number, moves: Move[]}[], moveIds: number[]): StartersAverageDamage[] {
+  public async processLedgeDashes(data: StatsWrapper<Ledgedashes>): Promise<IntermediaryStatsWrapper<ProcessedLedgedashes>> {
+    let processedLedgeDashes = {};
+    let ledgeDashes: Ledgedashes;
+    let ledgeDashesAllStages;
+
+    // Create an intermediary wrapper without the gameData
+    let ledgeDashesList: IntermediaryStatsWrapper<Ledgedashes> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (ledgeDashesList[character]) {
+          for (const stage of Object.keys(data[game][character])) {
+            // Same here, we'll only have one stage each time here
+            if (ledgeDashesList[character][stage]) {
+              if (data[game][character][stage]['invincible']) {
+                ledgeDashesList[character][stage]['invincible'].push(
+                  ...data[game][character][stage]['invincible']
+                );
+              }
+              if (data[game][character][stage]['notInvincible']) {
+                ledgeDashesList[character][stage]['notInvincible'].push(
+                  ...data[game][character][stage]['notInvincible']
+                );
+              }
+            } else {
+              ledgeDashesList[character][stage] = data[game][character][stage];
+            }
+          }
+        } else {
+          // First game with this character
+          ledgeDashesList[character] = data[game][character];
+        }
+      }
+    }
+
+    for (let character of Object.keys(ledgeDashesList)) {
+      processedLedgeDashes[character] = {};
+      ledgeDashesAllStages = {
+        invincible: [],
+        notInvincible: [],
+      }
+      for (let stage of Object.keys(ledgeDashesList[character])) {
+        ledgeDashes = ledgeDashesList[character][stage];
+        if (ledgeDashesList[character] && ledgeDashesList[character][stage]) {
+          if (ledgeDashesList[character][stage]['invincible']?.length > 0) {
+            ledgeDashesAllStages.invincible.push(...ledgeDashesList[character][stage]['invincible']);
+          }
+          if (ledgeDashesList[character][stage]['notInvincible']?.length > 0) {
+            ledgeDashesAllStages.notInvincible.push(...ledgeDashesList[character][stage]['notInvincible']);
+          }
+        }
+        let invincible;
+        let notInvincible;
+        // Process data for current stage
+        if (ledgeDashes && ledgeDashes['invincible']) {
+          const averageFramesSinceLedgeDropInvincible = this.calculMoyenneOverall(ledgeDashes['invincible'].map(
+            ledgeDash => ledgeDash.framesSinceLedgeDrop
+          ));
+          const averageExtraInvincibilityFrames = this.calculMoyenneOverall(ledgeDashes['invincible'].map(
+            ledgeDash => ledgeDash.extraInvincibilityFrames
+          ));
+          const minFramesSinceLedgedropInvincible = GeneralUtils.minValueFromNumberArray(ledgeDashes['invincible'].map(
+            ledgeDash => ledgeDash.framesSinceLedgeDrop
+          ));
+          const maxExtraInvincibilityFrames = GeneralUtils.maxValueFromNumberArray(ledgeDashes['invincible'].map(
+            ledgeDash => ledgeDash.extraInvincibilityFrames
+          ));
+          let percentOfTotalLedgedashes;
+          if (ledgeDashes['notInvincible']) {
+            percentOfTotalLedgedashes = ledgeDashes['invincible'].length * 100 / (ledgeDashes['invincible'].length + ledgeDashes['notInvincible'].length);
+          } else {
+            percentOfTotalLedgedashes = 100;
+          }
+
+          invincible = {
+            percentOfTotalLedgedashes,
+            averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropInvincible,
+            averageExtraInvincibilityFrames,
+            minFramesSinceLedgeDrop: minFramesSinceLedgedropInvincible,
+            maxExtraInvincibilityFrames
+          }
+
+        }
+        if (ledgeDashes && ledgeDashes['notInvincible']) {
+          const averageFramesSinceLedgeDropNotInvincible = this.calculMoyenneOverall(ledgeDashes['notInvincible'].map(
+            ledgeDash => ledgeDash.framesSinceLedgeDrop
+          ));
+          const minFramesSinceLedgedropNotInvincible = GeneralUtils.minValueFromNumberArray(ledgeDashes['notInvincible'].map(
+            ledgeDash => ledgeDash.framesSinceLedgeDrop
+          ));
+          const maxFramesSinceLedgedropNotInvincible = GeneralUtils.maxValueFromNumberArray(ledgeDashes['notInvincible'].map(
+            ledgeDash => ledgeDash.framesSinceLedgeDrop
+          ));
+
+          notInvincible = {
+            averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropNotInvincible,
+            minFramesSinceLedgeDrop: minFramesSinceLedgedropNotInvincible,
+            maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible
+          }
+
+        }
+
+        processedLedgeDashes[character][stage] = {
+          invincible,
+          notInvincible,
+        }
+      }
+      // Process data for all stages
+      let invincible;
+      let notInvincible;
+      if (ledgeDashesAllStages && ledgeDashesAllStages['invincible']) {
+        const averageFramesSinceLedgeDropInvincible = this.calculMoyenneOverall(ledgeDashesAllStages['invincible'].map(
+          ledgeDash => ledgeDash.framesSinceLedgeDrop
+        ));
+        const averageExtraInvincibilityFrames = this.calculMoyenneOverall(ledgeDashesAllStages['invincible'].map(
+          ledgeDash => ledgeDash.extraInvincibilityFrames
+        ));
+        const minFramesSinceLedgedropInvincible = GeneralUtils.minValueFromNumberArray(ledgeDashesAllStages['invincible'].map(
+          ledgeDash => ledgeDash.framesSinceLedgeDrop
+        ));
+        const maxExtraInvincibilityFrames = GeneralUtils.maxValueFromNumberArray(ledgeDashesAllStages['invincible'].map(
+          ledgeDash => ledgeDash.extraInvincibilityFrames
+        ));
+
+        let percentOfTotalLedgedashes;
+        if (ledgeDashesAllStages['notInvincible']) {
+          percentOfTotalLedgedashes = ledgeDashesAllStages['invincible'].length * 100 / (ledgeDashesAllStages['invincible'].length + ledgeDashesAllStages['notInvincible'].length);
+        } else {
+          percentOfTotalLedgedashes = 100;
+        }
+
+        invincible = {
+          percentOfTotalLedgedashes,
+          averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropInvincible,
+          averageExtraInvincibilityFrames,
+          minFramesSinceLedgeDrop: minFramesSinceLedgedropInvincible,
+          maxExtraInvincibilityFrames
+        }
+      }
+
+      if (ledgeDashesAllStages && ledgeDashesAllStages['notInvincible']) {
+        const averageFramesSinceLedgeDropNotInvincible = this.calculMoyenneOverall(ledgeDashesAllStages['notInvincible'].map(
+          ledgeDash => ledgeDash.framesSinceLedgeDrop
+        ));
+        const minFramesSinceLedgedropNotInvincible = GeneralUtils.minValueFromNumberArray(ledgeDashesAllStages['notInvincible'].map(
+          ledgeDash => ledgeDash.framesSinceLedgeDrop
+        ));
+        const maxFramesSinceLedgedropNotInvincible = GeneralUtils.maxValueFromNumberArray(ledgeDashesAllStages['notInvincible'].map(
+          ledgeDash => ledgeDash.framesSinceLedgeDrop
+        ));
+
+        notInvincible = {
+          averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropNotInvincible,
+          minFramesSinceLedgeDrop: minFramesSinceLedgedropNotInvincible,
+          maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible
+        }
+      }
+
+      processedLedgeDashes[character]['allStages'] = {
+        invincible,
+        notInvincible
+      }
+    }
+    return processedLedgeDashes;
+  }
+
+  private averageDamageForMostCommonStarters(nbMoves: number, conversions: { totalDamage: number, moves: Move[] }[], moveIds: number[]): StartersAverageDamage[] {
     let most = [];
     for (let moveId of moveIds) {
       const index = most.findIndex(m => m.moveId === moveId);
       if (index !== -1) {
         most[index].count += 1;
       } else {
-        most.push({moveId, count : 1});
+        most.push({ moveId, count: 1 });
       }
     }
     const mostUsedMoves = most.sort((m1, m2) => m2.count - m1.count);
     const result = [];
-    for (let i = 0; i < mostUsedMoves.length && i < nbMoves; i ++) {
+    for (let i = 0; i < mostUsedMoves.length && i < nbMoves; i++) {
       if (mostUsedMoves[i]) {
         let damage = 0;
         for (let conversion of conversions) {
@@ -533,21 +700,21 @@ export class StatsProcessingService {
             }
           } else {
             console.log('DEBUG : the weird conversion ', conversion);
-          }          
+          }
         }
         result.push({
-          moveId : mostUsedMoves[i].moveId,
+          moveId: mostUsedMoves[i].moveId,
           averageDamage: damage / mostUsedMoves[i].count
         });
       }
     }
-    return result;    
+    return result;
   }
-  
+
   private calculMoyenneOverall(array): number {
     let val = 0;
-    for (let i = 0; i < array.length; i ++) {
-        val += array[i];
+    for (let i = 0; i < array.length; i++) {
+      val += array[i];
     }
     return array.length > 0 ? val / array.length : undefined;
   }
@@ -556,76 +723,75 @@ export class StatsProcessingService {
     let damage = 0;
     let moves = 0;
     for (let i = 0; i < conversions.length; i++) {
-        damage += conversions[i].totalDamage;
-        if (!oneHitMode) {
-            moves += conversions[i].moves.length;
-        }
+      damage += conversions[i].totalDamage;
+      if (!oneHitMode) {
+        moves += conversions[i].moves.length;
+      }
     }
     return {
-        averageDamage: conversions.length !== 0 ? damage/conversions.length : undefined,
-        averageLength: oneHitMode ? undefined : conversions.length !== 0 ? moves/conversions.length : undefined
+      averageDamage: conversions.length !== 0 ? damage / conversions.length : undefined,
+      averageLength: oneHitMode ? undefined : conversions.length !== 0 ? moves / conversions.length : undefined
     };
   }
-  
+
   private calculMostCommonMove(movesArray): MostCommonMove {
     let totalMovesCounted = 0;
     if (movesArray.length > 0) {
-        let moves = {};
-        for (const move of movesArray) {
-            if (moves[move.moveId]) {
-                moves[move.moveId] = moves[move.moveId] + 1
-            } else {
-                moves[move.moveId] = 1;
-            }
-            totalMovesCounted ++;
+      let moves = {};
+      for (const move of movesArray) {
+        if (moves[move.moveId]) {
+          moves[move.moveId] = moves[move.moveId] + 1
+        } else {
+          moves[move.moveId] = 1;
         }
-        let maxMoveId;
-        for (const moveId of Object.keys(moves)) {
-            if (maxMoveId) {
-                if (moves[moveId] > moves[maxMoveId]) {
-                    maxMoveId = moveId;
-                }
-            } else {
-                maxMoveId = moveId;
-            }
+        totalMovesCounted++;
+      }
+      let maxMoveId;
+      for (const moveId of Object.keys(moves)) {
+        if (maxMoveId) {
+          if (moves[moveId] > moves[maxMoveId]) {
+            maxMoveId = moveId;
+          }
+        } else {
+          maxMoveId = moveId;
         }
-        const move = EXTERNALMOVES[maxMoveId];
-        return {move: move ? move.name : 'Weird move', count: moves[maxMoveId] / totalMovesCounted * 100};
+      }
+      const move = EXTERNALMOVES[maxMoveId];
+      return { move: move ? move.name : 'Weird move', count: moves[maxMoveId] / totalMovesCounted * 100 };
     }
     return undefined;
   }
 
-  private countOptions(options: string[]): {option: string, count: number}[] {
+  private countOptions(options: string[]): { option: string, count: number }[] {
     let returnValue = [];
     let totalOptionsCounted = 0;
     if (options?.length > 0) {
       for (let option of options) {
         const rvIndex = returnValue.findIndex(rv => rv.option === option);
         if (rvIndex !== -1) {
-          returnValue[rvIndex].count ++;
+          returnValue[rvIndex].count++;
         } else {
-          returnValue.push({option: option, count: 1});
+          returnValue.push({ option: option, count: 1 });
         }
-        totalOptionsCounted ++;
+        totalOptionsCounted++;
       }
       for (let value of returnValue) {
-        value.count = value.count/totalOptionsCounted * 100;
+        value.count = value.count / totalOptionsCounted * 100;
       }
     }
     return returnValue;
   }
 
-  private sumLcancels(lcancels: {successful: number, failed: number}[]): {successful: number, failed: number} {
+  private sumLcancels(lcancels: { successful: number, failed: number }[]): { successful: number, failed: number } {
     let returnValue = {
       successful: 0,
       failed: 0
     };
     for (let lcancel of lcancels) {
       returnValue.failed += lcancel.failed;
-      returnValue.successful +=lcancel.successful;
+      returnValue.successful += lcancel.successful;
     }
     return returnValue;
   }
-
 
 }

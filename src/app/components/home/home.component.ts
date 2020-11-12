@@ -72,6 +72,16 @@ export class HomeComponent implements OnInit {
           this.initStatsIfNeeded();
           this.stats.lcancelsForOpponent = value.lcancelsForOpponent;
         }
+        if (value.ledgeDashesForPlayer) {
+          console.log('Home - Received ledgeDashesForPlayer from store : ', value.ledgeDashesForPlayer);
+          this.initStatsIfNeeded();
+          this.stats.ledgeDashesForPlayer = value.ledgeDashesForPlayer;
+        }
+        if (value.ledgeDashesForOpponent) {
+          console.log('Home - Received ledgeDashesForOpponent from store : ', value.ledgeDashesForOpponent);
+          this.initStatsIfNeeded();
+          this.stats.ledgeDashesForOpponent = value.ledgeDashesForOpponent;
+        }
         if (value.selectedGames) {
           console.log('Home - Received selectedGames from store : ', value.selectedGames);
           // When we select games in stats-game-select
@@ -114,7 +124,9 @@ export class HomeComponent implements OnInit {
         punishedActionsForOpponent: undefined,
         punishedActionsForPlayer: undefined,
         lcancelsForPlayer: undefined,
-        lcancelsForOpponent: undefined
+        lcancelsForOpponent: undefined,
+        ledgeDashesForPlayer: undefined,
+        ledgeDashesForOpponent: undefined
       };
     }
   }

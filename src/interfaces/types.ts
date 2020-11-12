@@ -118,3 +118,19 @@ export interface ProcessedLCancels {
     count: number
   }[]
 }
+
+
+export interface ProcessedLedgedashes {
+  invincible : {
+    percentOfTotalLedgedashes: number,
+    averageFramesSinceLedgeDrop: number,
+    averageExtraInvincibilityFrames: number,
+    minFramesSinceLedgeDrop: number,
+    maxExtraInvincibilityFrames: number
+  },
+  notInvincible : {
+    averageFramesSinceLedgeDrop: number,
+    minFramesSinceLedgeDrop: number,
+    maxFramesSinceLedgeDrop: number,
+  }
+}

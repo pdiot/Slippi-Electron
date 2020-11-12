@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
-import { Conversion, EnrichedGameFile, LCancels, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 import GameFileUtils from '../utils/gameFile.utils';
@@ -140,6 +140,8 @@ export class GameListComponent implements OnInit, OnChanges {
         const punishedActionsForOpponent = arg.punishedActionsForOpponent as StatsWrapper<PunishedActions>;
         const lcancelsForPlayer = arg.lcancelsForPlayer as StatsWrapper<LCancels>;
         const lcancelsForOpponent = arg.lcancelsForOpponent as StatsWrapper<LCancels>;
+        const ledgeDashesForPlayer = arg.ledgeDashesForPlayer as StatsWrapper<Ledgedashes>;
+        const ledgeDashesForOpponent = arg.ledgeDashesForOpponent as StatsWrapper<Ledgedashes>;
         this.store.setMultiple([
           {
             key : 'playerConversions',
@@ -172,6 +174,14 @@ export class GameListComponent implements OnInit, OnChanges {
           {
             key : 'lcancelsForOpponent',
             data: lcancelsForOpponent
+          },
+          {
+            key: 'ledgeDashesForPlayer',
+            data: ledgeDashesForPlayer
+          },
+          {
+            key: 'ledgeDashesForOpponent',
+            data: ledgeDashesForOpponent
           },
           {
             key : 'statsCalculationDone',

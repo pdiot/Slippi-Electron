@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, ProcessedLCancels, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedLCancels, ProcessedLedgedashes, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
 import GameFileUtils from '../utils/gameFile.utils';
 import GeneralUtils from '../utils/general.utils';
@@ -24,6 +24,8 @@ export class StatsDisplayComponent implements OnInit {
   punishedActionsForOpponent: IntermediaryStatsWrapper<ProcessedPunishedOptions>;
   lcancelsForPlayer: IntermediaryStatsWrapper<ProcessedLCancels>;
   lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
+  ledgeDashesForPlayer: IntermediaryStatsWrapper<ProcessedLedgedashes>;
+  ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   collapseId = 'collapse';
   writeFeedbackMessage: string;
 
@@ -45,6 +47,8 @@ export class StatsDisplayComponent implements OnInit {
       this.selectedGames = changes.selectedGames.currentValue as unknown as EnrichedGameFile[];
     }
     if (this.selectedGames &&
+      this.stats?.ledgeDashesForPlayer &&
+      this.stats?.ledgeDashesForOpponent &&
       this.stats?.punishedActionsForPlayer &&
       this.stats?.punishedActionsForOpponent &&
       this.stats?.lcancelsForOpponent &&
@@ -134,6 +138,20 @@ export class StatsDisplayComponent implements OnInit {
         this.cd.detectChanges();
       });
     }
+    if (newStats.ledgeDashesForPlayer) {
+      this.statsService.processLedgeDashes(newStats.ledgeDashesForPlayer).then(result => {
+        console.log('Stats Display - got player ledgeDashes back', result);
+        this.ledgeDashesForPlayer = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.ledgeDashesForOpponent) {
+      this.statsService.processLedgeDashes(newStats.ledgeDashesForOpponent).then(result => {
+        console.log('Stats Display - got opponent ledgeDashes back', result);
+        this.ledgeDashesForOpponent = result;
+        this.cd.detectChanges();
+      });
+    }
   }
 
   private filterStats(): StatsItem {
@@ -150,7 +168,9 @@ export class StatsDisplayComponent implements OnInit {
       punishedActionsForOpponent: undefined,
       punishedActionsForPlayer: undefined,
       lcancelsForPlayer: undefined,
-      lcancelsForOpponent: undefined
+      lcancelsForOpponent: undefined,
+      ledgeDashesForPlayer: undefined,
+      ledgeDashesForOpponent: undefined
     };
     for (let game of Object.keys(this.stats.playerConversions)) {
       if (niceNamesToKeep.includes(game)) {
@@ -214,6 +234,22 @@ export class StatsDisplayComponent implements OnInit {
           newStats.punishedActionsForPlayer = {};
         }
         newStats.punishedActionsForPlayer[game] = this.stats.punishedActionsForPlayer[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.ledgeDashesForPlayer)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.ledgeDashesForPlayer) {
+          newStats.ledgeDashesForPlayer = {};
+        }
+        newStats.ledgeDashesForPlayer[game] = this.stats.ledgeDashesForPlayer[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.ledgeDashesForOpponent)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.ledgeDashesForOpponent) {
+          newStats.ledgeDashesForOpponent = {};
+        }
+        newStats.ledgeDashesForOpponent[game] = this.stats.ledgeDashesForOpponent[game];
       }
     }
 

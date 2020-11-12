@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { count } from 'console';
-import { IntermediaryStatsWrapper, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
 import GeneralUtils from '../utils/general.utils';
 
 @Component({
@@ -18,6 +18,8 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
   @Input() punishedActionsForOpponent: IntermediaryStatsWrapper<ProcessedPunishedOptions>;
   @Input() lcancelsForPlayer: IntermediaryStatsWrapper<ProcessedLCancels>;
   @Input() lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
+  @Input() ledgeDashesForPlayer: IntermediaryStatsWrapper<ProcessedLedgedashes>;
+  @Input() ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   @Input() collapseId: string;
   
   toggled : any = {};

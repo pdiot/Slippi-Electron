@@ -29,5 +29,29 @@ export default class GeneralUtils {
     }
     return returnValue;
   }
+
+  static minValueFromNumberArray(numbers: number[]): number {
+    let min;
+    for (let num of numbers) {
+      if (!min) {
+        min = num;
+      } else if (num < min) {
+        min = num;
+      }
+    }
+    return min;
+  }
+
+  static maxValueFromNumberArray(numbers: number[]): number {
+    let max;
+    for (let num of numbers) {
+      if (!max) {
+        max = num;
+      } else if (num > max) {
+        max = num;
+      }
+    }
+    return max;
+  }
 }
   

@@ -360,6 +360,82 @@
                       </app-foldable-block>
                     </div>
                   </div>
+                  <div class="subsectionWrapper">
+                    <!-- Ledgedashes -->
+                    <div class="subsectionBlock"
+                      *ngIf="ledgeDashesForPlayer && ledgeDashesForPlayer[character] && ledgeDashesForPlayer[character][stage]">
+                      <!-- Player ledgedashes -->
+                      <app-foldable-block [label]="'Player Ledgedashes'" [collapseId]="collapseId + '' + i + '' + j + 9"
+                        (toggledEmit)="handleToggleEmit(character, stage, 'playerLedgeDashes', $event)">
+                        <ng-container *ngIf="buildDOM(character, stage, 'playerLedgeDashes')">
+                          <p class="label">Player invincible ledgedashes</p>
+                          <app-stats-line [label]="'Invincible ledgedashes percentage'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.invincible?.percentOfTotalLedgedashes ? (ledgeDashesForPlayer[character][stage].invincible.percentOfTotalLedgedashes | number:'1.0-1') : 'N/A'"
+                            [unit1]="ledgeDashesForPlayer[character][stage]?.invincible?.percentOfTotalLedgedashes ? '%' : ''">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Average framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.invincible?.averageFramesSinceLedgeDrop ? (ledgeDashesForPlayer[character][stage].invincible.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Average extra invicibility frames'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.invincible?.averageExtraInvincibilityFrames ? (ledgeDashesForPlayer[character][stage].invincible.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Shortest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.invincible?.minFramesSinceLedgeDrop ? (ledgeDashesForPlayer[character][stage].invincible.minFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Longest extra invicibility frames'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.invincible?.maxExtraInvincibilityFrames ? (ledgeDashesForPlayer[character][stage].invincible.maxExtraInvincibilityFrames) : 'N/A'">
+                          </app-stats-line>
+                          <p class="label">Player non invincible ledgedashes</p>
+                          <app-stats-line [label]="'Average framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.notInvincible?.averageFramesSinceLedgeDrop ? (ledgeDashesForPlayer[character][stage].notInvincible.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Shortest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.notInvincible?.minFramesSinceLedgeDrop ? (ledgeDashesForPlayer[character][stage].notInvincible.minFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Longest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForPlayer[character][stage]?.notInvincible?.maxFramesSinceLedgeDrop ? (ledgeDashesForPlayer[character][stage].notInvincible.maxFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                        </ng-container>
+                      </app-foldable-block>
+                    </div>
+                    <div class="subsectionBlock"
+                      *ngIf="ledgeDashesForOpponent && ledgeDashesForOpponent[character] && ledgeDashesForOpponent[character][stage]">
+                      <!-- Opponent ledgedashes -->
+                      <app-foldable-block [label]="'Opponent Ledgedashes'"
+                        [collapseId]="collapseId + '' + i + '' + j + 10"
+                        (toggledEmit)="handleToggleEmit(character, stage, 'opponentLedgedashes', $event)">
+                        <ng-container *ngIf="buildDOM(character, stage, 'opponentLedgedashes')">
+                          <p class="label">Opponent invincible ledgedashes</p>
+                          <app-stats-line [label]="'Invincible ledgedashes percentage'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.invincible?.percentOfTotalLedgedashes ? (ledgeDashesForOpponent[character][stage].invincible.percentOfTotalLedgedashes | number:'1.0-1') : 'N/A'"
+                            [unit1]="ledgeDashesForOpponent[character][stage]?.invincible?.percentOfTotalLedgedashes ? '%' : ''">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Average framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.invincible?.averageFramesSinceLedgeDrop ? (ledgeDashesForOpponent[character][stage].invincible.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Average extra invicibility frames'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.invincible?.averageExtraInvincibilityFrames ? (ledgeDashesForOpponent[character][stage].invincible.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Shortest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.invincible?.minFramesSinceLedgeDrop ? (ledgeDashesForOpponent[character][stage].invincible.minFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Longest extra invicibility frames'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.invincible?.maxExtraInvincibilityFrames ? (ledgeDashesForOpponent[character][stage].invincible.maxExtraInvincibilityFrames) : 'N/A'">
+                          </app-stats-line>
+                          <p class="label">Opponent non invincible ledgedashes</p>
+                          <app-stats-line [label]="'Average framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.notInvincible?.averageFramesSinceLedgeDrop ? (ledgeDashesForOpponent[character][stage].notInvincible.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Shortest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.notInvincible?.minFramesSinceLedgeDrop ? (ledgeDashesForOpponent[character][stage].notInvincible.minFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                          <app-stats-line [label]="'Longest framecount from ledge drop to end of ledgedash'"
+                            [value]="ledgeDashesForOpponent[character][stage]?.notInvincible?.maxFramesSinceLedgeDrop ? (ledgeDashesForOpponent[character][stage].notInvincible.maxFramesSinceLedgeDrop) : 'N/A'">
+                          </app-stats-line>
+                        </ng-container>
+                      </app-foldable-block>
+                    </div>
+                  </div>
                 </ng-container>
               </app-foldable-block>
             </div>

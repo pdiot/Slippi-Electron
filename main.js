@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const { Worker } = require('worker_threads');
 const slippiStats = require('./slippi-stats');
 const constants = require('./constants');
+const node_utils = require('./node_utils');
 const path = require('path');
 const fs = require('fs');
 
@@ -60,13 +61,13 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                console.log('returnValue', returnValue);
+                node_utils.addToLog('returnValue' + returnValue);
                 const value = 
                 {
                     path: returnValue.filePaths[0],
                     statsFromJSON : readStatsFile(returnValue.filePaths[0])
                 }
-                console.log(`sending ${data}StatsFileOpenedOK`);
+                node_utils.addToLog(`sending ${data}StatsFileOpenedOK`);
                 event.sender.send(`${data}StatsFileOpenedOK`, value);
             }
         })); 
@@ -87,12 +88,12 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                console.log('returnValue', returnValue);
+                node_utils.addToLog('returnValue', returnValue);
                 value = [];
                 for (let filePath of returnValue.filePaths) {
                     value.push(readStatsFile(filePath));
                 }
-                console.log(`sending statsFilesForGraphsOpened`);
+                node_utils.addToLog(`sending statsFilesForGraphsOpened`);
                 event.sender.send(`statsFilesForGraphsOpened`, value);
             }
         })); 
@@ -127,7 +128,7 @@ function createWindow () {
                 }
             });
             worker.on('message', (data) => {
-                console.log('message : ', data);
+                node_utils.addToLog('message : '+ data);
                 if (Object.keys(data).includes('computedStats')) {
                     // It's the end of stats processing message
                     event.sender.send('statsDoneTS', data);
@@ -139,7 +140,7 @@ function createWindow () {
                 }
             });
             worker.on('error', (error) => {
-                console.log('Error inside stats calculator worker', error);
+                node_utils.addToLog('Error inside stats calculator worker' + error);
             });
             worker.on('exit', (code) => {
                 if (code !== 0)

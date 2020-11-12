@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { IntermediaryStatsWrapper, ProcessedLCancels, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedLCancels, ProcessedLedgedashes, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions } from 'src/interfaces/types';
 
 @Component({
   selector: 'app-stats-compare-display',
@@ -19,6 +19,8 @@ export class StatsCompareDisplayComponent implements OnInit, OnChanges {
   punishedActionsForOpponent: IntermediaryStatsWrapper<ProcessedPunishedOptions>;
   lcancelsForPlayer: IntermediaryStatsWrapper<ProcessedLCancels>;
   lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
+  ledgeDashesForPlayer: IntermediaryStatsWrapper<ProcessedLedgedashes>;
+  ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   
   constructor(private cd: ChangeDetectorRef) { }
 
@@ -35,6 +37,8 @@ export class StatsCompareDisplayComponent implements OnInit, OnChanges {
       this.punishedActionsForOpponent = changes.statsFromJSON.currentValue.punishedActionsForOpponent;
       this.lcancelsForPlayer = changes.statsFromJSON.currentValue.lcancelsForPlayer;
       this.lcancelsForOpponent = changes.statsFromJSON.currentValue.lcancelsForOpponent;
+      this.ledgeDashesForPlayer = changes.statsFromJSON.currentValue.ledgeDashesForPlayer;
+      this.ledgeDashesForOpponent = changes.statsFromJSON.currentValue.ledgeDashesForOpponent;
     }
     if (changes.collapseId?.currentValue) {
       this.collapseId = changes.collapseId.currentValue;

@@ -87,6 +87,20 @@ export interface LCancels {
     failedMoves: string[],
 }
 
+export interface Ledgedashes {
+    invincible : [
+        {
+            framesSinceLedgeDrop: number,
+            extraInvincibilityFrames: number
+        }        
+    ],
+    notInvincible : [
+        {
+            framesSinceLedgeDrop: number
+        }
+    ]
+}
+
 export interface StatsItem {
     playerConversions: StatsWrapper<Conversion[]>,
     opponentConversions: StatsWrapper<Conversion[]>,
@@ -95,5 +109,7 @@ export interface StatsItem {
     punishedActionsForPlayer: StatsWrapper<PunishedActions>,
     punishedActionsForOpponent: StatsWrapper<PunishedActions>,
     lcancelsForPlayer: StatsWrapper<LCancels>,
-    lcancelsForOpponent: StatsWrapper<LCancels>
+    lcancelsForOpponent: StatsWrapper<LCancels>,
+    ledgeDashesForPlayer: StatsWrapper<Ledgedashes>,
+    ledgeDashesForOpponent: StatsWrapper<Ledgedashes>,
   }

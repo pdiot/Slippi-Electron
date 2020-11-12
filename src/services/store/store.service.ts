@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Conversion, EnrichedGameFile, LCancels, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 
 export interface Dictionary {
@@ -15,6 +15,8 @@ export interface Dictionary {
   'punishedActionsForOpponent': StatsWrapper<PunishedActions>,
   'lcancelsForPlayer': StatsWrapper<LCancels>,
   'lcancelsForOpponent': StatsWrapper<LCancels>,
+  'ledgeDashesForPlayer': StatsWrapper<Ledgedashes>,
+  'ledgeDashesForOpponent': StatsWrapper<Ledgedashes>,
   'statsCalculationProgress': StatsCalculationProgress,
   'statsCalculationDone': boolean,
   'firstFile': any,
@@ -36,6 +38,8 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'punishedActionsForOpponent': true,
   'lcancelsForPlayer': true,
   'lcancelsForOpponent': true,
+  'ledgeDashesForPlayer': true,
+  'ledgeDashesForOpponent': true,
   'statsCalculationProgress': true,
   'statsCalculationDone': true,
   'firstFile': true,

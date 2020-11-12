@@ -18,7 +18,7 @@ function main() {
   const slippiId = workerData.slippiId;
   const characterId = workerData.characterId;
 
-  console.log('JE SUIS UN WORKER. ENCORE DU TRAVAIL ?');
+  node_utils.addToLog('JE SUIS UN WORKER. ENCORE DU TRAVAIL ?');
 
   const stats = processGames(gameFiles, slippiId, characterId);
 
@@ -147,7 +147,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
       lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
     
       processedGamesNb ++;
-      console.log('WORKER sent statProgress', processedGamesNb);
+      node_utils.addToLog('WORKER sent statProgress', processedGamesNb);
       parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
   }
 
@@ -166,7 +166,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     // framesArray // DEBUG
   }
   
-  console.log('WORKER end of treatment');
+  node_utils.addToLog('WORKER end of treatment');
   return returnValue;
 }
 
@@ -310,7 +310,7 @@ function getLCancels(frames, playerPort, opponentPort) {
 
 function getLedgeDashes(frames, playerPort) {
   node_utils.addToLog(`Starting ledgeDash for playerPort ${playerPort}`);
-  let ledgeDashes = {};
+  let ledgeDashes;
   let foundCliffCatch = false;
   let foundCliffDrop = false;
   let foundAirDodge = false;
@@ -337,11 +337,14 @@ function getLedgeDashes(frames, playerPort) {
       if (framesSinceLedgeDrop <= LEDGEDASHWINDOW) {
         if (playerPostFrameUpdate.hurtboxCollisionState === 0) {
           // Invincibility has ended, we save it
-            if (!ledgeDashes['invincible']) {
-              ledgeDashes['invincible'] = [];
-            }
-            ledgeDashes['invincible'].push({framesSinceLedgeDrop, extraInvincibilityFrames});
-            reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
+          if (!ledgeDashes) {
+            ledgeDashes = {};
+          }
+          if (!ledgeDashes['invincible']) {
+            ledgeDashes['invincible'] = [];
+          }
+          ledgeDashes['invincible'].push({framesSinceLedgeDrop, extraInvincibilityFrames});
+          reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
         }
       } else {
         // Should never happen. Probably ? I hope.
@@ -356,6 +359,9 @@ function getLedgeDashes(frames, playerPort) {
           // The waveland is over, we check the invincibility status
           if (playerPostFrameUpdate.hurtboxCollisionState === 0) {
             // It's not an invincible ledgedash, we save it right now
+            if (!ledgeDashes) {
+              ledgeDashes = {};
+            }
             if (!ledgeDashes['notInvincible']) {
               ledgeDashes['notInvincible'] = [];
             }
