@@ -48,10 +48,6 @@
                           <app-stats-line [label]="'Percentage of opponent conversions / total conversions'"
                             [value]="opponentOverall[character][stage].conversionsRatio | number:'1.0-1'" [unit1]="'%'">
                           </app-stats-line>
-                          <app-stats-line [label]="'Avg dmg per conversion (with single hits)'"
-                            [value]="opponentOverall[character][stage].damagePerOpeningMoyenne | number:'1.0-1'"
-                            [unit1]="'%'">
-                          </app-stats-line>
                           <app-stats-line [label]="'Avg number of kills per game'"
                             [value]="opponentOverall[character][stage].killCountMoyenne | number:'1.0-1'">
                           </app-stats-line>

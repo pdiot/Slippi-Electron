@@ -445,3 +445,5 @@ Statislip-linux-x64/resources/app/src/services/store/store.service.ts
 Statislip-linux-x64/swiftshader/libEGL.so
 Statislip-linux-x64/swiftshader/libGLESv2.so
 frames.json
+debug.log
+Workspace.code-workspace

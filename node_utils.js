@@ -38,11 +38,10 @@ const ATTACKACTIONSTATES = {
 	74 : { id : 74, name : 'LandingAirLw', niceName: 'Dair landing'},
 	212 : { id : 212, name : 'Catch', niceName: 'Grab'},
 	214 : { id : 214, name : 'CatchDash', niceName: 'Dash grab'},
-  256 : {id: 256, name: 'CliffAttackSlow', niceName: 'Ledge attack (100%+)'},
-  257 : {id: 257, name: 'CliffAttackQuick', niceName: 'Ledge attack (<100%) '}, 
 };
 
 const MOVEMENTACTIONSTATES = {
+  14: {id: 14, name: 'Wait', nameForOpponentAttackStats: 'Wait'},
   15 : {id: 15, name: 'WalkSlow', niceName: 'Walk'},
   16 : {id: 16, name: 'WalkMiddle', niceName: 'Walk'},
   17 : {id: 17, name: 'WalkFast', niceName: 'Walk'},
@@ -88,8 +87,12 @@ const DEFENSIVEACTIONSTATES = {
   236 : {id: 236, name: 'EscapeAir', niceName: 'Airdodge '},
   244 : {id: 244, name: 'Pass', niceName: 'Drop through platform '},
   251 : {id: 251, name: 'MissFoot', niceName: 'Shield slide off'},
+  252 : {id: 252, name: 'CliffCatch', niceName: 'Grabbing the ledge'},
+  253 : {id: 253, name: 'CliffWait', niceName: 'Hanging on the ledge'},
   254 : {id: 254, name: 'CliffClimbSlow', niceName: 'Climbing the ledge (100%+)'},
   255 : {id: 255, name: 'CliffClimbQuick', niceName: 'Climbing the ledge (<100%)'},
+  256 : {id: 256, name: 'CliffAttackSlow', niceName: 'Ledge attack (100%+)'},
+  257 : {id: 257, name: 'CliffAttackQuick', niceName: 'Ledge attack (<100%) '}, 
   258 : {id: 258, name: 'CliffEscapeSlow', niceName: 'Ledge roll (100%+)'},
   259 : {id: 259, name: 'CliffEscapeQuick', niceName: 'Ledge roll (<100%) '},
   260 : {id: 260, name: 'CliffJumpSlow1', niceName: 'Ledge jump/tournament winner (100%+)'}, 
@@ -175,7 +178,7 @@ function addToLog(stringValue) {
 }
 
 function printLog(path) {
-  fs.writeFile(path, stringValue, err => {
+  fs.writeFile(path, logString, err => {
     if (err) throw err;
     console.log(`Wrote ${path}`);
   })
@@ -188,4 +191,6 @@ module.exports = {
   getDefensiveAction: getDefensiveAction,
   isNewShield: isNewShield,
   isNewPowerShield: isNewPowerShield,
+  addToLog: addToLog,
+  printLog: printLog
 }
