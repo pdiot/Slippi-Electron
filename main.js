@@ -41,10 +41,12 @@ function createWindow () {
                 'multiSelections'
             ]
         }).then((returnValue => {
+            node_utils.addToLog(`Main.js openFile => received ${JSON.stringify(returnValue, null, 4)}`);
+            node_utils.printLog(`main_debug.log`);
             if (!returnValue.canceled) {
                 enrichGameFiles(returnValue.filePaths).then(result => {
                     event.sender.send('fileOpenedOK', result);
-                })
+                });
             }
         })); 
     });

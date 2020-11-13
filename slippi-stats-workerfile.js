@@ -20,10 +20,15 @@ function main() {
 
   node_utils.addToLog('JE SUIS UN WORKER. ENCORE DU TRAVAIL ?');
 
-  const stats = processGames(gameFiles, slippiId, characterId);
-
-  node_utils.printLog('debug.log');
-  parentPort.postMessage(stats);
+  let stats;
+  try {
+    stats = processGames(gameFiles, slippiId, characterId);
+    node_utils.printLog('debug_worker.log');
+    parentPort.postMessage(stats);
+  } catch (err) {
+    node_utils.addToLog(JSON.stringify(err, null, 4));
+    node_utils.printLog('debug_worker.log');
+  }
 }
 
 function processGames(gamesFromMain, slippiId, characterId) {
@@ -147,7 +152,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
       lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
     
       processedGamesNb ++;
-      node_utils.addToLog('WORKER sent statProgress', processedGamesNb);
+      node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
       parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
   }
 
