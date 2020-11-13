@@ -2,7 +2,7 @@
   <!-- Player Id -->
   <h3>Player Slippi Id</h3>
   <div ngbRadioGroup name="radioPlayerId" formControlName="playerId" class="formRow">
-    <label *ngFor="let playerId of playerIdsData" ngbButtonLabel 
+    <label *ngFor="let playerId of playerIdsData" ngbButtonLabel
       [ngClass]="{'selected': isSelectedPlayerId(playerId), 'filteredOut': !isSelectedPlayerId(playerId)}"
       class="playerLabel">
       <input ngbButton type="radio" [value]="playerId" (click)="selectPlayer(playerId)"> {{playerId}}
@@ -13,8 +13,8 @@
     <h3>Player character</h3>
     <div ngbRadioGroup name="radioPlayerCharacter" formControlName="playerCharacter" class="formRow">
       <label *ngFor="let character of playerCharacters" ngbButtonLabel
-      [ngClass]="{'selected': isSelectedPlayerCharacter(character), 'filteredOut': !isSelectedPlayerCharacter(character)}"
-      class="charLabel">
+        [ngClass]="{'selected': isSelectedPlayerCharacter(character), 'filteredOut': !isSelectedPlayerCharacter(character)}"
+        class="charLabel">
         <img src="{{getCharacterPicture(character)}}" />
         <input ngbButton type="radio" [value]="character" (click)="selectPlayerCharacter(character)">
       </label>
@@ -23,12 +23,12 @@
   <!-- Opponent ids -->
   <ng-container *ngIf="opponentIds && opponentIds.length > 0">
     <h3>Opponent Slippi Ids</h3>
+    <input type="'text'" formControlName="opponentIdFilter" placeholder="Filter opponent Ids to display"
+      (change)="filterOpponentIds()">
     <div ngbRadioGroup name="checkboxOpponentIds" formControlName="opponentIds" class="formRow">
-      <ng-container *ngFor="let oppId of opponentIds">
-        <label ngbButtonLabel
-        class="playerLabel"
-        [ngClass]="{'selected': isActiveOpponent(oppId), 'ignored': isIgnoredOpponent(oppId)}"
-        >
+      <ng-container *ngFor="let oppId of filteredOpponentIds">
+        <label ngbButtonLabel class="playerLabel"
+          [ngClass]="{'selected': isActiveOpponent(oppId), 'ignored': isIgnoredOpponent(oppId)}">
           <input ngbButton type="checkbox" [value]="oppId" (click)="toggleOpponent(oppId)"> {{oppId}}
         </label>
       </ng-container>
@@ -38,8 +38,7 @@
   <ng-container *ngIf="opponentCharacters && opponentCharacters.length > 0">
     <h3>Opponent characters</h3>
     <div ngbRadioGroup name="radioOpponentCharacter" formControlName="opponentCharacters" class="formRow">
-      <label *ngFor="let character of opponentCharacters" ngbButtonLabel
-        class="charLabel"
+      <label *ngFor="let character of opponentCharacters" ngbButtonLabel class="charLabel"
         [ngClass]="{'selected': isActiveOpponentCharacter(character), 'ignored': isIgnoredOpponentCharacter(character)}">
         <img src="{{getCharacterPicture(character)}}" />
         <input ngbButton type="checkbox" [value]="character" (click)="toggleOpponentCharacter(character)">
@@ -50,10 +49,9 @@
   <ng-container *ngIf="filteredStages && filteredStages.length > 0">
     <h3>Stages</h3>
     <div ngbRadioGroup name="radioStages" formControlName="filteredStages" class="formRow">
-      <label *ngFor="let stage of filteredStages" ngbButtonLabel
-        class="stageLabel"
+      <label *ngFor="let stage of filteredStages" ngbButtonLabel class="stageLabel"
         [ngClass]="{'selected': isActiveStage(stage), 'ignored': isIgnoredStage(stage)}">
-        <img src="{{getStagePicture(stage)}}"/>
+        <img src="{{getStagePicture(stage)}}" />
         <input ngbButton type="checkbox" [value]="stage" (click)="toggleStage(stage)">
       </label>
     </div>

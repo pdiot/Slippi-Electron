@@ -278,6 +278,8 @@ export class StatsDisplayComponent implements OnInit {
       punishedActionsForOpponent: this.punishedActionsForOpponent,
       lcancelsForPlayer: this.lcancelsForPlayer,
       lcancelsForOpponent: this.lcancelsForOpponent,
+      ledgeDashesForPlayer: this.ledgeDashesForPlayer,
+      ledgeDashesForOpponent: this.ledgeDashesForPlayer,
       dates: this.statsDates,
     }
     this.electron.ipcRenderer.on('fileWrittenOK', (event, arg) => {

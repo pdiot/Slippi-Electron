@@ -28,6 +28,7 @@ export class FilterFormComponent implements OnInit, OnChanges {
 
   playerCharacters: string[];
   opponentIds: string[];
+  filteredOpponentIds: string[];
   opponentCharacters: string[];
   filteredStages: string[];
 
@@ -36,6 +37,7 @@ export class FilterFormComponent implements OnInit, OnChanges {
     this.filterForm = this.fb.group({
       playerId: null,
       playerCharacter: null,
+      opponentIdFilter : null,
       opponentIds: {blacklisted:[], whitelisted:[]},
       opponentCharacters: {blacklisted:[], whitelisted:[]},
       filteredStages: {blacklisted:[], whitelisted:[]},
@@ -47,6 +49,19 @@ export class FilterFormComponent implements OnInit, OnChanges {
       this.enrichedGameFiles = changes.enrichedGameFiles.currentValue as unknown as EnrichedGameFile[];
       this.processPlayers();
     }
+  }
+
+  public filterOpponentIds(): void {
+    if (this.filterForm.controls['opponentIdFilter'].value) {
+      this.filteredOpponentIds = this.opponentIds.filter(oppId => {
+        const val = this.filterForm.controls['opponentIdFilter'].value;
+        return oppId.toLowerCase().substr(0, val.length) ===  val;
+      });
+    } else {
+      this.filteredOpponentIds = this.opponentIds;
+    }
+    console.log('toto');
+    this.cd.detectChanges();
   }
 
   private sendFilter(): void {
@@ -79,6 +94,7 @@ export class FilterFormComponent implements OnInit, OnChanges {
   public selectPlayerCharacter(value:string): void {
     this.filterForm.controls['playerCharacter'].setValue(value);
     this.processOpponents();
+    this.filterOpponentIds();
     this.processOpponentCharacters();
     this.processStages();
     this.sendFilter();
