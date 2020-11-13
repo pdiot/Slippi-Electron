@@ -1,5 +1,5 @@
-const {parentPort, workerData} = require ('worker_threads');
-const { default : SlippiGame } = require('@slippi/slippi-js');
+const { parentPort, workerData } = require('worker_threads');
+const { default: SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 const node_utils = require('./node_utils');
 const fs = require('fs');
@@ -26,7 +26,7 @@ function main() {
     node_utils.printLog('debug_worker.log');
     parentPort.postMessage(stats);
   } catch (err) {
-    node_utils.addToLog(JSON.stringify(err, null, 4));
+    node_utils.addToLog(JSON.stringify(err.stack, null, 4));
     node_utils.printLog('debug_worker.log');
   }
 }
@@ -34,7 +34,7 @@ function main() {
 function processGames(gamesFromMain, slippiId, characterId) {
   let games = [];
   for (const game of gamesFromMain) {
-      games.push({game: new SlippiGame(game.file), gameFile: game.file, gameFromMain: game});
+    games.push({ game: new SlippiGame(game.file), gameFile: game.file, gameFromMain: game });
   }
   // DEBUG
   // let framesArray = [];
@@ -53,107 +53,109 @@ function processGames(gamesFromMain, slippiId, characterId) {
 
   // Getting the data we want
   for (const gameBlob of games) {
-      const game = gameBlob.game;
-      const stats = game.getStats();
-      const metadata = game.getMetadata();
-      const frames = game.getFrames();
-      // DEBUG
-      // framesArray.push(frames);
-      // fs.writeFile('frames.json', JSON.stringify(frames, null, 4), err => {
-      //   if (err) throw err;
-      //   console.log('wrote frames in frames.json');
-      // })
-      // DEBUG
-      const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
-      const settings = game.getSettings();
-      const stage = getMapName(settings.stageId);
-      let playerPort;
-      let opponentPort;
-      if (metadata.players[2] || 
-        metadata.players[3] || 
-        (metadata.players[0] && !metadata.players[0].names.code) ||
-        (metadata.players[1] && !metadata.players[1].names.code)) {
-        // We're in a local game
-        for (let pcp of gameBlob.gameFromMain.playerCharacterPairs) {
-          if (pcp.isCurrentPlayer) {
-            playerPort = pcp.port;
-          } else {
-            opponentPort = pcp.port;
-          }
-        }
-      } else {
-        if (metadata.players[0].names.code === slippiId) {
-            playerPort = 0;
-            opponentPort = 1;
+    const game = gameBlob.game;
+    const stats = game.getStats();
+    const metadata = game.getMetadata();
+    const frames = game.getFrames();
+    // DEBUG
+    // framesArray.push(frames);
+    // fs.writeFile('frames.json', JSON.stringify(frames, null, 4), err => {
+    //   if (err) throw err;
+    //   console.log('wrote frames in frames.json');
+    // })
+    // DEBUG
+    const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
+    const settings = game.getSettings();
+    const stage = getMapName(settings.stageId);
+    let playerPort;
+    let opponentPort;
+    if (metadata.players[2] ||
+      metadata.players[3] ||
+      (metadata.players[0] && !metadata.players[0].names.code) ||
+      (metadata.players[1] && !metadata.players[1].names.code)) {
+      // We're in a local game
+      for (let pcp of gameBlob.gameFromMain.playerCharacterPairs) {
+        if (pcp.isCurrentPlayer) {
+          playerPort = pcp.port;
         } else {
-            playerPort = 1;
-            opponentPort = 0;
+          opponentPort = pcp.port;
         }
       }
-      let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
+    } else {
+      if (metadata.players[0].names.code === slippiId) {
+        playerPort = 0;
+        opponentPort = 1;
+      } else {
+        playerPort = 1;
+        opponentPort = 0;
+      }
+    }
+    let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
 
-      const playerLedgeDashes = getLedgeDashes(frames, playerPort);
-      const opponentLedgeDashes = getLedgeDashes(frames, opponentPort);
-      const playerConversions = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
-      const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
-      const playerPunishedActions = getPunishedActions(frames, playerPort, opponentConversions, playerConversions);
-      const opponentPunishedActions = getPunishedActions(frames, opponentPort, playerConversions, opponentConversions);
-      const LCancels = getLCancels(frames, playerPort, opponentPort);
-      const playerLCancels = LCancels.player;
-      const opponentLCancels = LCancels.opponent;
-      const playerOverall = stats.overall.filter(overall => overall.playerIndex === playerPort)[0];
-      playerOverall.conversionsRatio = getOpeningRatio(playerConversions, opponentConversions);
-      const opponentOverall = stats.overall.filter(overall => overall.playerIndex === opponentPort)[0];
-      opponentOverall.conversionsRatio = getOpeningRatio(opponentConversions, playerConversions);
+    const playerLedgeDashes = getLedgeDashes(frames, playerPort);
+    const opponentLedgeDashes = getLedgeDashes(frames, opponentPort);
+    const playerConversions = stats.conversions.filter(conversion => conversion.playerIndex === playerPort);
+    const opponentConversions = stats.conversions.filter(conversion => conversion.playerIndex === opponentPort);
+    const playerPunishedActions = getPunishedActions(frames, playerPort, opponentConversions, playerConversions);
+    const opponentPunishedActions = getPunishedActions(frames, opponentPort, playerConversions, opponentConversions);
+    const LCancels = getLCancels(frames, playerPort, opponentPort);
+    const playerLCancels = LCancels.player;
+    const opponentLCancels = LCancels.opponent;
+    const playerOverall = stats.overall.filter(overall => overall.playerIndex === playerPort)[0];
+    playerOverall.conversionsRatio = getOpeningRatio(playerConversions, opponentConversions);
+    const opponentOverall = stats.overall.filter(overall => overall.playerIndex === opponentPort)[0];
+    opponentOverall.conversionsRatio = getOpeningRatio(opponentConversions, playerConversions);
 
-      ledgeDashesForPlayer[startAt] = {};
-      ledgeDashesForPlayer[startAt][opponentCharName] = {};
-      ledgeDashesForPlayer[startAt][opponentCharName][stage] = playerLedgeDashes;
-      
-      ledgeDashesForOpponent[startAt] = {};
-      ledgeDashesForOpponent[startAt][opponentCharName] = {};
-      ledgeDashesForOpponent[startAt][opponentCharName][stage] = opponentLedgeDashes;
+    ledgeDashesForPlayer[startAt] = {};
+    ledgeDashesForPlayer[startAt][opponentCharName] = {};
+    ledgeDashesForPlayer[startAt][opponentCharName][stage] = playerLedgeDashes;
 
-      overallOnOpponent[startAt] = {};
-      overallOnOpponent[startAt][opponentCharName] = {};
-      overallOnOpponent[startAt][opponentCharName][stage] = {
-        ...playerOverall};
-      
-      conversionsOnOpponent[startAt] = {};
-      conversionsOnOpponent[startAt][opponentCharName] = {};
-      conversionsOnOpponent[startAt][opponentCharName][stage] = [
-        ...playerConversions];
-      
-      
-      overallFromOpponent[startAt] = {};
-      overallFromOpponent[startAt][opponentCharName] = {};
-      overallFromOpponent[startAt][opponentCharName][stage] = {
-        ...opponentOverall};
+    ledgeDashesForOpponent[startAt] = {};
+    ledgeDashesForOpponent[startAt][opponentCharName] = {};
+    ledgeDashesForOpponent[startAt][opponentCharName][stage] = opponentLedgeDashes;
 
-      conversionsFromOpponent[startAt] = {};
-      conversionsFromOpponent[startAt][opponentCharName] = {};
-      conversionsFromOpponent[startAt][opponentCharName][stage] = [
-        ...opponentConversions];
+    overallOnOpponent[startAt] = {};
+    overallOnOpponent[startAt][opponentCharName] = {};
+    overallOnOpponent[startAt][opponentCharName][stage] = {
+      ...playerOverall
+    };
 
-      punishedActionsForPlayer[startAt] = {};
-      punishedActionsForPlayer[startAt][opponentCharName] = {};
-      punishedActionsForPlayer[startAt][opponentCharName][stage] = playerPunishedActions;
-      
-      punishedActionsForOpponent[startAt] = {};
-      punishedActionsForOpponent[startAt][opponentCharName] = {};
-      punishedActionsForOpponent[startAt][opponentCharName][stage] = opponentPunishedActions;
+    conversionsOnOpponent[startAt] = {};
+    conversionsOnOpponent[startAt][opponentCharName] = {};
+    conversionsOnOpponent[startAt][opponentCharName][stage] = [
+      ...playerConversions];
 
-      lcancelsForPlayer[startAt] = {};
-      lcancelsForPlayer[startAt][opponentCharName] = {};
-      lcancelsForPlayer[startAt][opponentCharName][stage] = playerLCancels;
 
-      lcancelsForOpponent[startAt] = {};
-      lcancelsForOpponent[startAt][opponentCharName] = {};
-      lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
-    
-      processedGamesNb ++;
-      node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
-      parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
+    overallFromOpponent[startAt] = {};
+    overallFromOpponent[startAt][opponentCharName] = {};
+    overallFromOpponent[startAt][opponentCharName][stage] = {
+      ...opponentOverall
+    };
+
+    conversionsFromOpponent[startAt] = {};
+    conversionsFromOpponent[startAt][opponentCharName] = {};
+    conversionsFromOpponent[startAt][opponentCharName][stage] = [
+      ...opponentConversions];
+
+    punishedActionsForPlayer[startAt] = {};
+    punishedActionsForPlayer[startAt][opponentCharName] = {};
+    punishedActionsForPlayer[startAt][opponentCharName][stage] = playerPunishedActions;
+
+    punishedActionsForOpponent[startAt] = {};
+    punishedActionsForOpponent[startAt][opponentCharName] = {};
+    punishedActionsForOpponent[startAt][opponentCharName][stage] = opponentPunishedActions;
+
+    lcancelsForPlayer[startAt] = {};
+    lcancelsForPlayer[startAt][opponentCharName] = {};
+    lcancelsForPlayer[startAt][opponentCharName][stage] = playerLCancels;
+
+    lcancelsForOpponent[startAt] = {};
+    lcancelsForOpponent[startAt][opponentCharName] = {};
+    lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
+
+    processedGamesNb++;
+    node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
+    parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
   }
 
   const returnValue = {
@@ -170,7 +172,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     ledgeDashesForOpponent,
     // framesArray // DEBUG
   }
-  
+
   node_utils.addToLog('WORKER end of treatment');
   return returnValue;
 }
@@ -199,72 +201,79 @@ function getPunishedActions(frames, playerPort, opponentConversions, playerConve
       const startFrame = conversion.moves[0].frame;
       let hasFoundMove = false;
       let currentFrame = startFrame - 1;
-      while(!hasFoundMove) {
-        const players = frames[currentFrame].players;
-        const correctPlayerData = players.find(player => player.pre.playerIndex === playerPort);
-        const postFrameUpdate = correctPlayerData.post;
-        const attack = node_utils.getAttackAction(postFrameUpdate.actionStateId);
-        const defensiveOption = node_utils.getDefensiveAction(postFrameUpdate.actionStateId);
-        const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
-        if (attack) {
-          // TODO : check whether the attack hit, whiffed, or got shielded
-          let isAttackOngoing = true;
-          let i = currentFrame - 1;
-          let hasFoundCollision = false;
-          let whiffShieldPLHit = undefined;
-          while (isAttackOngoing && !hasFoundCollision) {
-            // To detect a shield hit : we want to find i such that frames[i] has a shieldStun stateId and frames[i-1] doesn't
-            // To detect a hit : We look for the startup frame of the attack, and look it up in our conversions somewhere. 
-            // Either it was part of a conversion, and it was a hit (unsafe on hit, crouch, etc), or it wasn't and it's a whiff
-            const currentPlayerPost = frames[i].players.find(player => player.pre.playerIndex === playerPort).post;
-            if (node_utils.getAttackAction(currentPlayerPost.actionStateId) === attack) {
-              const previousOpponentPost = frames[i-1].players.find(player => player.pre.playerIndex !== playerPort).post;
-              const previousOpponentActionStateId = previousOpponentPost.actionStateId;
-              const currentOpponentPost = frames[i].players.find(player => player.pre.playerIndex !== playerPort).post;
-              const currentOpponentActionStateId = currentOpponentPost.actionStateId;
-              // here we will check if we detect a new shieldstun "event"
-              if (node_utils.isNewShield(currentOpponentActionStateId, previousOpponentActionStateId)) {
-                // We have detected a shieldstun, now we want to know if it was a regular shield or a powershield
-                // Since non projectile attacks don't trigger a specific powershield actionStateId, we need to parse some frames
-                // We need to parse the previous frame
-                // If previouspost.shieldSize is equal to currentpost.shieldSize, it's a powershield else it's a shield
-                if (currentOpponentPost.shieldSize === previousOpponentPost.shieldSize) {
-                  whiffShieldPLHit = 'Powershield';
-                } else {
-                  whiffShieldPLHit = 'Shield';
+      while (!hasFoundMove) {
+        if (frames[currentFrame]) {
+          const players = frames[currentFrame].players;
+          const correctPlayerData = players.find(player => player.pre.playerIndex === playerPort);
+          const postFrameUpdate = correctPlayerData.post;
+          const attack = node_utils.getAttackAction(postFrameUpdate.actionStateId);
+          const defensiveOption = node_utils.getDefensiveAction(postFrameUpdate.actionStateId);
+          const movementOption = node_utils.getMovementAction(postFrameUpdate.actionStateId);
+          if (attack) {
+            // TODO : check whether the attack hit, whiffed, or got shielded
+            let isAttackOngoing = true;
+            let i = currentFrame - 1;
+            let hasFoundCollision = false;
+            let whiffShieldPLHit = undefined;
+            while (isAttackOngoing && !hasFoundCollision) {
+              // To detect a shield hit : we want to find i such that frames[i] has a shieldStun stateId and frames[i-1] doesn't
+              // To detect a hit : We look for the startup frame of the attack, and look it up in our conversions somewhere. 
+              // Either it was part of a conversion, and it was a hit (unsafe on hit, crouch, etc), or it wasn't and it's a whiff
+              const currentPlayerPost = frames[i].players.find(player => player.pre.playerIndex === playerPort).post;
+              if (node_utils.getAttackAction(currentPlayerPost.actionStateId) === attack) {
+                const previousOpponentPost = frames[i - 1].players.find(player => player.pre.playerIndex !== playerPort).post;
+                const previousOpponentActionStateId = previousOpponentPost.actionStateId;
+                const currentOpponentPost = frames[i].players.find(player => player.pre.playerIndex !== playerPort).post;
+                const currentOpponentActionStateId = currentOpponentPost.actionStateId;
+                // here we will check if we detect a new shieldstun "event"
+                if (node_utils.isNewShield(currentOpponentActionStateId, previousOpponentActionStateId)) {
+                  // We have detected a shieldstun, now we want to know if it was a regular shield or a powershield
+                  // Since non projectile attacks don't trigger a specific powershield actionStateId, we need to parse some frames
+                  // We need to parse the previous frame
+                  // If previouspost.shieldSize is equal to currentpost.shieldSize, it's a powershield else it's a shield
+                  if (currentOpponentPost.shieldSize === previousOpponentPost.shieldSize) {
+                    whiffShieldPLHit = 'Powershield';
+                  } else {
+                    whiffShieldPLHit = 'Shield';
+                  }
+                  hasFoundCollision = true;
                 }
-                hasFoundCollision = true;
-              }
-              i --;
-            } else {
-              isAttackOngoing = false;
-              // Here we check if it hit or not
-              // The attack wasn't ongoing at frame i, so it started on frame i+1
-              // We want to check the player's conversions and see if we can see a move that started at frame i+1. If we do, it's a hit, else it was a whiff
-              for (let conv of playerConversions) {
-                if (conv.moves.find(move => move.frame === i + 1)) {
-                  whiffShieldPLHit = 'Hit';
-                  break;
+                i--;
+              } else {
+                isAttackOngoing = false;
+                // Here we check if it hit or not
+                // The attack wasn't ongoing at frame i, so it started on frame i+1
+                // We want to check the player's conversions and see if we can see a move that started at frame i+1. If we do, it's a hit, else it was a whiff
+                for (let conv of playerConversions) {
+                  if (conv.moves.find(move => move.frame === i + 1)) {
+                    whiffShieldPLHit = 'Hit';
+                    break;
+                  }
                 }
-              }
-              if (!whiffShieldPLHit) {
-                whiffShieldPLHit = 'Whiff'
+                if (!whiffShieldPLHit) {
+                  whiffShieldPLHit = 'Whiff'
+                }
               }
             }
+            //TODO : add the result of whiffShieldPLHit to the return value
+            punishedAttacks.push({ name: attack, status: whiffShieldPLHit });
+            hasFoundMove = true;
           }
-          //TODO : add the result of whiffShieldPLHit to the return value
-          punishedAttacks.push({name: attack, status: whiffShieldPLHit});
+          if (defensiveOption) {
+            punishedDefensiveOptions.push(defensiveOption);
+            hasFoundMove = true;
+          }
+          if (movementOption) {
+            punishedMovementOptions.push(movementOption);
+            hasFoundMove = true;
+          }
+          currentFrame--;
+        } else {
+          // The conversion started at the very beginning of the game, without anything being done by the opponent
+          // Somehow it has happened I guess
+          // We just ignore this conversion
           hasFoundMove = true;
         }
-        if (defensiveOption) {
-          punishedDefensiveOptions.push(defensiveOption);
-          hasFoundMove = true;
-        }
-        if (movementOption) {
-          punishedMovementOptions.push(movementOption);
-          hasFoundMove = true;
-        }
-        currentFrame --;
       }
     }
   }
@@ -274,9 +283,9 @@ function getPunishedActions(frames, playerPort, opponentConversions, playerConve
 }
 
 function getLCancels(frames, playerPort, opponentPort) {
-  let playerLCancels = {successful: 0, failed: 0};
+  let playerLCancels = { successful: 0, failed: 0 };
   let playerFailedMoves = [];
-  let oppLCancels = {successful: 0, failed: 0};
+  let oppLCancels = { successful: 0, failed: 0 };
   let oppFailedMoves = [];
   for (let frameKey of Object.keys(frames)) {
     const playerPostFrameUpdate = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).post;
@@ -285,17 +294,17 @@ function getLCancels(frames, playerPort, opponentPort) {
     const oppAttack = node_utils.getAttackAction(oppPostFrameUpdate.actionStateId);
     if (playerAttack) {
       if (playerPostFrameUpdate.lCancelStatus === 1) {
-        playerLCancels.successful ++;
+        playerLCancels.successful++;
       } else if (playerPostFrameUpdate.lCancelStatus === 2) {
-        playerLCancels.failed ++;
+        playerLCancels.failed++;
         playerFailedMoves.push(playerAttack);
       }
     }
     if (oppAttack) {
       if (oppPostFrameUpdate.lCancelStatus === 1) {
-        oppLCancels.successful ++;
+        oppLCancels.successful++;
       } else if (oppPostFrameUpdate.lCancelStatus === 2) {
-        oppLCancels.failed ++;
+        oppLCancels.failed++;
         oppFailedMoves.push(oppAttack);
       }
     }
@@ -323,7 +332,7 @@ function getLedgeDashes(frames, playerPort) {
   let hasWavelandEnded = false;
   let framesSinceLedgeDrop = 0;
   let extraInvincibilityFrames = 0;
-  let reset = function(reason) {
+  let reset = function (reason) {
     node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
     foundCliffCatch = false;
     foundCliffDrop = false;
@@ -348,7 +357,7 @@ function getLedgeDashes(frames, playerPort) {
           if (!ledgeDashes['invincible']) {
             ledgeDashes['invincible'] = [];
           }
-          ledgeDashes['invincible'].push({framesSinceLedgeDrop, extraInvincibilityFrames});
+          ledgeDashes['invincible'].push({ framesSinceLedgeDrop, extraInvincibilityFrames });
           reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
         }
       } else {
@@ -370,7 +379,7 @@ function getLedgeDashes(frames, playerPort) {
             if (!ledgeDashes['notInvincible']) {
               ledgeDashes['notInvincible'] = [];
             }
-            ledgeDashes['notInvincible'].push({framesSinceLedgeDrop});
+            ledgeDashes['notInvincible'].push({ framesSinceLedgeDrop });
             reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
           } else {
             // It's an invincible ledgedash, we will look forwards in frames until we lose the invulnerability
@@ -416,10 +425,10 @@ function getLedgeDashes(frames, playerPort) {
     }
     // Counter update after the frame
     if (foundCliffDrop) {
-      framesSinceLedgeDrop ++;
+      framesSinceLedgeDrop++;
     }
     if (hasWavelandEnded) {
-      extraInvincibilityFrames ++;
+      extraInvincibilityFrames++;
     }
   }
   return ledgeDashes;
