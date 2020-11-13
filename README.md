@@ -19,4 +19,15 @@ Simply download the appropriate zip in the release tab, extract it and run the e
 
 # Roadmap :
 Make it pretty
-App tour to teach people how to use it
+
+Add a back button on the stats screen to change the filter options without having to reupload the files
+
+App tour to teach people how to use the app
+
+New stats : 
+
+wavedashes (% of frame 1, 2, 3, 4, 5+ wavedashes, maaaaayyyyyyybe angles ?), 
+
+JC grabs (ratio of succesful to failed JC grabs, then % of frame 1, 2, 3 + of jumpsquat)
+
+MU / stage Winrates
