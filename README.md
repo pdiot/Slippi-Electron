@@ -19,3 +19,4 @@ Simply download the appropriate zip in the release tab, extract it and run the e
 
 # Roadmap :
 Make it pretty
+App tour to teach people how to use it
