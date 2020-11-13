@@ -581,7 +581,11 @@ export class StatsProcessingService {
           ));
           let percentOfTotalLedgedashes;
           if (ledgeDashes['notInvincible']) {
-            percentOfTotalLedgedashes = ledgeDashes['invincible'].length * 100 / (ledgeDashes['invincible'].length + ledgeDashes['notInvincible'].length);
+            if (ledgeDashes['invincible']?.length > 0) {
+              percentOfTotalLedgedashes = ledgeDashes['invincible'].length * 100 / (ledgeDashes['invincible'].length + ledgeDashes['notInvincible'].length);
+            } else {
+              percentOfTotalLedgedashes = 0;
+            }
           } else {
             percentOfTotalLedgedashes = 100;
           }
@@ -638,7 +642,11 @@ export class StatsProcessingService {
 
         let percentOfTotalLedgedashes;
         if (ledgeDashesAllStages['notInvincible']) {
-          percentOfTotalLedgedashes = ledgeDashesAllStages['invincible'].length * 100 / (ledgeDashesAllStages['invincible'].length + ledgeDashesAllStages['notInvincible'].length);
+          if (ledgeDashesAllStages['invincible']?.length > 0) {
+            percentOfTotalLedgedashes = ledgeDashesAllStages['invincible'].length * 100 / (ledgeDashesAllStages['invincible'].length + ledgeDashesAllStages['notInvincible'].length);
+          } else {
+            percentOfTotalLedgedashes = 0;
+          }
         } else {
           percentOfTotalLedgedashes = 100;
         }
@@ -714,7 +722,9 @@ export class StatsProcessingService {
   private calculMoyenneOverall(array): number {
     let val = 0;
     for (let i = 0; i < array.length; i++) {
-      val += array[i];
+      if (array[i]) {
+        val += array[i];
+      }
     }
     return array.length > 0 ? val / array.length : undefined;
   }

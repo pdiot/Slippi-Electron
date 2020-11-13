@@ -14,13 +14,15 @@ export class StatsGraphService {
   opponentOverallDataSet;
   playerConversionsDataSet;
   opponentConversionsDataSet;
+  playerLedgedashesDataSet;
 
   constructor() { }
-  
+
   public async makeGraphDataSets(stats): Promise<any> {
     this.stats = stats;
     this.meanDatas = {};
     this.makeLcancels();
+    this.makeLedgedashes();
     this.makeOverallPlayer();
     this.makeOverallOnPlayer();
     this.makeConversionsOnPlayer();
@@ -33,20 +35,22 @@ export class StatsGraphService {
       opponentOverallDataSet: this.opponentOverallDataSet,
       playerConversionsDataSet: this.playerConversionsDataSet,
       opponentConversionsDataSet: this.opponentConversionsDataSet,
+      playerLedgedashesDataSet: this.playerLedgedashesDataSet,
     };
   }
-  
+
 
   getKeys(object): string[] {
     return GeneralUtils.getKeys(object);
   }
 
-  private generateDataSets() : void{
+  private generateDataSets(): void {
     this.lCancelDataSet = {};
     this.playerOverallDataSet = {};
     this.opponentOverallDataSet = {};
     this.playerConversionsDataSet = {};
     this.opponentConversionsDataSet = {};
+    this.playerLedgedashesDataSet = {};
     if (this.meanDatas['lCancels']) {
       for (let character of this.getKeys(this.meanDatas['lCancels'])) {
         if (!this.lCancelDataSet[character]) {
@@ -64,12 +68,16 @@ export class StatsGraphService {
         if (!this.opponentConversionsDataSet[character]) {
           this.opponentConversionsDataSet[character] = {};
         }
+        if (!this.playerLedgedashesDataSet[character]) {
+          this.playerLedgedashesDataSet[character] = {};
+        }
         for (let stage of this.getKeys(this.meanDatas['lCancels'][character])) {
           this.lCancelDataSet[character][stage] = this.makeLcancelsForCharStage(character, stage);
           this.playerOverallDataSet[character][stage] = this.makeOverallForCharStage(character, stage, 'overallFromPlayer');
           this.opponentOverallDataSet[character][stage] = this.makeOverallForCharStage(character, stage, 'overallOnPlayer');
           this.playerConversionsDataSet[character][stage] = this.makeConversionsForCharStage(character, stage, 'conversionsFromPlayer');
           this.opponentConversionsDataSet[character][stage] = this.makeConversionsForCharStage(character, stage, 'conversionsOnPlayer');
+          this.playerLedgedashesDataSet[character][stage] = this.makeLedgedashesForCharStage(character, stage);
         }
       }
     }
@@ -118,13 +126,44 @@ export class StatsGraphService {
         });
       }
       dataSets.push({
-        name:"Successful L-Cancels ratio (%)",
+        name: "Successful L-Cancels ratio (%)",
         series: series
       });
     }
     return dataSets;
   }
-  
+
+  private makeLedgedashesForCharStage(character: string, stage: string) {
+    let dataSets = {};
+    dataSets['percentOfTotal'] = [];
+    dataSets['averageInvincibilityFrames'] = [];
+
+    if (this.meanDatas['ledgeDashes']) {
+      let seriesPercent = [];
+      let seriesFramecount = [];
+      const dates = Object.keys(this.meanDatas['ledgeDashes'][character][stage]).sort((dateA, dateB) => this.compareDateStrings(dateA, dateB));
+      for (let date of dates) {
+        seriesPercent.push({
+          "name": this.niceDate(date),
+          "value": this.meanDatas['ledgeDashes'][character][stage][date].percentOfTotal
+        });
+        seriesFramecount.push({
+          "name": this.niceDate(date),
+          "value": this.meanDatas['ledgeDashes'][character][stage][date].averageInvincibilityFrames
+        });
+      }
+      dataSets['percentOfTotal'].push({
+        name: "Invincible ledgedashes ratio (%)",
+        series: seriesPercent
+      });
+      dataSets['averageInvincibilityFrames'].push({
+        name: "Average number of extra invinc. frames",
+        series: seriesFramecount
+      });
+    }
+    return dataSets;
+  }
+
   private makeOverallForCharStage(character: string, stage: string, overall: string) {
     let dataSets = {};
     dataSets['killCount'] = [];
@@ -156,19 +195,19 @@ export class StatsGraphService {
         });
       }
       dataSets['killCount'].push({
-        name:"Kill Count",
+        name: "Kill Count",
         series: killCountSeries
       });
       dataSets['killPercent'].push({
-        name:"Kill Percent (%)",
+        name: "Kill Percent (%)",
         series: killPercentSeries
       });
       dataSets['openingsPerKill'].push({
-        name:"Openings per kill",
+        name: "Openings per kill",
         series: openingsPerKillSeries
       });
       dataSets['totalDamage'].push({
-        name:"Total damage (%)",
+        name: "Total damage (%)",
         series: totalDamageSeries
       });
     }
@@ -206,19 +245,19 @@ export class StatsGraphService {
         });
       }
       dataSets['neutralWinAverageDamage'].push({
-        name:"Neutral win conversion average damage (%)",
+        name: "Neutral win conversion average damage (%)",
         series: neutralWinAverageDamageSeries
       });
       dataSets['neutralWinAverageLength'].push({
-        name:"Neutral win conversion average length",
+        name: "Neutral win conversion average length",
         series: neutralWinAverageLengthSeries
       });
       dataSets['punishAverageDamage'].push({
-        name:"Punish conversion average damage (%)",
+        name: "Punish conversion average damage (%)",
         series: punishAverageDamageSeries
       });
       dataSets['punishAverageLength'].push({
-        name:"Punish conversion average length",
+        name: "Punish conversion average length",
         series: punishAverageLengthSeries
       });
     }
@@ -239,21 +278,21 @@ export class StatsGraphService {
           for (let date of stat.dates) {
             if (!conversions[character][stage][date]) {
               conversions[character][stage][date] = {
-                neutralWinAverageDamage: {value : stat.opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage, count: 1},
-                neutralWinAverageLength: {value : stat.opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength, count: 1},
-                punishAverageDamage: {value : stat.opponentConversions[character][stage].processedPunishes['multi-hits'].averageDamage, count: 1},
-                punishAverageLength: {value : stat.opponentConversions[character][stage].processedPunishes['multi-hits'].averageLength, count: 1},
+                neutralWinAverageDamage: { value: stat.opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage, count: 1 },
+                neutralWinAverageLength: { value: stat.opponentConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength, count: 1 },
+                punishAverageDamage: { value: stat.opponentConversions[character][stage].processedPunishes['multi-hits'].averageDamage, count: 1 },
+                punishAverageLength: { value: stat.opponentConversions[character][stage].processedPunishes['multi-hits'].averageLength, count: 1 },
               }
             } else {
               const value = stat.opponentConversions[character][stage];
               conversions[character][stage][date].neutralWinAverageDamage.value += value.processedNeutralWinsConversions['multi-hits'].averageDamage;
-              conversions[character][stage][date].neutralWinAverageDamage.count ++;
+              conversions[character][stage][date].neutralWinAverageDamage.count++;
               conversions[character][stage][date].neutralWinAverageLength.value += value.processedNeutralWinsConversions['multi-hits'].averageLength;
-              conversions[character][stage][date].neutralWinAverageLength.count ++;
+              conversions[character][stage][date].neutralWinAverageLength.count++;
               conversions[character][stage][date].punishAverageDamage.value += value.processedPunishes['multi-hits'].averageDamage;
-              conversions[character][stage][date].punishAverageDamage.count ++;
+              conversions[character][stage][date].punishAverageDamage.count++;
               conversions[character][stage][date].punishAverageLength.value += value.processedPunishes['multi-hits'].averageLength;
-              conversions[character][stage][date].punishAverageLength.count ++;
+              conversions[character][stage][date].punishAverageLength.count++;
             }
           }
         }
@@ -288,21 +327,21 @@ export class StatsGraphService {
           for (let date of stat.dates) {
             if (!conversions[character][stage][date]) {
               conversions[character][stage][date] = {
-                neutralWinAverageDamage: {value : stat.playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage, count: 1},
-                neutralWinAverageLength: {value : stat.playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength, count: 1},
-                punishAverageDamage: {value : stat.playerConversions[character][stage].processedPunishes['multi-hits'].averageDamage, count: 1},
-                punishAverageLength: {value : stat.playerConversions[character][stage].processedPunishes['multi-hits'].averageLength, count: 1},
+                neutralWinAverageDamage: { value: stat.playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageDamage, count: 1 },
+                neutralWinAverageLength: { value: stat.playerConversions[character][stage].processedNeutralWinsConversions['multi-hits'].averageLength, count: 1 },
+                punishAverageDamage: { value: stat.playerConversions[character][stage].processedPunishes['multi-hits'].averageDamage, count: 1 },
+                punishAverageLength: { value: stat.playerConversions[character][stage].processedPunishes['multi-hits'].averageLength, count: 1 },
               }
             } else {
               const value = stat.playerConversions[character][stage];
               conversions[character][stage][date].neutralWinAverageDamage.value += value.processedNeutralWinsConversions['multi-hits'].averageDamage;
-              conversions[character][stage][date].neutralWinAverageDamage.count ++;
+              conversions[character][stage][date].neutralWinAverageDamage.count++;
               conversions[character][stage][date].neutralWinAverageLength.value += value.processedNeutralWinsConversions['multi-hits'].averageLength;
-              conversions[character][stage][date].neutralWinAverageLength.count ++;
+              conversions[character][stage][date].neutralWinAverageLength.count++;
               conversions[character][stage][date].punishAverageDamage.value += value.processedPunishes['multi-hits'].averageDamage;
-              conversions[character][stage][date].punishAverageDamage.count ++;
+              conversions[character][stage][date].punishAverageDamage.count++;
               conversions[character][stage][date].punishAverageLength.value += value.processedPunishes['multi-hits'].averageLength;
-              conversions[character][stage][date].punishAverageLength.count ++;
+              conversions[character][stage][date].punishAverageLength.count++;
             }
           }
         }
@@ -322,7 +361,7 @@ export class StatsGraphService {
     }
     this.meanDatas['conversionsFromPlayer'] = conversions;
   }
-    
+
   private makeOverallOnPlayer(): void {
     let overall = {};
     for (let stat of this.stats) {
@@ -337,21 +376,21 @@ export class StatsGraphService {
           for (let date of stat.dates) {
             if (!overall[character][stage][date]) {
               overall[character][stage][date] = {
-                killCountMoyenne: {value : stat.opponentOverall[character][stage].killCountMoyenne, count: 1},
-                killPercentMoyenne: {value : stat.opponentOverall[character][stage].killPercentMoyenne, count: 1},
-                openingsPerKillMoyenne: {value : stat.opponentOverall[character][stage].openingsPerKillMoyenne, count: 1},
-                totalDamageMoyenne: {value : stat.opponentOverall[character][stage].totalDamageMoyenne, count: 1},
+                killCountMoyenne: { value: stat.opponentOverall[character][stage].killCountMoyenne, count: 1 },
+                killPercentMoyenne: { value: stat.opponentOverall[character][stage].killPercentMoyenne, count: 1 },
+                openingsPerKillMoyenne: { value: stat.opponentOverall[character][stage].openingsPerKillMoyenne, count: 1 },
+                totalDamageMoyenne: { value: stat.opponentOverall[character][stage].totalDamageMoyenne, count: 1 },
               }
             } else {
               const value = stat.opponentOverall[character][stage];
               overall[character][stage][date].killCountMoyenne.value += value.killCountMoyenne;
-              overall[character][stage][date].killCountMoyenne.count ++;
+              overall[character][stage][date].killCountMoyenne.count++;
               overall[character][stage][date].killPercentMoyenne.value += value.killPercentMoyenne;
-              overall[character][stage][date].killPercentMoyenne.count ++;
+              overall[character][stage][date].killPercentMoyenne.count++;
               overall[character][stage][date].openingsPerKillMoyenne.value += value.openingsPerKillMoyenne;
-              overall[character][stage][date].openingsPerKillMoyenne.count ++;
+              overall[character][stage][date].openingsPerKillMoyenne.count++;
               overall[character][stage][date].totalDamageMoyenne.value += value.totalDamageMoyenne;
-              overall[character][stage][date].totalDamageMoyenne.count ++;
+              overall[character][stage][date].totalDamageMoyenne.count++;
             }
           }
         }
@@ -371,7 +410,7 @@ export class StatsGraphService {
     }
     this.meanDatas['overallOnPlayer'] = overall;
   }
-  
+
   private makeOverallPlayer(): void {
     let overall = {};
     for (let stat of this.stats) {
@@ -386,21 +425,21 @@ export class StatsGraphService {
           for (let date of stat.dates) {
             if (!overall[character][stage][date]) {
               overall[character][stage][date] = {
-                killCountMoyenne: {value : stat.playerOverall[character][stage].killCountMoyenne, count: 1},
-                killPercentMoyenne: {value : stat.playerOverall[character][stage].killPercentMoyenne, count: 1},
-                openingsPerKillMoyenne: {value : stat.playerOverall[character][stage].openingsPerKillMoyenne, count: 1},
-                totalDamageMoyenne: {value : stat.playerOverall[character][stage].totalDamageMoyenne, count: 1},
+                killCountMoyenne: { value: stat.playerOverall[character][stage].killCountMoyenne, count: 1 },
+                killPercentMoyenne: { value: stat.playerOverall[character][stage].killPercentMoyenne, count: 1 },
+                openingsPerKillMoyenne: { value: stat.playerOverall[character][stage].openingsPerKillMoyenne, count: 1 },
+                totalDamageMoyenne: { value: stat.playerOverall[character][stage].totalDamageMoyenne, count: 1 },
               }
             } else {
               const value = stat.playerOverall[character][stage];
               overall[character][stage][date].killCountMoyenne.value += value.killCountMoyenne;
-              overall[character][stage][date].killCountMoyenne.count ++;
+              overall[character][stage][date].killCountMoyenne.count++;
               overall[character][stage][date].killPercentMoyenne.value += value.killPercentMoyenne;
-              overall[character][stage][date].killPercentMoyenne.count ++;
+              overall[character][stage][date].killPercentMoyenne.count++;
               overall[character][stage][date].openingsPerKillMoyenne.value += value.openingsPerKillMoyenne;
-              overall[character][stage][date].openingsPerKillMoyenne.count ++;
+              overall[character][stage][date].openingsPerKillMoyenne.count++;
               overall[character][stage][date].totalDamageMoyenne.value += value.totalDamageMoyenne;
-              overall[character][stage][date].totalDamageMoyenne.count ++;
+              overall[character][stage][date].totalDamageMoyenne.count++;
             }
           }
         }
@@ -454,7 +493,54 @@ export class StatsGraphService {
     }
     this.meanDatas['lCancels'] = lCancels;
   }
-  
+
+  private makeLedgedashes(): void {
+    let ledgedashes = {};
+    for (let stat of this.stats) {
+      for (let character of Object.keys(stat.ledgeDashesForPlayer)) {
+        if (!ledgedashes[character]) {
+          ledgedashes[character] = {};
+        }
+        for (let stage of Object.keys(stat.ledgeDashesForPlayer[character])) {
+          if (!ledgedashes[character][stage]) {
+            ledgedashes[character][stage] = {};
+          }
+          for (let date of stat.dates) {
+            if (!ledgedashes[character][stage][date]) {
+              ledgedashes[character][stage][date] = {};
+              if (stat.ledgeDashesForPlayer[character][stage]['invincible']) {
+                ledgedashes[character][stage][date].percentOfTotal = [stat.ledgeDashesForPlayer[character][stage]['invincible'].percentOfTotalLedgedashes];
+                ledgedashes[character][stage][date].averageInvincibilityFrames = [stat.ledgeDashesForPlayer[character][stage]['invincible'].averageExtraInvincibilityFrames];
+              } else {
+                ledgedashes[character][stage][date].percentOfTotal = [0];
+                ledgedashes[character][stage][date].averageInvincibilityFrames = [0];
+              }
+            } else {
+              if (stat.ledgeDashesForPlayer[character][stage]['invincible']) {
+                ledgedashes[character][stage][date].percentOfTotal.push(stat.ledgeDashesForPlayer[character][stage]['invincible'].percentOfTotalLedgedashes);
+                ledgedashes[character][stage][date].averageInvincibilityFrames.push(stat.ledgeDashesForPlayer[character][stage]['invincible'].averageExtraInvincibilityFrames);
+              } else {
+                ledgedashes[character][stage][date].percentOfTotal.push(0);
+                ledgedashes[character][stage][date].averageInvincibilityFrames.push(0);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for (let character of Object.keys(ledgedashes)) {
+      for (let stage of Object.keys(ledgedashes[character])) {
+        for (let date of Object.keys(ledgedashes[character][stage])) {
+          const value = ledgedashes[character][stage][date];
+          ledgedashes[character][stage][date].percentOfTotal = GeneralUtils.moyenneFromNumberArray(value.percentOfTotal);
+          ledgedashes[character][stage][date].averageInvincibilityFrames = GeneralUtils.moyenneFromNumberArray(value.averageInvincibilityFrames);
+        }
+      }
+    }
+    this.meanDatas['ledgeDashes'] = ledgedashes;
+  }
+
   private niceDate(date: string): string {
     return date.substr(0, 10);
   }

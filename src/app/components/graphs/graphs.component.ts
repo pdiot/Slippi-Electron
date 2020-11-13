@@ -20,6 +20,7 @@ export class GraphsComponent implements OnInit {
   opponentOverallDataSet;
   playerConversionsDataSet;
   opponentConversionsDataSet;
+  ledgeDashesDataSet;
 
   toggled : any = {};
 
@@ -42,6 +43,7 @@ export class GraphsComponent implements OnInit {
           this.opponentOverallDataSet = result.opponentOverallDataSet;
           this.playerConversionsDataSet = result.playerConversionsDataSet;
           this.opponentConversionsDataSet = result.opponentConversionsDataSet;
+          this.ledgeDashesDataSet = result.playerLedgedashesDataSet;
           this.display = true;
           this.showOverlay = false;
           this.cd.detectChanges();

@@ -11,18 +11,19 @@
     <app-foldable-block [label]="'Against ' + character" [collapseId]="i">
       <ng-container>
         <div class="statsDisplayStageWrapper">
-          <div class="stageBlock"
-            *ngFor="let stage of getKeys(lCancelDataSet[character]); let j = index;">
+          <div class="stageBlock" *ngFor="let stage of getKeys(lCancelDataSet[character]); let j = index;">
             <app-foldable-block [label]="'On ' + getStageName(stage)" [collapseId]="i + '' + j">
               <ng-container>
                 <div class="subsectionWrapper">
                   <!-- L-Cancels -->
                   <div class="subsectionBlock">
-                    <app-foldable-block [label]="'L-Cancels'" [collapseId]="i + '' + j + '1'" (toggledEmit)="handleToggleEmit(character, stage, 'lCancels', $event)">
+                    <app-foldable-block [label]="'L-Cancels'" [collapseId]="i + '' + j + '1'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'lCancels', $event)">
                       <div class="subsection" *ngIf="buildDOM(character, stage, 'lCancels')">
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [yScaleMin]="0" [yScaleMax]="100"
-                          [xAxisLabel]="'Date'" [yAxisLabel]="lCancelDataSet[character][stage][0].name"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [yScaleMin]="0"
+                          [yScaleMax]="100" [xAxisLabel]="'Date'"
+                          [yAxisLabel]="lCancelDataSet[character][stage][0].name"
                           [results]="lCancelDataSet[character][stage]">
                         </ngx-charts-area-chart>
                       </div>
@@ -30,29 +31,34 @@
                   </div>
                   <!-- PlayerOverall -->
                   <div class="subsectionBlock" *ngIf="playerOverallDataSet">
-                    <app-foldable-block [label]="'Overall stats from player'" [collapseId]="i + '' + j + '2'" (toggledEmit)="handleToggleEmit(character, stage, 'playerOverall', $event)">
+                    <app-foldable-block [label]="'Overall stats from player'" [collapseId]="i + '' + j + '2'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'playerOverall', $event)">
                       <div class="subsection" *ngIf="buildDOM(character, stage, 'playerOverall')">
                         <!-- Kill count -->
-                        <ngx-charts-area-chart [animations]="false"  [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerOverallDataSet[character][stage]['killCount'][0].name"
                           [results]="playerOverallDataSet[character][stage]['killCount']">
                         </ngx-charts-area-chart>
                         <!-- Kill percent -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerOverallDataSet[character][stage]['killPercent'][0].name"
                           [results]="playerOverallDataSet[character][stage]['killPercent']">
                         </ngx-charts-area-chart>
                         <!-- Openings per kill -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerOverallDataSet[character][stage]['openingsPerKill'][0].name"
                           [results]="playerOverallDataSet[character][stage]['openingsPerKill']">
                         </ngx-charts-area-chart>
                         <!-- Total damage -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerOverallDataSet[character][stage]['totalDamage'][0].name"
                           [results]="playerOverallDataSet[character][stage]['totalDamage']">
                         </ngx-charts-area-chart>
@@ -61,29 +67,34 @@
                   </div>
                   <!-- OpponentOverall -->
                   <div class="subsectionBlock" *ngIf="opponentOverallDataSet">
-                    <app-foldable-block [label]="'Overall stats from opponents'" [collapseId]="i + '' + j + '3'" (toggledEmit)="handleToggleEmit(character, stage, 'opponentOverall', $event)">
+                    <app-foldable-block [label]="'Overall stats from opponents'" [collapseId]="i + '' + j + '3'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'opponentOverall', $event)">
                       <div class="subsection" *ngIf="buildDOM(character, stage, 'opponentOverall')">
                         <!-- Kill count -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentOverallDataSet[character][stage]['killCount'][0].name"
                           [results]="opponentOverallDataSet[character][stage]['killCount']">
                         </ngx-charts-area-chart>
                         <!-- Kill percent -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentOverallDataSet[character][stage]['killPercent'][0].name"
                           [results]="opponentOverallDataSet[character][stage]['killPercent']">
                         </ngx-charts-area-chart>
                         <!-- Openings per kill -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentOverallDataSet[character][stage]['openingsPerKill'][0].name"
                           [results]="opponentOverallDataSet[character][stage]['openingsPerKill']">
                         </ngx-charts-area-chart>
                         <!-- Total damage -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentOverallDataSet[character][stage]['totalDamage'][0].name"
                           [results]="opponentOverallDataSet[character][stage]['totalDamage']">
                         </ngx-charts-area-chart>
@@ -92,29 +103,34 @@
                   </div>
                   <!-- Player conversions -->
                   <div class="subsectionBlock" *ngIf="playerConversionsDataSet">
-                    <app-foldable-block [label]="'Conversions from player'" [collapseId]="i + '' + j + '4'" (toggledEmit)="handleToggleEmit(character, stage, 'playerConversions', $event)">
+                    <app-foldable-block [label]="'Conversions from player'" [collapseId]="i + '' + j + '4'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'playerConversions', $event)">
                       <div class="subsection" *ngIf="buildDOM(character, stage, 'playerConversions')">
                         <!-- Kill count -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerConversionsDataSet[character][stage]['neutralWinAverageDamage'][0].name"
                           [results]="playerConversionsDataSet[character][stage]['neutralWinAverageDamage']">
                         </ngx-charts-area-chart>
                         <!-- Kill percent -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerConversionsDataSet[character][stage]['neutralWinAverageLength'][0].name"
                           [results]="playerConversionsDataSet[character][stage]['neutralWinAverageLength']">
                         </ngx-charts-area-chart>
                         <!-- Openings per kill -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerConversionsDataSet[character][stage]['punishAverageDamage'][0].name"
                           [results]="playerConversionsDataSet[character][stage]['punishAverageDamage']">
                         </ngx-charts-area-chart>
                         <!-- Total damage -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="playerConversionsDataSet[character][stage]['punishAverageLength'][0].name"
                           [results]="playerConversionsDataSet[character][stage]['punishAverageLength']">
                         </ngx-charts-area-chart>
@@ -123,31 +139,58 @@
                   </div>
                   <!-- Opponent conversions -->
                   <div class="subsectionBlock" *ngIf="opponentConversionsDataSet">
-                    <app-foldable-block [label]="'Conversions from opponents'" [collapseId]="i + '' + j + '5'" (toggledEmit)="handleToggleEmit(character, stage, 'oppponentConversions', $event)">
+                    <app-foldable-block [label]="'Conversions from opponents'" [collapseId]="i + '' + j + '5'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'oppponentConversions', $event)">
                       <div class="subsection" *ngIf="buildDOM(character, stage, 'oppponentConversions')">
                         <!-- Kill count -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentConversionsDataSet[character][stage]['neutralWinAverageDamage'][0].name"
                           [results]="opponentConversionsDataSet[character][stage]['neutralWinAverageDamage']">
                         </ngx-charts-area-chart>
                         <!-- Kill percent -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentConversionsDataSet[character][stage]['neutralWinAverageLength'][0].name"
                           [results]="opponentConversionsDataSet[character][stage]['neutralWinAverageLength']">
                         </ngx-charts-area-chart>
                         <!-- Openings per kill -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentConversionsDataSet[character][stage]['punishAverageDamage'][0].name"
                           [results]="opponentConversionsDataSet[character][stage]['punishAverageDamage']">
                         </ngx-charts-area-chart>
                         <!-- Total damage -->
-                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme" [showXAxisLabel]="true"
-                          [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [xAxisLabel]="'Date'"
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true"
+                          [xAxisLabel]="'Date'"
                           [yAxisLabel]="opponentConversionsDataSet[character][stage]['punishAverageLength'][0].name"
                           [results]="opponentConversionsDataSet[character][stage]['punishAverageLength']">
+                        </ngx-charts-area-chart>
+                      </div>
+                    </app-foldable-block>
+                  </div>
+                  <!-- Ledgedashes -->
+                  <div class="subsectionBlock" *ngIf="ledgeDashesDataSet">
+                    <app-foldable-block [label]="'Invincible ledgedashes'" [collapseId]="i + '' + j + '6'"
+                      (toggledEmit)="handleToggleEmit(character, stage, 'ledgeDashes', $event)">
+                      <div class="subsection" *ngIf="buildDOM(character, stage, 'ledgeDashes')">
+                        <!-- Invincible ledgedashes ratio -->
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [yScaleMin]="0"
+                          [yScaleMax]="100" [xAxisLabel]="'Date'"
+                          [yAxisLabel]="ledgeDashesDataSet[character][stage]['percentOfTotal'][0].name"
+                          [results]="ledgeDashesDataSet[character][stage]['percentOfTotal']">
+                        </ngx-charts-area-chart>
+                        <!-- Extra invul frames -->
+                        <ngx-charts-area-chart [animations]="false" [view]="[600,250]" [scheme]="colorScheme"
+                          [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxis]="true" [yAxis]="true" [yScaleMin]="0"
+                          [yScaleMax]="100" [xAxisLabel]="'Date'"
+                          [yAxisLabel]="ledgeDashesDataSet[character][stage]['averageInvincibilityFrames'][0].name"
+                          [results]="ledgeDashesDataSet[character][stage]['averageInvincibilityFrames']">
                         </ngx-charts-area-chart>
                       </div>
                     </app-foldable-block>

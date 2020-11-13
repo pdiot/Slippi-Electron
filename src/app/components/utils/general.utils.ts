@@ -21,10 +21,10 @@ export default class GeneralUtils {
     }
   }
 
-  static getTop3MostCommonMoves(moves: {move: string, count: number}[]): {move: string, count: number}[] {
+  static getTop3MostCommonMoves(moves: { move: string, count: number }[]): { move: string, count: number }[] {
     let returnValue = [];
     let sortedMoves = moves.sort((moveA, moveB) => moveB.count - moveA.count);
-    for (let i = 0; i < moves.length && i < 3; i ++) {
+    for (let i = 0; i < moves.length && i < 3; i++) {
       returnValue.push(sortedMoves[i]);
     }
     return returnValue;
@@ -53,5 +53,20 @@ export default class GeneralUtils {
     }
     return max;
   }
+
+  static moyenneFromNumberArray(numbers: number[]): number {
+    let total = 0, count = 0;
+    for (let num of numbers) {
+      if (num) {
+        total += num;
+        count ++;
+      }
+    }
+    if (count !== 0) {
+      return total / count;
+    } else {
+      return undefined;
+    }
+  }
 }
-  
+
