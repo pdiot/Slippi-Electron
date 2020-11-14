@@ -7,6 +7,95 @@ export class IconsService {
 
   constructor() {}
 
+  public getCharacterVersus(character: string | number, side: 'left' | 'right'): string {
+    let path = 'assets/versuschars/';
+    const imgName = `vs-${side}.png`;
+    switch (character) {
+      case 'Falcon' || 2:
+        path = `${path}/captain-falcon/default/${imgName}`;
+        break;
+      case 'DK' || 3:
+        path = `${path}/donkey-kong/default/${imgName}`;
+        break;
+      case 'Fox' || 1:
+        path = `${path}/fox/default/${imgName}`;
+        break;
+      case 'G&W' || 24:
+        path = `${path}/mr-game-watch/default/${imgName}`;
+        break;
+      case 'Kirby' || 4:
+        path = `${path}/kirby/default/${imgName}`;
+        break;
+      case 'Bowser' || 5:
+        path = `${path}/bowser/default/${imgName}`;
+        break;
+      case 'Link' || 6:
+        path = `${path}/link/default/${imgName}`;
+        break;
+      case 'Luigi' || 17:
+        path = `${path}/luigi/default/${imgName}`;
+        break;
+      case 'Mario' || 0:
+        path = `${path}/mario/default/${imgName}`;
+        break;
+      case 'Marth' || 18:
+        path = `${path}/marth/default/${imgName}`;
+        break;
+      case 'Mewtwo' || 16:
+        path = `${path}/mewtwo/default/${imgName}`;
+        break;
+      case 'Ness' || 8:
+        path = `${path}/ness/default/${imgName}`;
+        break;
+      case 'Peach' || 9:
+        path = `${path}/peach/default/${imgName}`;
+        break;
+      case 'Pikachu' || 12:
+        path = `${path}/pikachu/default/${imgName}`;
+        break;
+      case 'ICs' || 10:
+        path = `${path}/ice-climbers/default/${imgName}`;
+        break;
+      case 'Puff' || 15:
+        path = `${path}/jigglypuff/default/${imgName}`;
+        break;
+      case 'Samus' || 13:
+        path = `${path}/samus/default/${imgName}`;
+        break;
+      case 'Yoshi' || 14:
+        path = `${path}/yoshi/default/${imgName}`;
+        break;
+      case 'Zelda' || 19:
+        path = `${path}/zelda/default/${imgName}`;
+        break;
+      case 'Sheik' || 7:
+        path = `${path}/sheik/default/${imgName}`;
+        break;
+      case 'Falco' || 22:
+        path = `${path}/falco/default/${imgName}`;
+        break;
+      case 'Doc' || 21:
+        path = `${path}/dr-mario/default/${imgName}`;
+        break;
+      case 'Roy' || 26:
+        path = `${path}/roy/default/${imgName}`;
+        break;
+      case 'YLink' || 20:
+        path = `${path}/young-link/default/${imgName}`;
+        break;
+      case 'Pichu' || 23:
+        path = `${path}/pichu/default/${imgName}`;
+        break;
+      case 'Ganon' || 25:
+        path = `${path}/ganondorf/default/${imgName}`;
+        break;
+      default:
+        path = `${path}/fox/default/${imgName}`;
+        break;
+    }
+    return path;
+  }
+
   public getCharacterIcon(character: string | number): string {
     const path = 'assets/chars/';
     switch (character) {
