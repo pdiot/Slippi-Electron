@@ -1,0 +1,33 @@
+.top-block {
+  display: flex;
+  flex-direction: row;
+
+  .portrait-left {
+    width: 15%;
+    background: rgba(0, 0, 0, 0) radial-gradient(circle at center -30%, rgb(245, 46, 46), transparent) repeat scroll 0%
+      0%;
+  }
+  .portrait-right {
+    width: 15%;
+    background: rgba(0, 0, 0, 0) radial-gradient(circle at center -30%, rgb(84, 99, 255), transparent) repeat scroll 0%
+      0%;
+  }
+  .stats-tabs {
+    width: 70%;
+  }
+
+  .char-versus-picture {
+    content: " ";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left top;
+  }
+}
+
+.bottom-block {
+  display: flex;
+  flex-direction: row;
+}
