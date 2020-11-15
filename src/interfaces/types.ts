@@ -76,7 +76,7 @@ export interface ProcessedOverallList {
   killCountMoyenne: number,
   openingsPerKillMoyenne: number,
   damagePerOpeningMoyenne: number,
-  killPercentMoyenne: number,    
+  killPercentMoyenne: number,
 }
 
 export interface StatsCalculationProgress {

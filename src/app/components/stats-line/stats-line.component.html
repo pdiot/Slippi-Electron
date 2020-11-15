@@ -1,14 +1,11 @@
-<ng-container *ngIf="!value2; then oneValue else twoValues;"></ng-container>
-<ng-template #oneValue>
-  <div class="lineOneValue">
-    <p class="label">{{label}}</p>
-    <p class="value">{{value}}{{unit1 ? unit1 : ''}}</p>
+<ng-container *ngIf="separator; then separatorBlock else normal"></ng-container>
+<ng-template #normal>
+  <div class="stat-line" [ngClass]="{'highlight': highlight}">
+    <div class="value-left">{{value1}}{{unit1 ? unit1 : ''}}</div>
+    <div [ngClass]="{'highlight': highlight, 'label': label}">{{label}}</div>
+    <div class="value-right">{{value2}}{{unit2 ? unit2 : ''}}</div>
   </div>
 </ng-template>
-<ng-template #twoValues>
-  <div class="lineTwoValues">
-    <p class="label">{{label}}</p>
-    <p class="value">{{value}}{{unit1 ? unit1 : ''}}</p>
-    <p class="value">{{value2}}{{unit2 ? unit2 : ''}}</p>
-  </div>
+<ng-template #separatorBlock>
+  <div class="separator"></div>
 </ng-template>

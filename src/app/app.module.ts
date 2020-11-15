@@ -16,7 +16,6 @@ import { StatsDisplayBlockComponent } from './components/stats-display-block/sta
 import { MenuComponent } from './components/menu/menu.component';
 import { GameLineComponent } from './components/game-line/game-line.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { GraphsComponent } from './components/graphs/graphs.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StatsDisplayReworkComponent } from './pages/stats-display-rework/stats-display-rework.component';
 import { CompareComponent } from './pages/compare/compare.component';
@@ -24,6 +23,8 @@ import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
 import { StatsDisplayComponent } from './pages/stats-display/stats-display.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { StatsTabsContainerComponent } from './components/stats-tabs-container/stats-tabs-container.component';
+import { GraphsComponent } from './pages/graphs/graphs.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MenuComponent,
     GameLineComponent,
     GraphsComponent,
-    StatsDisplayReworkComponent
+    StatsDisplayReworkComponent,
+    StatsTabsContainerComponent
   ],
   imports: [
     BrowserModule,

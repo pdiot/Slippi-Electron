@@ -21,6 +21,10 @@ export default class GeneralUtils {
     }
   }
 
+  static removeLanding(landing: string): string {
+    return landing.split(' ')[0];
+  }
+
   static getTop3MostCommonMoves(moves: { move: string, count: number }[]): { move: string, count: number }[] {
     let returnValue = [];
     let sortedMoves = moves.sort((moveA, moveB) => moveB.count - moveA.count);

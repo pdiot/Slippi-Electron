@@ -161,6 +161,7 @@ export class StatsDisplayComponent implements OnInit {
       niceNamesToKeep.push(GameFileUtils.niceName(game.file));
     }
     const newStats: StatsItem = {
+      playerCharName: undefined,
       playerConversions: undefined,
       opponentConversions: undefined,
       playerOveralls: undefined,

@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import GeneralUtils from 'src/app/components/utils/general.utils';
 import { ElecService } from 'src/app/elec.service';
 import { StatsGraphService } from 'src/services/stats-graph/stats-graph.service';
 import { StoreService } from 'src/services/store/store.service';
-import GeneralUtils from '../utils/general.utils';
 
 @Component({
   selector: 'app-graphs',

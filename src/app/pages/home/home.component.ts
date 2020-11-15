@@ -32,6 +32,11 @@ export class HomeComponent implements OnInit {
           console.log('Home - Received gameFilter from store : ', value.gameFilter);
           this.filter = value.gameFilter;
         }
+        if (value.playerCharName) {
+          console.log('Home - Received playerCharName from store : ', value.playerCharName);
+          this.initStatsIfNeeded();
+          this.stats.playerCharName = value.playerCharName;
+        }
         if (value.playerConversions) {
           console.log('Home - Received playerConversions from store : ', value.playerConversions);
           this.initStatsIfNeeded();
@@ -117,6 +122,7 @@ export class HomeComponent implements OnInit {
   private initStatsIfNeeded() {
     if (!this.stats) {
       this.stats = {
+        playerCharName: undefined,
         playerConversions : undefined,
         opponentConversions : undefined,
         playerOveralls : undefined,
