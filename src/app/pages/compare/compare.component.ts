@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
+import { StatsItem } from 'src/interfaces/outputs';
 import { StoreService } from 'src/services/store/store.service';
 
 @Component({
@@ -15,6 +16,8 @@ export class CompareComponent implements OnInit {
   secondFilePath;
   showOverlay = false;
 
+  stats;
+
   constructor(private electron: ElecService, private cd : ChangeDetectorRef, private store: StoreService) { }
 
   ngOnInit(): void {
@@ -22,6 +25,7 @@ export class CompareComponent implements OnInit {
       if (value?.firstFile) {
         this.firstFile = value.firstFile.statsFromJSON;
         this.firstFilePath = value.firstFile.path;
+        this.makeStats();
       } else {
         this.firstFile = undefined;
         this.firstFilePath = undefined;
@@ -29,12 +33,31 @@ export class CompareComponent implements OnInit {
       if (value?.secondFile) {
         this.secondFile = value.secondFile.statsFromJSON;
         this.secondFilePath = value.secondFile.path;
+        this.makeStats();
       } else {
         this.secondFile = undefined;
         this.secondFilePath = undefined;
       }
       this.cd.detectChanges();
     })
+  }
+
+  makeStats() {
+    if (this.secondFile && this.firstFile) {
+      this.stats = {
+        playerCharName: this.firstFile.playerCharName,
+        playerOverall: this.firstFile.playerOverall,
+        opponentOverall: this.secondFile.playerOverall,
+        playerConversions: this.firstFile.playerConversions,
+        opponentConversions: this.secondFile.playerConversions,
+        punishedActionsForPlayer: this.firstFile.punishedActionsForPlayer,
+        punishedActionsForOpponent: this.secondFile.punishedActionsForPlayer,
+        lcancelsForPlayer: this.firstFile.lcancelsForPlayer,
+        lcancelsForOpponent: this.secondFile.lcancelsForPlayer,
+        ledgeDashesForPlayer: this.firstFile.ledgeDashesForPlayer,
+        ledgeDashesForOpponent: this.firstFile.ledgeDashesForPlayer
+      }
+    }
   }
 
   loadFile(select: number) {

@@ -44,8 +44,8 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     private iconService: IconsService,
     private electron: ElecService) { }
 
-  currentCharacter = 'Puff';
-  currentStage = 'allStages';
+  currentCharacter;
+  currentStage;
 
   showModale = false;
   characterModale = false;

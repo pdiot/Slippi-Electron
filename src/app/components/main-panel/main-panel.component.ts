@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ElecService } from 'src/app/elec.service';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
 import { GameFileFilter } from 'src/interfaces/types';
 
@@ -17,7 +18,7 @@ export class MainPanelComponent implements OnInit, OnChanges {
 
   @Input() selectedGames: EnrichedGameFile[];
 
-  constructor(private cd: ChangeDetectorRef) {
+  constructor(private cd: ChangeDetectorRef, private elec: ElecService) {
   }
 
   ngOnInit(): void {
@@ -41,6 +42,10 @@ export class MainPanelComponent implements OnInit, OnChanges {
 
   get hasEnrichedGameFiles(): boolean {
     return this.enrichedGameFiles && this.enrichedGameFiles.length > 0;
+  }
+
+  openLink(link: string) {
+    this.elec.shell.openExternal(link);
   }
 
 }

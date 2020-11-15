@@ -1,16 +1,41 @@
 @use '../../../variables' as variables;
 
+form {
+  margin-left: 1em;
+}
+
 .playerLabel {
   width: fit-content;
-  font-size: 24px;
-  padding: 8px;
-  border: variables.$white 1px solid;
+  margin-top: 0.3rem;
   margin-right: 10px;
-  border-radius: 8px;
+  font-weight: 600;
+  color: variables.$black;
+  background-color: variables.$white;
+  text-align: center;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  font-size: 1.2em;
+  box-shadow: variables.$black 0.2em 0.2em 0.2em;
+  opacity: 1;
+  transition: opacity 0.1s ease-in-out 0s;
+  position: relative;
+  cursor: pointer;
 
   input {
     display: none;
   }
+}
+
+.playerLabel.selected {
+  color: variables.$white;
+  background-color: variables.$lightGreen;
+}
+
+.playerLabel.ignored {
+  color: variables.$white;
+  background-color: variables.$lightRed;
 }
 
 .charLabel {
@@ -46,4 +71,5 @@
 .formRow {
   display: flex;
   flex-wrap: wrap;
+  padding-left: 1em;
 }

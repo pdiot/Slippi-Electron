@@ -16,11 +16,6 @@
 </div>
 <ng-container *ngIf="firstFile && secondFile">
   <div class="statsWrapper">
-    <div class="statsBlock">
-      <app-stats-compare-display [statsFromJSON]="firstFile" [collapseId]="'first'"></app-stats-compare-display>
-    </div>
-    <div class="statsBlock">
-      <app-stats-compare-display [statsFromJSON]="secondFile" [collapseId]="'second'"></app-stats-compare-display>
-    </div>
+    <app-stats-compare-display [stats]="stats"></app-stats-compare-display>
   </div>
 </ng-container>
