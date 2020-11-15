@@ -3,9 +3,9 @@
 .filesRow {
   display: flex;
   flex-direction: row;
-  margin-top: 10px;
 
   .fileData {
+    margin-top: 10px;
     width: 50%;
     display: flex;
     flex-direction: row;
@@ -28,12 +28,7 @@
 .statsWrapper {
   display: flex;
   flex-direction: row;
-
-  .statsBlock {
-    width: 50%;
-  }
-
-  .statsBlock:first-of-type {
-    border-right: variables.$white 8px solid;
+  app-stats-compare-display {
+    width: 100%;
   }
 }

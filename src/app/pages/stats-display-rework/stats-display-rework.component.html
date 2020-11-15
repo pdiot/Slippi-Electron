@@ -90,7 +90,7 @@
           <app-stats-line
             [value1]="getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit1]="'%'"
-            [value1]="getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit2]="'%'" [label]="'Most common neutral opener'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
@@ -116,7 +116,7 @@
           <app-stats-line
             [value1]="getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit1]="'%'"
-            [value1]="getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit2]="'%'" [label]="'Most common punish option'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
@@ -125,13 +125,13 @@
           <app-stats-line
             [value1]="getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit1]="'%'"
-            [value1]="getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit2]="'%'" [label]="'Most common neutral kill option'">
           </app-stats-line>
           <app-stats-line
             [value1]="getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit1]="'%'"
-            [value1]="getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
             [unit2]="'%'" [label]="'Most common punish kill option'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
@@ -219,7 +219,7 @@
             *ngFor="let option of getTop3OfPunishedOptions(getData('failedMoves', lcancelsForPlayer, currentCharacter, currentStage)); let i = index;">
             <app-stats-line [value1]="removeLanding(option.move) + ' - ' + (option.count | number:'1.0-1')"
               [unit1]="'%'" [unit2]="'%'"
-              [value2]="getTop3OfPunishedOptions(getData('failedMoves', punishedActionsForOpponent, currentCharacter, currentStage)?.onWhiff)?.length > i ? removeLanding(getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage).onWhiff)[i].move) + ' - ' + (getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage).onWhiff)[i].count | number:'1.0-1'): 'N/A '">
+              [value2]="getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))?.length > i ? removeLanding(getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))[i].move) + ' - ' + (getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))[i].count | number:'1.0-1'): 'N/A '">
             </app-stats-line>
           </ng-container>
           <app-stats-line [separator]="true"></app-stats-line>

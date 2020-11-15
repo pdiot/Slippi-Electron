@@ -1,21 +1,29 @@
 <ng-container *ngIf="stats; then hasStats else noStats"></ng-container>
 <ng-template #noStats>
   <div [ngClass]="{'content' : !hasEnrichedGameFiles}">
-    <div class="header">
+    <div class="header" [ngClass]="{'offset': hasEnrichedGameFiles}">
+      <div class="header-data-line">
+        <div class="d40"></div>
         <h1>Slippi stats calculator V0.8</h1>
-        <ng-container>
-          <app-upload></app-upload>
-        </ng-container>
-        <ng-container *ngIf="hasEnrichedGameFiles">
-          <app-game-list [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-game-list>
-        </ng-container>
+        <div class="d20"></div>
+        <div class="slippi-link">
+          <A (click)="openLink('https://slippi.gg')">
+            <img alt="Powered by Slippi" title="Open Slippi.gg homepage" src="./assets/powered-by.png" />
+          </A>
+        </div>
+      </div>
+      <ng-container>
+        <app-upload></app-upload>
+      </ng-container>
     </div>
+    <ng-container *ngIf="hasEnrichedGameFiles">
+      <app-game-list [enrichedGameFiles]="enrichedGameFiles" [filter]="filter"></app-game-list>
+    </ng-container>
   </div>
 </ng-template>
 <ng-template #hasStats>
   <div>
     <div>
-      <!-- <app-stats-display [stats]="stats" [selectedGames]="selectedGames"></app-stats-display> -->
       <app-stats-display-rework [stats]="stats" [selectedGames]="selectedGames"></app-stats-display-rework>
     </div>
   </div>

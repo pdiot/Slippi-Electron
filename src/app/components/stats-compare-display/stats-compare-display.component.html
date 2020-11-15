@@ -1,14 +1,299 @@
-<app-stats-display-block *ngIf="collapseId"
-    [playerConversions]="playerConversions"
-    [opponentConversions]="opponentConversions"
-    [playerOverall]="playerOverall"
-    [opponentOverall]="opponentOverall"
-    [punishedActionsForPlayer]="punishedActionsForPlayer"
-    [punishedActionsForOpponent]="punishedActionsForOpponent"
-    [lcancelsForPlayer]="lcancelsForPlayer"
-    [lcancelsForOpponent]="lcancelsForOpponent"
-    [ledgeDashesForPlayer]="ledgeDashesForPlayer"
-    [ledgeDashesForOpponent]="ledgeDashesForOpponent"
-    [collapseId]="collapseId"
->
-</app-stats-display-block>
+<div class="top-block">
+  <div class="left">
+    <div class="portrait-left">
+      <div class="char-versus-picture" [style.backgroundImage]="'url(' + getPlayerImageUrl() +')'">
+      </div>
+    </div>
+  </div>
+  <div class="stats-tabs">
+    <div class="tab-labels">
+      <ng-container *ngFor="let tab of tabs">
+        <div class="label" [ngClass]="{'active': tab.active}" (click)="setActiveTab(tab.key)">{{tab.label}}</div>
+      </ng-container>
+    </div>
+    <div class="tab-contents" *ngIf="currentCharacter && currentStage">
+      <!-- Overall tab -->
+      <ng-container *ngIf="isActiveTab('overall')">
+        <div *ngIf="playerOverall && opponentOverall" class="content">
+          <app-stats-line [value1]="'Stats for file 1'" [value2]="'Stats for file 2'" [label]="'Overall Stats'"
+            [highlight]="true"></app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+          <app-stats-line
+            [value1]="getData('conversionsRatio', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('conversionsRatio', opponentOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit2]="'%'" [label]="'% of openings'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('killCountMoyenne', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [value2]="getData('killCountMoyenne', opponentOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [label]="'Average number of kills'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('killPercentMoyenne', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('killPercentMoyenne', opponentOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average kill %'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('openingsPerKillMoyenne', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [value2]="getData('openingsPerKillMoyenne', opponentOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [label]="'Openings per kill'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('totalDamageMoyenne', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('totalDamageMoyenne', opponentOverall, currentCharacter, currentStage)| number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average damage done'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+        </div>
+      </ng-container>
+      <!-- Conversions tab -->
+      <ng-container *ngIf="isActiveTab('conversions')">
+        <div *ngIf="playerConversions && opponentConversions" class="content">
+          <app-stats-line [value1]="'Stats for file 1'" [value2]="'Stats for file 2'" [label]="'Conversion Stats'"
+            [highlight]="true"></app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+          <app-stats-line [label]="'Damage for most common neutral openers'"></app-stats-line>
+          <app-stats-line *ngFor="let i of [0,1,2]"
+            [value1]="getMoveName(getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getMoveName(getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [unit2]="'%'">
+          </app-stats-line>
+          <app-stats-line [label]="'Damage for most common punishes'"></app-stats-line>
+          <app-stats-line *ngFor="let i of [0,1,2]"
+            [value1]="getMoveName(getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getMoveName(getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [unit2]="'%'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+
+          <app-stats-line [label]="'Neutral Wins'" [highlight]="true"></app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average damage (single-hit)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average damage (multi-hits)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
+            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
+            [label]="'Average length (multi-hits)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit2]="'%'" [label]="'Most common neutral opener'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+
+          <app-stats-line [label]="'Punishes'" [highlight]="true"></app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average damage (single-hit)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [unit2]="'%'" [label]="'Average damage (multi-hits)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
+            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
+            [label]="'Average length (multi-hits)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit2]="'%'" [label]="'Most common punish option'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+
+          <app-stats-line [label]="'Kills'" [highlight]="true"></app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit2]="'%'" [label]="'Most common neutral kill option'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit1]="'%'"
+            [value2]="getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [unit2]="'%'" [label]="'Most common punish kill option'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+        </div>
+      </ng-container>
+      <!-- Punished options tab -->
+      <ng-container *ngIf="isActiveTab('punishes')">
+        <div *ngIf="punishedActionsForPlayer && punishedActionsForOpponent" class="content">
+          <app-stats-line [value1]="'Stats for file 1'" [value2]="'Stats for file 2'" [label]="'Punished options Stats'"
+            [highlight]="true"></app-stats-line>
+          <app-stats-line [value1]="'Player actions punished by opponent'"
+            [value2]="'Player actions punished by opponent'"></app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+          <app-stats-line [label]="'Punished attacks'" [highlight]="true"></app-stats-line>
+          <app-stats-line [label]="'On whiff'"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForPlayer, currentCharacter, currentStage).onWhiff); let i = index;">
+            <app-stats-line [value1]="option.attack + ' - ' + (option.count | number:'1.0-1')" [unit1]="'%'"
+              [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage)?.onWhiff)?.length > i ? getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onWhiff)[i].attack + ' - ' + (getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onWhiff)[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+
+          <app-stats-line [label]="'On shield'"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForPlayer, currentCharacter, currentStage).onShield); let i = index;">
+            <app-stats-line [value1]="option.attack + ' - ' + (option.count | number:'1.0-1')" [unit1]="'%'"
+              [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage)?.onShield)?.length > i ? getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onShield)[i].attack + ' - ' + (getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onShield)[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+
+          <app-stats-line [label]="'On powershield'"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForPlayer, currentCharacter, currentStage).onPShield); let i = index;">
+            <app-stats-line [value1]="option.attack + ' - ' + (option.count | number:'1.0-1')" [unit1]="'%'"
+              [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage)?.onPShield)?.length > i ? getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onPShield)[i].attack + ' - ' + (getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onPShield)[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+
+          <app-stats-line [label]="'On hit'"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForPlayer, currentCharacter, currentStage).onHit); let i = index;">
+            <app-stats-line *ngIf="option" [value1]="option.attack + ' - ' + (option.count | number:'1.0-1')"
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage)?.onHit)?.length > i ? getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onHit)[i].attack + ' - ' + (getTop3OfPunishedOptions(getData('punishedAttacks', punishedActionsForOpponent, currentCharacter, currentStage).onHit)[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+
+          <app-stats-line [label]="'Punished defensive options'" [highlight]="true"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedDefensiveOptions', punishedActionsForPlayer, currentCharacter, currentStage)); let i = index;">
+            <app-stats-line *ngIf="option" [value1]="option.defensiveOption + ' - ' + (option.count | number:'1.0-1')"
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedDefensiveOptions', punishedActionsForOpponent, currentCharacter, currentStage))?.length > i ? getTop3OfPunishedOptions(getData('punishedDefensiveOptions', punishedActionsForOpponent, currentCharacter, currentStage))[i].defensiveOption + ' - ' + (getTop3OfPunishedOptions(getData('punishedDefensiveOptions', punishedActionsForOpponent, currentCharacter, currentStage))[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+
+          <app-stats-line [label]="'Punished movement options'" [highlight]="true"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('punishedMovementOptions', punishedActionsForPlayer, currentCharacter, currentStage)); let i = index;">
+            <app-stats-line *ngIf="option" [value1]="option.movementOption + ' - ' + (option.count | number:'1.0-1')"
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('punishedMovementOptions', punishedActionsForOpponent, currentCharacter, currentStage))?.length > i ? getTop3OfPunishedOptions(getData('punishedMovementOptions', punishedActionsForOpponent, currentCharacter, currentStage))[i].movementOption + ' - ' + (getTop3OfPunishedOptions(getData('punishedMovementOptions', punishedActionsForOpponent, currentCharacter, currentStage))[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+          <app-stats-line [separator]="true"></app-stats-line>
+        </div>
+      </ng-container>
+      <!-- L-Cancels tab -->
+      <ng-container *ngIf="isActiveTab('lcancels')">
+        <div *ngIf="lcancelsForPlayer && lcancelsForOpponent" class="content">
+          <app-stats-line [value1]="'Stats for file 1'" [value2]="'Stats for file 2'" [label]="'L-Cancel Stats'"
+            [highlight]="true"></app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+
+          <app-stats-line
+            [value1]="getRatio(getData('lcancels', lcancelsForPlayer, currentCharacter, currentStage)) | number:'1.0-1'"
+            [unit1]="'%'"
+            [value2]="getRatio(getData('lcancels', lcancelsForOpponent, currentCharacter, currentStage)) | number:'1.0-1'"
+            [unit2]="'%'" [label]="'Ratio of successful L-Cancels'">
+          </app-stats-line>
+
+          <app-stats-line [label]="'Moves with failed l-cancels'"></app-stats-line>
+          <ng-container
+            *ngFor="let option of getTop3OfPunishedOptions(getData('failedMoves', lcancelsForPlayer, currentCharacter, currentStage)); let i = index;">
+            <app-stats-line [value1]="removeLanding(option.move) + ' - ' + (option.count | number:'1.0-1')"
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))?.length > i ? removeLanding(getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))[i].move) + ' - ' + (getTop3OfPunishedOptions(getData('failedMoves', lcancelsForOpponent, currentCharacter, currentStage))[i].count | number:'1.0-1'): 'N/A '">
+            </app-stats-line>
+          </ng-container>
+          <app-stats-line [separator]="true"></app-stats-line>
+        </div>
+      </ng-container>
+      <!-- Ledgedashes tab -->
+      <ng-container *ngIf="isActiveTab('ledgedashes')">
+        <div *ngIf="ledgeDashesForPlayer && ledgeDashesForOpponent" class="content">
+          <app-stats-line [value1]="'Stats for file 1'" [value2]="'Stats for file 2'" [label]="'Ledgedashes Stats'"
+            [highlight]="true"></app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+          <app-stats-line [label]="'Invincible Ledgedashes'" [highlight]="true"></app-stats-line>
+          <app-stats-line [label]="'% of total ledgedashes'"
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.percentOfTotalLedgedashes ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage).percentOfTotalLedgedashes | number:'1.0-1') : 'N/A' "
+            [unit1]="'%'" [unit2]="'%'"
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.percentOfTotalLedgedashes ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage).percentOfTotalLedgedashes | number:'1.0-1') : 'N/A' ">
+          </app-stats-line>
+          <app-stats-line [label]="'Average extra invincibility frames'"
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'"
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'">
+          </app-stats-line>
+          <app-stats-line [label]="'Average framecount since ledgedrop'"
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'"
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+          <app-stats-line [label]="'Non-invincible Ledgedashes'" [highlight]="true"></app-stats-line>
+          <app-stats-line [label]="'Average framecount since ledgedrop'"
+            [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'"
+            [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+          </app-stats-line>
+          <app-stats-line [separator]="true"></app-stats-line>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="right">
+    <div class="portrait-right">
+      <div class="char-versus-picture" [style.backgroundImage]="'url(' + getOpponentImageUrl() +')'">
+      </div>
+    </div>
+  </div>
+  <div class="player-label-block left-side">
+    <div class="highlight">
+      Stats for {{stats.playerCharName}}
+    </div>
+  </div>
+  <div class="player-label-block right-side">
+    <div class="highlight">
+      Stats against {{currentCharacter}}
+    </div>
+    <div class="action" (click)="openCharacterSelect()"> Change character </div>
+  </div>
+</div>
+<div class="bottom-block">
+  <div class="stages-list" *ngIf="playerOverall">
+    <ng-container *ngFor="let stage of commonStagesForCurrentChar">
+      <div class="stage" [ngClass]="{'active': isActiveStage(stage)}" (click)="setActiveStage(stage)">
+        <img src="{{getStagePicture(stage)}}" />
+        <div class="name">{{getStageName(stage) | uppercase}}</div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<div class="modale" *ngIf="showModale">
+  <div class="characterModale" *ngIf="characterModale">
+    <ng-container *ngFor="let character of commonChars">
+      <div class="characterPicture" (click)="saveCharacter(character)">
+        <img src="{{getOpponentCharacterImageUrl(character)}}">
+      </div>
+    </ng-container>
+  </div>
+</div>
