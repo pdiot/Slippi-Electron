@@ -113,4 +113,5 @@ export interface StatsItem {
     lcancelsForOpponent: StatsWrapper<LCancels>,
     ledgeDashesForPlayer: StatsWrapper<Ledgedashes>,
     ledgeDashesForOpponent: StatsWrapper<Ledgedashes>,
+    gameResults: StatsWrapper<string>,
   }

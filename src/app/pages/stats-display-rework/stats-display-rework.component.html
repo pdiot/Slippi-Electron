@@ -16,6 +16,12 @@
       <ng-container *ngIf="isActiveTab('overall')">
         <div *ngIf="playerOverall && opponentOverall" class="content">
           <app-stats-line [label]="'Overall Stats'" [highlight]="true"></app-stats-line>
+          <app-stats-line *ngIf="gameResults"
+            [label]="'Winrate'"
+            [value1]="gameResults[currentCharacter][currentStage] | number:'1.0-1'"
+            [value2]="( 100 - gameResults[currentCharacter][currentStage]) | number:'1.0-1'"
+            [unit1]="'%'" [unit2]="'%'"
+          ></app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
           <app-stats-line
             [value1]="getData('conversionsRatio', playerOverall, currentCharacter, currentStage)| number:'1.0-1'"

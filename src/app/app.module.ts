@@ -21,7 +21,6 @@ import { StatsDisplayReworkComponent } from './pages/stats-display-rework/stats-
 import { CompareComponent } from './pages/compare/compare.component';
 import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
-import { StatsDisplayComponent } from './pages/stats-display/stats-display.component';
 import { StatsTabsContainerComponent } from './components/stats-tabs-container/stats-tabs-container.component';
 import { GraphsComponent } from './pages/graphs/graphs.component';
 import { IvyCarouselModule } from 'angular-responsive-carousel';
@@ -36,7 +35,6 @@ import { IvyCarouselModule } from 'angular-responsive-carousel';
     FilterFormComponent,
     MainPanelComponent,
     StatsGameSelectComponent,
-    StatsDisplayComponent,
     StatsLineComponent,
     FoldableBlockComponent,
     CompareComponent,

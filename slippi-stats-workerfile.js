@@ -37,7 +37,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     games.push({ game: new SlippiGame(game.file), gameFile: game.file, gameFromMain: game });
   }
   // DEBUG
-  // let framesArray = [];
+  let debug;
   // DEBUG
   let processedGamesNb = 0;
   let conversionsOnOpponent = {};
@@ -50,6 +50,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let lcancelsForOpponent = {};
   let ledgeDashesForPlayer = {};
   let ledgeDashesForOpponent = {};
+  let gameResults = {};
   let playerCharName;
 
   // Getting the data we want
@@ -58,12 +59,14 @@ function processGames(gamesFromMain, slippiId, characterId) {
     const stats = game.getStats();
     const metadata = game.getMetadata();
     const frames = game.getFrames();
+    const end = game.getGameEnd();
     // DEBUG
     // framesArray.push(frames);
     // fs.writeFile('frames.json', JSON.stringify(frames, null, 4), err => {
     //   if (err) throw err;
     //   console.log('wrote frames in frames.json');
     // })
+    debug = {stats, metadata, end};
     // DEBUG
     const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
     const settings = game.getSettings();
@@ -109,6 +112,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     playerOverall.conversionsRatio = getOpeningRatio(playerConversions, opponentConversions);
     const opponentOverall = stats.overall.filter(overall => overall.playerIndex === opponentPort)[0];
     opponentOverall.conversionsRatio = getOpeningRatio(opponentConversions, playerConversions);
+    const gameResult = getResult(playerPort, opponentPort, stats.stocks, end);
 
     ledgeDashesForPlayer[startAt] = {};
     ledgeDashesForPlayer[startAt][opponentCharName] = {};
@@ -157,6 +161,10 @@ function processGames(gamesFromMain, slippiId, characterId) {
     lcancelsForOpponent[startAt][opponentCharName] = {};
     lcancelsForOpponent[startAt][opponentCharName][stage] = opponentLCancels;
 
+    gameResults[startAt] = {};
+    gameResults[startAt][opponentCharName] = {};
+    gameResults[startAt][opponentCharName][stage] = gameResult;
+
     processedGamesNb++;
     node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
     parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
@@ -175,11 +183,53 @@ function processGames(gamesFromMain, slippiId, characterId) {
     lcancelsForOpponent,
     ledgeDashesForPlayer,
     ledgeDashesForOpponent,
-    // framesArray // DEBUG
+    gameResults,
+    debug
   }
 
   node_utils.addToLog('WORKER end of treatment');
   return returnValue;
+}
+
+function getResult(playerPort, opponentPort, stocks, end) {
+  // If a player ragequits, it's a loss.
+  if (end?.lrasInitiatorIndex === playerPort) {
+    return 'loss';
+  } else if (end?.lrasInitiatorIndex === opponentPort) {
+    return 'win';
+  }
+  // If there was no ragequit, we look for the player who has a stock with no end frame
+  node_utils.addToLog('WORKER GetResults end');
+  node_utils.addToLog(JSON.stringify(end, null, 4));
+  
+  node_utils.addToLog('WORKER GetResults stocks');
+  node_utils.addToLog(JSON.stringify(stocks, null, 4));
+
+  node_utils.addToLog('WORKER GetResults playerPort');
+  node_utils.addToLog(JSON.stringify(playerPort, null, 4));
+
+  node_utils.addToLog('WORKER GetResults opponentPort');
+  node_utils.addToLog(JSON.stringify(opponentPort, null, 4));
+
+  let winnerPort;
+  for (let stock of stocks) {
+    if (stock.deathAnimation === null) {
+      node_utils.addToLog('WORKER GetResults stock without death animation');
+      node_utils.addToLog(JSON.stringify(stock, null, 4));
+      if (!winnerPort) {
+        winnerPort = stock.playerIndex;
+      }
+    }
+  }
+  node_utils.addToLog('WORKER GetResults winner port');
+  node_utils.addToLog(JSON.stringify(winnerPort, null, 4));
+  if (winnerPort !== undefined) {
+    if (winnerPort === playerPort) {
+      return 'win';
+    } else if (winnerPort === opponentPort) {
+      return 'loss';
+    }
+  }
 }
 
 function getOpeningRatio(playerConversions, opponentConversions) {

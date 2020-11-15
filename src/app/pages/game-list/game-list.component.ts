@@ -143,10 +143,15 @@ export class GameListComponent implements OnInit, OnChanges {
         const lcancelsForOpponent = arg.lcancelsForOpponent as StatsWrapper<LCancels>;
         const ledgeDashesForPlayer = arg.ledgeDashesForPlayer as StatsWrapper<Ledgedashes>;
         const ledgeDashesForOpponent = arg.ledgeDashesForOpponent as StatsWrapper<Ledgedashes>;
+        const gameResults = arg.gameResults as StatsWrapper<string>;
         this.store.setMultiple([
           {
             key: 'playerCharName',
             data: playerCharName
+          },
+          {
+            key: 'gameResults',
+            data: gameResults
           },
           {
             key : 'playerConversions',

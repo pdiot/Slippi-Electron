@@ -512,6 +512,63 @@ export class StatsProcessingService {
     return processedLCancels;
   }
 
+  public async processWinrates(data: StatsWrapper<string>): Promise<IntermediaryStatsWrapper<number>> {
+    let processedWinRates = {};
+    let winrate;
+    let winrateAllStages;
+
+    // Create an intermediary wrapper without the gameData
+    let gameResultsList: IntermediaryStatsWrapper<string[]> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (!gameResultsList[character]) {
+          // First game with this character
+          gameResultsList[character] = {};
+        }
+        for (const stage of Object.keys(data[game][character])) {
+          // Same here, we'll only have one stage each time here
+          if (gameResultsList[character][stage]) {
+            gameResultsList[character][stage] = [
+              ...gameResultsList[character][stage],
+              data[game][character][stage]
+            ];
+
+          } else {
+            gameResultsList[character][stage] = [data[game][character][stage]];
+          }
+        }
+      }
+    }
+
+    for (let character of Object.keys(gameResultsList)) {
+      processedWinRates[character] = {};
+      winrateAllStages = [];
+      for (let stage of Object.keys(gameResultsList[character])) {
+        winrate = gameResultsList[character][stage];
+        winrateAllStages.push(...gameResultsList[character][stage]);
+
+        // Process data for current stage
+        let wins = 0;
+        let losses = 0;
+        for (let result of winrate) {
+          if (result === 'win') wins++;
+          if (result === 'loss') losses++;
+        }
+        processedWinRates[character][stage] = wins * 100 / (wins + losses);
+      }
+      // Process data for all stages
+      let wins = 0;
+      let losses = 0;
+      for (let result of winrateAllStages) {
+        if (result === 'win') wins++;
+        if (result === 'loss') losses++;
+      }
+      processedWinRates[character]['allStages'] = wins * 100 / (wins + losses);
+    }
+    return processedWinRates;
+  }
+
   public async processLedgeDashes(data: StatsWrapper<Ledgedashes>): Promise<IntermediaryStatsWrapper<ProcessedLedgedashes>> {
     let processedLedgeDashes = {};
     let ledgeDashes: Ledgedashes;
@@ -527,16 +584,16 @@ export class StatsProcessingService {
             // Same here, we'll only have one stage each time here
             if (ledgeDashesList[character][stage]) {
               if (data
-              && data[game] 
-              && data[game][character]
-              && data[game][character][stage]
-              && data[game][character][stage]['invincible']) {
+                && data[game]
+                && data[game][character]
+                && data[game][character][stage]
+                && data[game][character][stage]['invincible']) {
                 ledgeDashesList[character][stage]['invincible'].push(
                   ...data[game][character][stage]['invincible']
                 );
               }
               if (data
-                && data[game] 
+                && data[game]
                 && data[game][character]
                 && data[game][character][stage]
                 && data[game][character][stage]['invincible']) {
@@ -734,7 +791,7 @@ export class StatsProcessingService {
       if (array[i]) {
         val += array[i];
       } else {
-        ignoredValuesCount ++;
+        ignoredValuesCount++;
       }
     }
     return (array.length - ignoredValuesCount !== 0) ? val / (array.length - ignoredValuesCount) : undefined;

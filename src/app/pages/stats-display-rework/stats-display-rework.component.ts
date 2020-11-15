@@ -26,6 +26,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
   ledgeDashesForPlayer: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
+  gameResults: IntermediaryStatsWrapper<number>;
   writeFeedbackMessage: string;
 
   statsDates: Date[];
@@ -63,6 +64,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     }
     if (this.selectedGames &&
       this.stats?.playerCharName &&
+      this.stats?.gameResults &&
       this.stats?.ledgeDashesForPlayer &&
       this.stats?.ledgeDashesForOpponent &&
       this.stats?.punishedActionsForPlayer &&
@@ -155,6 +157,13 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     const newStats = this.filterStats();
     this.statsDates = this.getStatsDates();
     console.log('Stats Display - getProcessedStats');
+    if (newStats.gameResults) {
+      this.statsService.processWinrates(newStats.gameResults).then(result => {
+        console.log('Stats Display - got player winrates back', result);
+        this.gameResults = result;
+        this.cd.detectChanges();
+      });
+    }
     if (newStats.playerConversions) {
       this.statsService.processConversions(newStats.playerConversions).then(result => {
         console.log('Stats Display - got player conversions back', result);
@@ -238,6 +247,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       playerCharName: this.stats.playerCharName,
       playerConversions: undefined,
       opponentConversions: undefined,
+      gameResults: undefined,
       playerOveralls: undefined,
       opponentOveralls: undefined,
       punishedActionsForOpponent: undefined,
@@ -327,6 +337,14 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
         newStats.ledgeDashesForOpponent[game] = this.stats.ledgeDashesForOpponent[game];
       }
     }
+    for (let game of Object.keys(this.stats.gameResults)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.gameResults) {
+          newStats.gameResults = {};
+        }
+        newStats.gameResults[game] = this.stats.gameResults[game];
+      }
+    }
 
     return newStats;
   }
@@ -348,7 +366,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   }
 
   getPlayerImageUrl() {
-    return this.iconService.getCharacterVersus(this.stats?.playerCharName ? this.stats.playerCharName : 'Marth', 'left');
+    return this.iconService.getCharacterVersus(this.stats?.playerCharName ? this.stats.playerCharName : 'Pichu', 'left');
   }
 
   getOpponentImageUrl() {
