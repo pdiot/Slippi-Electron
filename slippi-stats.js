@@ -23,6 +23,9 @@ async function enrichGameFiles(gameFiles) {
         var game = new SlippiGame(gameFile);
         var meta = game.getMetadata();
         var stage = getMapName(game.getSettings().stageId);
+        if (!stage) {
+            break;
+        }
         let playerCharacterPairs;
         console.log('meta.players : ', meta.players);
         if (meta.players[2] || 
@@ -98,7 +101,10 @@ async function enrichGameFiles(gameFiles) {
 }
 
 function getMapName(id) {
-    return STAGES.find(stage => stage.id === +id).name;
+    if (STAGES.find(stage => stage.id === +id)) {
+        return STAGES.find(stage => stage.id === +id).name;
+    }
+    return undefined;
 }
 
 function getFullChar(id) {

@@ -22,9 +22,9 @@ import { CompareComponent } from './pages/compare/compare.component';
 import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
 import { StatsDisplayComponent } from './pages/stats-display/stats-display.component';
-import { MatTabsModule } from '@angular/material/tabs';
 import { StatsTabsContainerComponent } from './components/stats-tabs-container/stats-tabs-container.component';
 import { GraphsComponent } from './pages/graphs/graphs.component';
+import { IvyCarouselModule } from 'angular-responsive-carousel';
 
 @NgModule({
   declarations: [
@@ -55,7 +55,7 @@ import { GraphsComponent } from './pages/graphs/graphs.component';
     BrowserAnimationsModule,
     NgbModule,
     NgxChartsModule,
-    MatTabsModule
+    IvyCarouselModule
   ],
   providers: [],
   bootstrap: [AppComponent]

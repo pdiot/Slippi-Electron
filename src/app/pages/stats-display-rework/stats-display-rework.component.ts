@@ -47,6 +47,9 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   currentCharacter = 'Puff';
   currentStage = 'allStages';
 
+  showModale = false;
+  characterModale = false;
+
   ngOnInit(): void {
   }
 
@@ -72,8 +75,14 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.stats?.opponentOveralls) {
       this.writeFeedbackMessage = undefined;
       this.getProcessedStats();
-      this.setActiveTab('overall');
     }
+    this.cd.detectChanges();
+  }
+
+  initCurrentCharAndStage() {
+    this.currentCharacter = this.getKeys(this.playerOverall)[0];
+    this.currentStage = 'allStages';
+    this.setActiveTab('overall');
     this.cd.detectChanges();
   }
 
@@ -87,6 +96,36 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
 
   isActiveTab(key: string) {
     return this.tabs?.length > 0 && this.tabs.find(tab => tab.key === key)?.active;
+  }
+
+  setActiveStage(stage: string) {
+    this.currentStage = stage;
+    this.cd.detectChanges();
+  }
+
+  isActiveStage(stage: string) {
+    return this.currentStage === stage;
+  }
+
+  openCharacterSelect() {
+    if (this.showModale) {
+      this.showModale = false;
+      this.characterModale = false;
+    } else {
+      this.showModale = true;
+      this.characterModale = true;
+    }
+    this.cd.detectChanges();
+  }
+
+  saveCharacter(character: string) {
+    this.currentCharacter = character;
+    if (!this.getKeys(this.playerOverall[character]).includes(this.currentStage)) {
+      this.currentStage = 'allStages';
+    }
+    this.showModale = false;
+    this.characterModale = false;
+    this.cd.detectChanges();
   }
 
   getData(key: string, dataSet: IntermediaryStatsWrapper<any>, character: string, stage: string): string {
@@ -134,6 +173,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.statsService.processOverallList(newStats.playerOveralls).then(result => {
         console.log('Stats Display - got player overall back', result);
         this.playerOverall = result;
+        this.initCurrentCharAndStage();
         this.cd.detectChanges();
       });
     }
@@ -195,7 +235,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       niceNamesToKeep.push(GameFileUtils.niceName(game.file));
     }
     const newStats: StatsItem = {
-      playerCharName: undefined,
+      playerCharName: this.stats.playerCharName,
       playerConversions: undefined,
       opponentConversions: undefined,
       playerOveralls: undefined,
@@ -303,13 +343,20 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     return GeneralUtils.getStageName(stage);
   }
 
+  getStagePicture(stage: string): string {
+    return this.iconService.getStageMiniatureName(stage).miniature;
+  }
+
   getPlayerImageUrl() {
     return this.iconService.getCharacterVersus(this.stats?.playerCharName ? this.stats.playerCharName : 'Marth', 'left');
   }
 
   getOpponentImageUrl() {
-    return this.iconService.getCharacterVersus(this.currentCharacter, 'right');
+    return this.getOpponentCharacterImageUrl(this.currentCharacter);
+  }
 
+  getOpponentCharacterImageUrl(character: string) {
+    return this.iconService.getCharacterVersus(character, 'right');
   }
 
   getTop3OfPunishedOptions(array: any[]) {
@@ -320,7 +367,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     }
   }
 
-  getRatio(data: {failed: number, successful: number}): number {
+  getRatio(data: { failed: number, successful: number }): number {
     if (data.failed === 0) {
       return 100;
     }
@@ -329,13 +376,14 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     }
     return data.successful * 100 / (data.failed + data.successful);
   }
-  
+
   removeLanding(landing: string): string {
     return GeneralUtils.removeLanding(landing);
   }
 
   writeStats() {
     const stats = {
+      playerCharName: this.stats.playerCharName,
       playerConversions: this.playerConversions,
       opponentConversions: this.opponentConversions,
       playerOverall: this.playerOverall,

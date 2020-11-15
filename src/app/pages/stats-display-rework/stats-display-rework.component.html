@@ -11,7 +11,7 @@
         <div class="label" [ngClass]="{'active': tab.active}" (click)="setActiveTab(tab.key)">{{tab.label}}</div>
       </ng-container>
     </div>
-    <div class="tab-contents">
+    <div class="tab-contents" *ngIf="currentCharacter && currentStage">
       <!-- Overall tab -->
       <ng-container *ngIf="isActiveTab('overall')">
         <div *ngIf="playerOverall && opponentOverall" class="content">
@@ -232,23 +232,23 @@
           <app-stats-line [separator]="true"></app-stats-line>
           <app-stats-line [label]="'Invincible Ledgedashes'" [highlight]="true"></app-stats-line>
           <app-stats-line [label]="'% of total ledgedashes'"
-            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage).percentOfTotalLedgedashes"
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.percentOfTotalLedgedashes ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage).percentOfTotalLedgedashes | number:'1.0-1') : 'N/A' "
             [unit1]="'%'" [unit2]="'%'"
-            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage).percentOfTotalLedgedashes">
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.percentOfTotalLedgedashes ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage).percentOfTotalLedgedashes | number:'1.0-1') : 'N/A' ">
           </app-stats-line>
           <app-stats-line [label]="'Average extra invincibility frames'"
-            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames : 'N/A'"
-            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames : 'N/A'">
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'"
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageExtraInvincibilityFrames | number:'1.0-1') : 'N/A'">
           </app-stats-line>
           <app-stats-line [label]="'Average framecount since ledgedrop'"
-            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop : 'N/A'"
-            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop : 'N/A'">
+            [value1]="getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('invincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'"
+            [value2]="getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('invincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
           <app-stats-line [label]="'Non-invincible Ledgedashes'" [highlight]="true"></app-stats-line>
           <app-stats-line [label]="'Average framecount since ledgedrop'"
-            [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop : 'N/A'"
-            [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop : 'N/A'">
+            [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'"
+            [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
         </div>
@@ -261,9 +261,38 @@
       </div>
     </div>
   </div>
+  <div class="player-label-block left-side">
+    <div class="info" *ngIf="writeFeedbackMessage">
+      {{writeFeedbackMessage}}
+    </div>
+    <div class="highlight">
+      Stats for {{stats.playerCharName}}
+    </div>
+    <div class="action" (click)="writeStats()"> Save stats </div>
+  </div>
+  <div class="player-label-block right-side">
+    <div class="highlight">
+      Stats against {{currentCharacter}}
+    </div>
+    <div class="action" (click)="openCharacterSelect()"> Change character </div>
+  </div>
 </div>
 <div class="bottom-block">
-  <div class="stages-list">
-    Stage list here
+  <div class="stages-list" *ngIf="playerOverall">
+    <ng-container *ngFor="let stage of getKeys(playerOverall[currentCharacter])">
+      <div class="stage" [ngClass]="{'active': isActiveStage(stage)}" (click)="setActiveStage(stage)">
+        <img src="{{getStagePicture(stage)}}" />
+        <div class="name">{{getStageName(stage) | uppercase}}</div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<div class="modale" *ngIf="showModale">
+  <div class="characterModale" *ngIf="characterModale">
+      <ng-container *ngFor="let character of getKeys(playerOverall)">
+        <div class="characterPicture" (click)="saveCharacter(character)">
+          <img src="{{getOpponentCharacterImageUrl(character)}}">
+        </div>
+      </ng-container>
   </div>
 </div>
