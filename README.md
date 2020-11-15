@@ -17,8 +17,15 @@ npm run electron
 
 Simply download the appropriate zip in the release tab, extract it and run the exe.
 
+# Build upton :
+
+Built upon https://github.com/vinceau/slippi-stats for the extremely neat visual identity
+
+Built upon https://github.com/project-slippi for the data sources
+
 # Roadmap :
-Make it pretty
+
+Rework the graph screen to work with the new UX / visuals
 
 Add a back button on the stats screen to change the filter options without having to reupload the files
 
@@ -29,5 +36,3 @@ New stats :
 wavedashes (% of frame 1, 2, 3, 4, 5+ wavedashes, maaaaayyyyyyybe angles ?), 
 
 JC grabs (ratio of succesful to failed JC grabs, then % of frame 1, 2, 3 + of jumpsquat)
-
-MU / stage Winrates
