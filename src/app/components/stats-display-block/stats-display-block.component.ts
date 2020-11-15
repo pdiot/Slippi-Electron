@@ -104,7 +104,7 @@ export class StatsDisplayBlockComponent implements OnInit, OnChanges {
     };
   }
   removeLanding(landing: string): string {
-    return landing.split(' ')[0];
+    return GeneralUtils.removeLanding(landing);
   }
   public handleToggleEmit(character, stage, block, value) {
     if (!this.toggled[character]) {

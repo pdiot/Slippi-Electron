@@ -57,7 +57,7 @@ export class GameListComponent implements OnInit, OnChanges {
     const filteredGames = [];
     for (let game of this.enrichedGameFiles) {
       let toFilterOut = false;
-      if (!toFilterOut && game.playerCharacterPairs.find(pcp => pcp.player === this.filter.slippiId && pcp.character.name === this.filter.character)) {
+      if (!toFilterOut && game.playerCharacterPairs.find(pcp => pcp.player === this.filter.slippiId && pcp.character.shortName === this.filter.character)) {
         // Player Slippi ID ok && player character ok
         const oppIndex = game.playerCharacterPairs.findIndex(pcp => pcp.player !== this.filter.slippiId);
         if (this.filter.oppSlippiIds) {
@@ -132,6 +132,7 @@ export class GameListComponent implements OnInit, OnChanges {
       this.elecService.ipcRenderer.on('statsDoneTS', (event, arg) => {
         // Callback pour la fin du calcul des stats
         console.log('Game List - Received statsDoneTS', arg);
+        const playerCharName = arg.playerCharName as string;
         const playerConversions = arg.conversionsOnOpponent as StatsWrapper<Conversion[]>;
         const opponentConversions = arg.conversionsFromOpponent as StatsWrapper<Conversion[]>;
         const playerOveralls = arg.overallOnOpponent as StatsWrapper<Overall>;
@@ -143,6 +144,10 @@ export class GameListComponent implements OnInit, OnChanges {
         const ledgeDashesForPlayer = arg.ledgeDashesForPlayer as StatsWrapper<Ledgedashes>;
         const ledgeDashesForOpponent = arg.ledgeDashesForOpponent as StatsWrapper<Ledgedashes>;
         this.store.setMultiple([
+          {
+            key: 'playerCharName',
+            data: playerCharName
+          },
           {
             key : 'playerConversions',
             data: playerConversions

@@ -8,7 +8,7 @@ export class IconsService {
   constructor() {}
 
   public getCharacterVersus(character: string | number, side: 'left' | 'right'): string {
-    let path = 'assets/versuschars/';
+    let path = 'assets/versuschars';
     const imgName = `vs-${side}.png`;
     switch (character) {
       case 'Falcon' || 2:

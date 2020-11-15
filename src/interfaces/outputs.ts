@@ -102,6 +102,7 @@ export interface Ledgedashes {
 }
 
 export interface StatsItem {
+    playerCharName: string,
     playerConversions: StatsWrapper<Conversion[]>,
     opponentConversions: StatsWrapper<Conversion[]>,
     playerOveralls: StatsWrapper<Overall>,

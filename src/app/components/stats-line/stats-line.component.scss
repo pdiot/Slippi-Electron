@@ -1,29 +1,69 @@
-.lineOneValue {
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  height: 30px;
-  .label {
-    width: 70%;
-    margin: 0;
-  } 
-  .value {
-    width: 30%;
-    margin: 0;
-  }
+@use '../../../variables' as variables;
+
+.stat-line {
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+  width: 100%;
+  -moz-box-align: center;
+  align-items: center;
+  position: relative;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
-.lineTwoValues {
-  display: flex;
-  flex-direction: row;
+.stat-line.highlight {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.stat-line::before {
+  z-index: -1;
+  content: "";
+  display: block;
+  height: 0.1rem;
+  position: absolute;
+  width: 80%;
+  margin-left: 50%;
+  transform: translate(-50%, -50%);
+  background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+.value-left {
+  width: 100%;
+  text-align: left;
+  font-weight: 800;
+  font-size: 1.4em;
+}
+
+.value-right {
+  width: 100%;
+  text-align: right;
+  font-weight: 800;
+  font-size: 1.4em;
+}
+
+.label {    
+  color: variables.$black;
+  background-color: variables.$white;
   text-align: center;
-  height: 30px;
-  .label {
-    width: 50%;
-    margin: 0;
-  }
-  .value {
-    width: 25%;
-    margin: 0;
-  }
+  box-shadow: variables.$black 0.2em 0.2em 0.2em;
+  padding: 0.3em 2.5em;
+  font-weight: 700;
+  font-size: 1.2em;
+  justify-self: center;
+}
+
+.label.highlight {
+  background-color: variables.$greenBG;
+  color: variables.$white;
+}
+
+.separator {
+  display: block;
+  height: 0.1rem;
+  width: 100%;
+  margin-top: 0.7rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

@@ -50,6 +50,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let lcancelsForOpponent = {};
   let ledgeDashesForPlayer = {};
   let ledgeDashesForOpponent = {};
+  let playerCharName;
 
   // Getting the data we want
   for (const gameBlob of games) {
@@ -89,6 +90,9 @@ function processGames(gamesFromMain, slippiId, characterId) {
         playerPort = 1;
         opponentPort = 0;
       }
+    }
+    if (!playerCharName) {
+      playerCharName = getFullChar(Object.keys(metadata.players[playerPort].characters)[0]).shortName;
     }
     let opponentCharName = getFullChar(Object.keys(metadata.players[opponentPort].characters)[0]).shortName;
 
@@ -160,6 +164,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
 
   const returnValue = {
     computedStats: true,
+    playerCharName,
     conversionsOnOpponent,
     conversionsFromOpponent,
     overallOnOpponent,
