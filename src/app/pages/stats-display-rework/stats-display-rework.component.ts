@@ -6,6 +6,7 @@ import { StatsItem, EnrichedGameFile } from 'src/interfaces/outputs';
 import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
+import { StoreService } from 'src/services/store/store.service';
 
 @Component({
   selector: 'app-stats-display-rework',
@@ -43,6 +44,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   constructor(private cd: ChangeDetectorRef,
     private statsService: StatsProcessingService,
     private iconService: IconsService,
+    private store: StoreService,
     private electron: ElecService) { }
 
   currentCharacter;
@@ -79,6 +81,10 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.getProcessedStats();
     }
     this.cd.detectChanges();
+  }
+
+  back() {
+    this.store.resetButKeepFiles();
   }
 
   initCurrentCharAndStage() {

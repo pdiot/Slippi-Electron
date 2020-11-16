@@ -24,80 +24,81 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.storeService.getStore().subscribe(value => {
       if (value) {
-        if (value.enrichedGameFiles) {
+        console.log('Home - received new store value : ', value);
+        if (value.enrichedGameFiles && !value.reset) {
           console.log('Home - Received enrichedGameFiles from store : ', value.enrichedGameFiles);
           this.enrichedGameFiles = value.enrichedGameFiles;
         }
-        if (value.gameFilter) {
+        if (value.gameFilter && !value.reset) {
           console.log('Home - Received gameFilter from store : ', value.gameFilter);
           this.filter = value.gameFilter;
         }
-        if (value.playerCharName) {
+        if (value.playerCharName && !value.reset) {
           console.log('Home - Received playerCharName from store : ', value.playerCharName);
           this.initStatsIfNeeded();
           this.stats.playerCharName = value.playerCharName;
         }
-        if (value.gameResults) {
+        if (value.gameResults && !value.reset) {
           console.log('Home - Received gameResults from store : ', value.gameResults);
           this.initStatsIfNeeded();
           this.stats.gameResults = value.gameResults;
         }
-        if (value.playerConversions) {
+        if (value.playerConversions && !value.reset) {
           console.log('Home - Received playerConversions from store : ', value.playerConversions);
           this.initStatsIfNeeded();
           this.stats.playerConversions = value.playerConversions;
         }
-        if (value.opponentConversions) {
+        if (value.opponentConversions && !value.reset) {
           console.log('Home - Received opponentConversions from store : ', value.opponentConversions);
           this.initStatsIfNeeded();
           this.stats.opponentConversions = value.opponentConversions;
         }
-        if (value.playerOveralls) {
+        if (value.playerOveralls && !value.reset) {
           console.log('Home - Received playerOveralls from store : ', value.playerOveralls);
           this.initStatsIfNeeded();
           this.stats.playerOveralls = value.playerOveralls;
         }
-        if (value.opponentOveralls) {
+        if (value.opponentOveralls && !value.reset) {
           console.log('Home - Received opponentOveralls from store : ', value.opponentOveralls);
           this.initStatsIfNeeded();
           this.stats.opponentOveralls = value.opponentOveralls;
         }
-        if (value.punishedActionsForPlayer) {
+        if (value.punishedActionsForPlayer && !value.reset) {
           console.log('Home - Received punishedActionsForPlayer from store : ', value.punishedActionsForPlayer);
           this.initStatsIfNeeded();
           this.stats.punishedActionsForPlayer = value.punishedActionsForPlayer;
         }
-        if (value.punishedActionsForOpponent) {
+        if (value.punishedActionsForOpponent && !value.reset) {
           console.log('Home - Received punishedActionsForOpponent from store : ', value.punishedActionsForOpponent);
           this.initStatsIfNeeded();
           this.stats.punishedActionsForOpponent = value.punishedActionsForOpponent;
         }
-        if (value.lcancelsForPlayer) {
+        if (value.lcancelsForPlayer && !value.reset) {
           console.log('Home - Received lcancelsForPlayer from store : ', value.lcancelsForPlayer);
           this.initStatsIfNeeded();
           this.stats.lcancelsForPlayer = value.lcancelsForPlayer;
         }
-        if (value.lcancelsForOpponent) {
+        if (value.lcancelsForOpponent && !value.reset) {
           console.log('Home - Received lcancelsForOpponent from store : ', value.lcancelsForOpponent);
           this.initStatsIfNeeded();
           this.stats.lcancelsForOpponent = value.lcancelsForOpponent;
         }
-        if (value.ledgeDashesForPlayer) {
+        if (value.ledgeDashesForPlayer && !value.reset) {
           console.log('Home - Received ledgeDashesForPlayer from store : ', value.ledgeDashesForPlayer);
           this.initStatsIfNeeded();
           this.stats.ledgeDashesForPlayer = value.ledgeDashesForPlayer;
         }
-        if (value.ledgeDashesForOpponent) {
+        if (value.ledgeDashesForOpponent && !value.reset) {
           console.log('Home - Received ledgeDashesForOpponent from store : ', value.ledgeDashesForOpponent);
           this.initStatsIfNeeded();
           this.stats.ledgeDashesForOpponent = value.ledgeDashesForOpponent;
         }
-        if (value.selectedGames) {
+        if (value.selectedGames && !value.reset) {
           console.log('Home - Received selectedGames from store : ', value.selectedGames);
           // When we select games in stats-game-select
           this.selectedGames = value.selectedGames;
         }
-        if (value.statsCalculationProgress) {
+        if (value.statsCalculationProgress && !value.reset) {
           console.log('Home - Received statsCalculationProgress from store : ', value.statsCalculationProgress);
           this.statsCalculation = value.statsCalculationProgress;
           if (value.statsCalculationProgress.current !== value.statsCalculationProgress.total) {
@@ -106,13 +107,13 @@ export class HomeComponent implements OnInit {
             this.showOverlay = false;
           }
         }
-        if (value.statsCalculationDone) {
+        if (value.statsCalculationDone && !value.reset) {
           console.log('Home - Received statsCalculationDone from store : ', value.statsCalculationDone);
           this.showOverlay = false;
         }
         if (value.reset) {
           console.log('Home - Received reset from store : ', value.reset);
-          this.enrichedGameFiles = [];
+          this.enrichedGameFiles = value?.enrichedGameFiles ? value.enrichedGameFiles : [];
           this.selectedGames = [];
           this.stats = undefined;
           this.filter = undefined;

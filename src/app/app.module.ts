@@ -12,7 +12,6 @@ import { StatsGameSelectComponent } from './components/stats-game-select/stats-g
 import { StatsLineComponent } from './components/stats-line/stats-line.component';
 import { FoldableBlockComponent } from './components/foldable-block/foldable-block.component';
 import { StatsCompareDisplayComponent } from './components/stats-compare-display/stats-compare-display.component';
-import { StatsDisplayBlockComponent } from './components/stats-display-block/stats-display-block.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { GameLineComponent } from './components/game-line/game-line.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
@@ -21,7 +20,6 @@ import { StatsDisplayReworkComponent } from './pages/stats-display-rework/stats-
 import { CompareComponent } from './pages/compare/compare.component';
 import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
-import { StatsTabsContainerComponent } from './components/stats-tabs-container/stats-tabs-container.component';
 import { GraphsComponent } from './pages/graphs/graphs.component';
 
 @NgModule({
@@ -38,12 +36,10 @@ import { GraphsComponent } from './pages/graphs/graphs.component';
     FoldableBlockComponent,
     CompareComponent,
     StatsCompareDisplayComponent,
-    StatsDisplayBlockComponent,
     MenuComponent,
     GameLineComponent,
     GraphsComponent,
     StatsDisplayReworkComponent,
-    StatsTabsContainerComponent
   ],
   imports: [
     BrowserModule,

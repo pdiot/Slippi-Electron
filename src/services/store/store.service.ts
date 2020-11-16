@@ -66,8 +66,21 @@ export class StoreService {
     this.data = new Subject<Dictionary>();
   }
 
+  public getInstantData(key: keyof(Dictionary)) {
+    return this.internalData['key'];
+  }
+
   public reset(): void {
     this.internalData = {};
+    this.internalData['reset'] = true;
+    this.internalData['visibleMenu'] = false;
+    this.data.next(this.internalData);
+  }
+
+  public resetButKeepFiles(): void {
+    const files = this.internalData['enrichedGameFiles'];
+    this.internalData = {};
+    this.internalData['enrichedGameFiles'] = files;
     this.internalData['reset'] = true;
     this.internalData['visibleMenu'] = false;
     this.data.next(this.internalData);
