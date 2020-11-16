@@ -23,7 +23,6 @@ import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
 import { StatsTabsContainerComponent } from './components/stats-tabs-container/stats-tabs-container.component';
 import { GraphsComponent } from './pages/graphs/graphs.component';
-import { IvyCarouselModule } from 'angular-responsive-carousel';
 
 @NgModule({
   declarations: [
@@ -52,8 +51,7 @@ import { IvyCarouselModule } from 'angular-responsive-carousel';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     NgbModule,
-    NgxChartsModule,
-    IvyCarouselModule
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
