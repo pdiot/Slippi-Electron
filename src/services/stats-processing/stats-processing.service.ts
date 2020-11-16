@@ -596,7 +596,7 @@ export class StatsProcessingService {
                 && data[game]
                 && data[game][character]
                 && data[game][character][stage]
-                && data[game][character][stage]['invincible']) {
+                && data[game][character][stage]['notInvincible']) {
                 ledgeDashesList[character][stage]['notInvincible'].push(
                   ...data[game][character][stage]['notInvincible']
                 );
