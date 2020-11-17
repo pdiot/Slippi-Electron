@@ -583,23 +583,26 @@ export class StatsProcessingService {
           for (const stage of Object.keys(data[game][character])) {
             // Same here, we'll only have one stage each time here
             if (ledgeDashesList[character][stage]) {
-              if (data
-                && data[game]
-                && data[game][character]
-                && data[game][character][stage]
-                && data[game][character][stage]['invincible']) {
-                ledgeDashesList[character][stage]['invincible'].push(
-                  ...data[game][character][stage]['invincible']
-                );
-              }
-              if (data
-                && data[game]
-                && data[game][character]
-                && data[game][character][stage]
-                && data[game][character][stage]['notInvincible']) {
-                ledgeDashesList[character][stage]['notInvincible'].push(
-                  ...data[game][character][stage]['notInvincible']
-                );
+              if (data[game][character][stage]) {
+                if (data[game][character][stage]['invincible']) {
+                  if (ledgeDashesList[character][stage]['invincible']) {
+                    ledgeDashesList[character][stage]['invincible'].push(
+                      ...data[game][character][stage]['invincible']
+                    );
+                  } else {
+                    ledgeDashesList[character][stage]['invincible'] = [...data[game][character][stage]['invincible']];
+                  }
+                }
+
+                if (data[game][character][stage]['notInvincible']) {
+                  if (ledgeDashesList[character][stage]['notInvincible']) {
+                    ledgeDashesList[character][stage]['notInvincible'].push(
+                      ...data[game][character][stage]['notInvincible']
+                    );
+                  } else {
+                    ledgeDashesList[character][stage]['notInvincible'] = [...data[game][character][stage]['notInvincible']];
+                  }
+                }
               }
             } else {
               ledgeDashesList[character][stage] = data[game][character][stage];

@@ -1,0 +1,15 @@
+<div class="app-tour-overlay" *ngIf="show">
+  <div class="app-tour-card">
+    <div class="app-tour-title">
+      {{title}}
+    </div>
+    <div class="app-tour-text">
+      {{text}}
+    </div>
+    <div class="app-tour-buttons">
+      <ng-container *ngFor="let button of buttons">
+        <div class="action" (click)="button.click()">{{button.label}}</div>
+      </ng-container>
+    </div>
+  </div>
+</div>

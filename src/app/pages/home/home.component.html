@@ -4,6 +4,7 @@
     <span [ngStyle]="{'width': statsCalculationProgress +'%'}"></span>
   </div>
 </div>
+<app-app-tour></app-app-tour>
 <ng-container *ngIf="stats; then hasStats else hasNoStats">
 </ng-container>
 <ng-template #hasNoStats>

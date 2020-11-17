@@ -21,6 +21,7 @@ import { CompareComponent } from './pages/compare/compare.component';
 import { GameListComponent } from './pages/game-list/game-list.component';
 import { HomeComponent } from './pages/home/home.component';
 import { GraphsComponent } from './pages/graphs/graphs.component';
+import { AppTourComponent } from './components/app-tour/app-tour.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { GraphsComponent } from './pages/graphs/graphs.component';
     GameLineComponent,
     GraphsComponent,
     StatsDisplayReworkComponent,
+    AppTourComponent,
   ],
   imports: [
     BrowserModule,

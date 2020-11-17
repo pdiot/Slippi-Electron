@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { TourButton } from 'src/interfaces/tour';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 
 export interface Dictionary {
@@ -26,6 +27,15 @@ export interface Dictionary {
   'statsFilesForGraphs': any,
   'reset': boolean,
   'visibleMenu': boolean,
+}
+export interface TourDictionary {
+  'buttons': TourButton[],
+  'title': string,
+  'text': string,
+  'anchor': ViewChild,
+  'placement': 'left' | 'right' | 'top' | 'bottom',
+  'show': boolean,
+  'reset': boolean,
 }
 
 const DictionaryRecord : Record<keyof Dictionary, boolean> = {
@@ -53,6 +63,16 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'visibleMenu': true,
 }
 
+const TourRecord : Record<keyof TourDictionary, boolean> = {
+  'buttons': true,
+  'title': true,
+  'text': true,
+  'anchor': true,
+  'placement': true,
+  'show': true,
+  'reset': true,
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,13 +81,24 @@ export class StoreService {
   private data;
   private internalData;
 
+  private internalTourData;
+  private tourData;
+
   constructor() { 
     this.internalData = {};
     this.data = new Subject<Dictionary>();
+    this.internalTourData = {};
+    this.tourData = new Subject<TourDictionary>();
   }
 
   public getInstantData(key: keyof(Dictionary)) {
     return this.internalData['key'];
+  }
+
+  public resetTour(): void {
+    this.internalTourData = {};
+    this.internalTourData['reset'] = true;
+    this.tourData.next(this.internalTourData);
   }
 
   public reset(): void {
@@ -117,5 +148,39 @@ export class StoreService {
 
   public getStore(): Subject<Dictionary> {
     return this.data;
+  }
+  
+
+  public async setTour(key: keyof(TourDictionary), data: any): Promise<boolean> {
+    if (TourRecord[key]) {
+      this.internalTourData[key] = data;
+      this.tourData.next(this.internalTourData);
+      return true;
+    } else {
+      console.error(`Wrong tour store write operation : key `, key);
+      console.error(`Wrong tour store write operation : data `, data);
+      return false;
+    }
+  }
+
+  public async setMultipleTour(values : {key: keyof(TourDictionary), data: any}[]): Promise<boolean> {
+    let ok = true;
+    for (let value of values) {
+      if (TourRecord[value.key]) {
+        this.internalTourData[value.key] = value.data;
+      } else {
+        console.error(`Wrong tour store write operation : key `, value.key);
+        console.error(`Wrong tour store write operation : data `, value.data);
+        ok = false;
+      }
+    }
+    if (ok) {
+      this.tourData.next(this.internalTourData);
+    }
+    return ok;
+  }
+
+  public getStoreTour(): Subject<TourDictionary> {
+    return this.tourData;
   }
 }

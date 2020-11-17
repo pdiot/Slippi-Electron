@@ -16,9 +16,15 @@
   display: flex;
   flex-direction: column;
   .gamesPanel {
-    width: 90%;
+    @media (min-width : 2000px) {
+      width: 87%;
+      height: 8em;
+    }
+    @media (max-width : 1999px) {
+      width: 90%;
+      height: 150px;
+    }
     margin: auto;
-    height: 150px;
     overflow-y: scroll;
   }
   .statsPanel {

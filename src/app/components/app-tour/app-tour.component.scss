@@ -1,0 +1,66 @@
+@use '../../../variables' as variables;
+
+.app-tour-overlay {
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 900 !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: fixed !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  visibility: visible !important;
+  transition: visibility 0s, opacity 0.4s linear !important;
+
+  .app-tour-card {
+    max-width: 600px;
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    @media (min-width: 2000px) {
+      top: 35%;
+      left: 42%;
+    }
+    @media (max-width: 1999px) {
+      top: 35%;
+      left: 42%;
+    }
+    display: flex;
+    flex-direction: column;
+    background-color: variables.$lightBG;
+
+    .app-tour-title {
+      font-size: 1.6em;
+      font-weight: 600;
+      background-color: variables.$greenBG;
+      color: variables.$white;
+      border-bottom: 1px solid variables.$darkBorder;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+    .app-tour-text {
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+    .app-tour-buttons {
+      padding: 0.5em;
+
+      div {
+        font-size: 1.6em;
+        padding-top: 0.5em;
+        padding-top: 0.5em;
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+    }
+
+
+
+  }
+
+}

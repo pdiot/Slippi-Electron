@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EnrichedGameFile } from 'src/interfaces/outputs';
+import { TourButton } from 'src/interfaces/tour';
 import { ExternalCharacter, GameFileFilter, WhiteBlackList } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import { StoreService } from 'src/services/store/store.service';
@@ -44,10 +45,133 @@ export class FilterFormComponent implements OnInit, OnChanges {
     });
   }
 
+  startTourPlayerId() {
+    if (!(localStorage.getItem('filter-tour-playerId') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('filter-tour-playerId', 'complete');
+            this.store.resetTour();
+          }
+        }
+      ];
+      this.store.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Selecting your SlippiId'
+        },
+        {
+          key: 'text',
+          data: 'Now, choose the SlippiId for the player whose stats you want to generate'
+        },
+        {
+          key: 'buttons',
+          data: buttons
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
+    }
+  }
+
+  startTourPlayerCharacter() {
+    if (!(localStorage.getItem('filter-tour-playerCharacter') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('filter-tour-playerCharacter', 'complete');
+            this.store.resetTour();
+          }
+        }
+      ];
+      this.store.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Selecting your character'
+        },
+        {
+          key: 'text',
+          data: 'Then, choose the character whose stats you want to generate'
+        },
+        {
+          key: 'buttons',
+          data: buttons
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
+    }
+
+  }
+
+  startTourFilters() {
+    if (!(localStorage.getItem('filter-tour-filters') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'NEXT',
+          click: () => {
+            this.store.setTour('buttons', [buttons[1]]);
+            this.store.setTour('text', `One click selects a filter (turns it green), and makes it so only the games matching the green filters will be used. \n
+            Another click ignores the filter (turns it red), and makes it so the games matching the red filter won't be used. \n
+            A final click turns it back to it's default state, in grey.`)
+          }
+        },
+        {
+          label: 'NEXT',
+          click: () => {
+            this.store.setTour('buttons', [buttons[2]]);
+            this.store.setTour('text', `Finally, you can use the same principle to manually add / remove games from the list. \n
+            One click adds it, another removes it, and a third one turns it back to normal`)
+          }
+        },
+        {
+          label: 'NEXT',
+          click: () => {
+            this.store.setTour('buttons', [buttons[3]]);
+            this.store.setTour('text', `When you're done, click on the Generate Stats button.`);
+          }
+        },
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('filter-tour-filters', 'complete');
+            this.store.resetTour();
+          }
+        }
+      ];
+      this.store.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Setting up your filters'
+        },
+        {
+          key: 'text',
+          data: `Now, you can use the rest of the filters to determine which games you want to use for calculating your stats. \n
+          If no filters are selected or ignored, all the games matching your playerId and character will be used.`
+        },
+        {
+          key: 'buttons',
+          data: [buttons[0]]
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.enrichedGameFiles?.currentValue) {
       this.enrichedGameFiles = changes.enrichedGameFiles.currentValue as unknown as EnrichedGameFile[];
       this.processPlayers();
+      this.startTourPlayerId();
     }
   }
 
@@ -89,6 +213,7 @@ export class FilterFormComponent implements OnInit, OnChanges {
     this.filterForm.controls['playerId'].setValue(value);
     this.processPlayerCharacters();
     this.cd.detectChanges();
+    this.startTourPlayerCharacter();
   }
 
   public selectPlayerCharacter(value:string): void {
@@ -99,6 +224,7 @@ export class FilterFormComponent implements OnInit, OnChanges {
     this.processStages();
     this.sendFilter();
     this.cd.detectChanges();
+    this.startTourFilters();
   }
 
   public toggleOpponent(value:string): void {

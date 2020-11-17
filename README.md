@@ -17,7 +17,7 @@ npm run electron
 
 Simply download the appropriate zip in the release tab, extract it and run the exe.
 
-# Build upton :
+# Built upon :
 
 Built upon https://github.com/vinceau/slippi-stats for the extremely neat visual identity
 
@@ -26,8 +26,6 @@ Built upon https://github.com/project-slippi for the data sources
 # Roadmap :
 
 Rework the graph screen to work with the new UX / visuals
-
-Add a back button on the stats screen to change the filter options without having to reupload the files
 
 App tour to teach people how to use the app
 

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
 import { EnrichedGameFile } from 'src/interfaces/outputs';
+import { TourButton } from 'src/interfaces/tour';
 import { StoreService } from 'src/services/store/store.service';
 
 @Component({
@@ -8,11 +9,43 @@ import { StoreService } from 'src/services/store/store.service';
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss']
 })
-export class UploadComponent implements OnInit {
+export class UploadComponent implements OnInit, AfterViewInit {
 
-  constructor(private elecService: ElecService, private storeService: StoreService) { }
+  constructor(private elecService: ElecService, private storeService: StoreService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    if (!(localStorage.getItem('upload-tour') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('upload-tour', 'complete');
+            this.storeService.resetTour();
+          }
+        }
+      ];
+      this.storeService.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Welcome to Statislipp !'
+        },
+        {
+          key: 'text',
+          data: 'First, choose some .slp files to upload'
+        },
+        {
+          key: 'buttons',
+          data: buttons
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
+    }
   }
 
   callFileLoader() {

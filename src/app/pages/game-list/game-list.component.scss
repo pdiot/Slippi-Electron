@@ -26,10 +26,18 @@
 
   .generateStats {
     width: 200px;
-    margin: auto;
-    font-size: 26px;
-    margin-bottom: 10px;
-    margin-left: 470px;
+    @media (min-width : 2000px) {
+      font-size: 1.6em;
+      margin-bottom: 0.5em;
+      margin-top: 0.5em;
+      margin-left: 26em;
+    }
+    @media (max-width : 1999px) {
+      margin: auto;
+      font-size: 26px;
+      margin-bottom: 10px;
+      margin-left: 470px;
+    }
   }
 
   .gameLinesContainer {

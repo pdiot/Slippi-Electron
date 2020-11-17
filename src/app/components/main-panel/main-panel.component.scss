@@ -25,5 +25,11 @@ h1 {
 }
 
 .offset {
-  margin-left: -384px;
+  
+  @media (min-width : 2000px) {
+    margin-left: -32em;
+  }
+  @media (max-width : 1999px) {
+    margin-left: -384px;
+  }
 }
