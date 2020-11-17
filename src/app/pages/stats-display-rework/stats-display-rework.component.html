@@ -6,7 +6,7 @@
     </div>
   </div>
   <div class="stats-tabs">
-    <div class="tab-labels">
+    <div class="tab-labels" [ngClass]="{'tourHighlight': highlightLabels}">
       <ng-container *ngFor="let tab of tabs">
         <div class="label" [ngClass]="{'active': tab.active}" (click)="setActiveTab(tab.key)">{{tab.label}}</div>
       </ng-container>
@@ -271,7 +271,7 @@
     <div class="info" *ngIf="writeFeedbackMessage">
       {{writeFeedbackMessage}}
     </div>
-    <div class="highlight">
+    <div class="highlight" [ngClass]="{'tourHighlight': highlightSaveStats}">
       Stats for {{stats.playerCharName}}
     </div>
     <div class="action" (click)="writeStats()"> Save stats </div>
@@ -281,11 +281,11 @@
     <div class="highlight">
       Stats against {{currentCharacter}}
     </div>
-    <div class="action" (click)="openCharacterSelect()"> Change character </div>
+    <div class="action" [ngClass]="{'tourHighlight': highlightChangeChar}" (click)="openCharacterSelect()"> Change character </div>
   </div>
 </div>
 <div class="bottom-block">
-  <div class="stages-list" *ngIf="playerOverall">
+  <div class="stages-list" *ngIf="playerOverall" [ngClass]="{'tourHighlight': highlightStages}">
     <ng-container *ngFor="let stage of getKeys(playerOverall[currentCharacter])">
       <div class="stage" [ngClass]="{'active': isActiveStage(stage)}" (click)="setActiveStage(stage)">
         <img src="{{getStagePicture(stage)}}" />

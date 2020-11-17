@@ -102,7 +102,9 @@ body {
   z-index: 901;
   position: relative;
   border: 1px solid variables.$darkBorder;
-  box-shadow: 60px 0 120px #f0f, -60px 0 120px #0ff;
+  box-shadow: 60px 0 120px #f0f, -60px 0 120px #0ff !important;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 // Overlay

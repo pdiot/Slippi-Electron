@@ -28,7 +28,7 @@
 </ng-template>
 <ng-template #hasStats>
   <div class="statsContainer">
-    <div class="gamesPanel">
+    <div class="gamesPanel" [ngClass]="{'tourHighlight': highlightGames}">
       <app-side-panel [stats]="stats" [enrichedGameFiles]="enrichedGameFiles"></app-side-panel>
     </div>
     <div class="statsPanel">

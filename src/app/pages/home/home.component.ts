@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EnrichedGameFile, StatsItem } from 'src/interfaces/outputs';
+import { TourButton } from 'src/interfaces/tour';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 
@@ -15,6 +16,8 @@ export class HomeComponent implements OnInit {
   selectedGames: EnrichedGameFile[];
   filter: GameFileFilter;
   stats: StatsItem;
+
+  highlightGames;
 
   showOverlay = false;
   statsCalculation: StatsCalculationProgress;
@@ -111,6 +114,9 @@ export class HomeComponent implements OnInit {
           console.log('Home - Received statsCalculationDone from store : ', value.statsCalculationDone);
           this.showOverlay = false;
         }
+        if (this.stats) {
+          this.startTourStatsGames();
+        }
         if (value.reset) {
           console.log('Home - Received reset from store : ', value.reset);
           this.enrichedGameFiles = value?.enrichedGameFiles ? value.enrichedGameFiles : [];
@@ -141,6 +147,43 @@ export class HomeComponent implements OnInit {
         ledgeDashesForPlayer: undefined,
         ledgeDashesForOpponent: undefined
       };
+      
+    }
+  }
+
+  public startTourStatsGames() {
+    if (!(localStorage.getItem('stats-tour-games') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('stats-tour-games', 'complete');
+            this.highlightGames = false;
+            this.cd.detectChanges();
+            this.storeService.resetTour();
+            this.storeService.set('goodToGo', 'stats-tour');
+          }
+        }
+      ];
+      this.highlightGames = true;
+      this.storeService.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Adjusting your filtered games'
+        },
+        {
+          key: 'text',
+          data: 'You can add or remove games from the list of games used to make the stats by clicking on them here'
+        },
+        {
+          key: 'buttons',
+          data: buttons
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
     }
   }
 

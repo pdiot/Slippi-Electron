@@ -27,6 +27,7 @@ export interface Dictionary {
   'statsFilesForGraphs': any,
   'reset': boolean,
   'visibleMenu': boolean,
+  'goodToGo': string,
 }
 export interface TourDictionary {
   'buttons': TourButton[],
@@ -61,6 +62,7 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'statsFilesForGraphs': true,
   'reset': true,
   'visibleMenu': true,
+  'goodToGo': true,
 }
 
 const TourRecord : Record<keyof TourDictionary, boolean> = {

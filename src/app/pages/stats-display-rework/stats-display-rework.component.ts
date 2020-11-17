@@ -3,6 +3,7 @@ import GameFileUtils from 'src/app/components/utils/gameFile.utils';
 import GeneralUtils from 'src/app/components/utils/general.utils';
 import { ElecService } from 'src/app/elec.service';
 import { StatsItem, EnrichedGameFile } from 'src/interfaces/outputs';
+import { TourButton } from 'src/interfaces/tour';
 import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
@@ -40,6 +41,11 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   { label: 'Punished options', active: false, key: 'punishes' },
   { label: 'L-Cancels', active: false, key: 'lcancels' },
   { label: 'Ledgedashes', active: false, key: 'ledgedashes' }];
+
+  highlightLabels;
+  highlightStages;
+  highlightChangeChar;
+  highlightSaveStats;
 
   constructor(private cd: ChangeDetectorRef,
     private statsService: StatsProcessingService,
@@ -79,6 +85,11 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.stats?.opponentOveralls) {
       this.writeFeedbackMessage = undefined;
       this.getProcessedStats();
+      this.store.getStore().subscribe(value => {
+        if (value?.goodToGo === 'stats-tour') {
+          this.startTour();
+        }
+      })
     }
     this.cd.detectChanges();
   }
@@ -429,6 +440,105 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.cd.detectChanges();
     });
     this.electron.ipcRenderer.send('writeStats', stats);
+  }
+
+  startTour() {
+    if (!(localStorage.getItem('stats-tour-main') === 'complete')) {
+      const buttons: TourButton[] = [
+        {
+          label: 'OK',
+          click: () => {
+            this.highlightLabels = false;
+            this.highlightStages = true;
+            this.cd.detectChanges();
+            this.store.setMultipleTour(
+              [
+                {
+                  key: 'text',
+                  data: 'Filter your stats depending on stage'
+                },
+                {
+                  key: 'buttons',
+                  data: [buttons[1]]
+                }
+
+              ]
+            );
+          }
+        },
+        {
+          label: 'OK',
+          click: () => {
+            this.highlightStages = false;
+            this.highlightChangeChar = true;
+            this.cd.detectChanges();
+            this.store.setMultipleTour(
+              [
+                {
+                  key: 'text',
+                  data: `Change the opponent's character here`
+                },
+                {
+                  key: 'buttons',
+                  data: [buttons[2]]
+                }
+
+              ]
+            );
+          }
+        },
+        {
+          label: 'OK',
+          click: () => {
+            this.highlightChangeChar = false;
+            this.highlightSaveStats = true;
+            this.cd.detectChanges();
+            this.store.setMultipleTour(
+              [
+                {
+                  key: 'text',
+                  data: `Save your stats here for later use (Comparison module or graphs)`
+                },
+                {
+                  key: 'buttons',
+                  data: [buttons[3]]
+                }
+
+              ]
+            );
+          }
+        },
+        {
+          label: 'OK',
+          click: () => {
+            localStorage.setItem('stats-tour-main', 'complete');
+            this.highlightSaveStats = false;
+            this.cd.detectChanges();
+            this.store.resetTour();
+          }
+        }
+      ];
+      this.highlightLabels = true;
+      this.cd.detectChanges();
+      this.store.setMultipleTour([
+        {
+          key: 'title',
+          data: 'Accessing your stats'
+        },
+        {
+          key: 'text',
+          data: 'Choose which stats you wish to see by using those tabs'
+        },
+        {
+          key: 'buttons',
+          data: [buttons[0]]
+        },
+        {
+          key: 'show',
+          data: true
+        }
+      ]);
+    }
   }
 
 
