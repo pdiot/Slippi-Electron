@@ -184,6 +184,10 @@ function printLog(path) {
   })
 }
 
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
+
 
 module.exports = {
   getAttackAction: getAttackAction,
@@ -192,5 +196,6 @@ module.exports = {
   isNewShield: isNewShield,
   isNewPowerShield: isNewPowerShield,
   addToLog: addToLog,
-  printLog: printLog
+  printLog: printLog,
+  onlyUnique: onlyUnique,
 }

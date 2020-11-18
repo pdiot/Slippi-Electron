@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import GameFileUtils from 'src/app/components/utils/gameFile.utils';
 import { ElecService } from 'src/app/elec.service';
-import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 
@@ -144,6 +144,8 @@ export class GameListComponent implements OnInit, OnChanges {
         const ledgeDashesForPlayer = arg.ledgeDashesForPlayer as StatsWrapper<Ledgedashes>;
         const ledgeDashesForOpponent = arg.ledgeDashesForOpponent as StatsWrapper<Ledgedashes>;
         const gameResults = arg.gameResults as StatsWrapper<string>;
+        const playerWavedashes = arg.wavedashesForPlayer as StatsWrapper<Wavedashes>;
+        const opponentWavedashes = arg.wavedashesForOpponent as StatsWrapper<Wavedashes>;
         this.store.setMultiple([
           {
             key: 'playerCharName',
@@ -152,6 +154,14 @@ export class GameListComponent implements OnInit, OnChanges {
           {
             key: 'gameResults',
             data: gameResults
+          },
+          {
+            key: 'playerWavedashes',
+            data: playerWavedashes
+          },
+          {
+            key: 'opponentWavedashes',
+            data: opponentWavedashes
           },
           {
             key : 'playerConversions',

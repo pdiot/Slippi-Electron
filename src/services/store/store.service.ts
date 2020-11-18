@@ -1,6 +1,6 @@
 import { Injectable, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
 import { TourButton } from 'src/interfaces/tour';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 
@@ -18,6 +18,8 @@ export interface Dictionary {
   'lcancelsForOpponent': StatsWrapper<LCancels>,
   'ledgeDashesForPlayer': StatsWrapper<Ledgedashes>,
   'ledgeDashesForOpponent': StatsWrapper<Ledgedashes>,
+  'playerWavedashes': StatsWrapper<Wavedashes>,
+  'opponentWavedashes': StatsWrapper<Wavedashes>,
   'statsCalculationProgress': StatsCalculationProgress,
   'statsCalculationDone': boolean,
   'playerCharName': string,
@@ -53,6 +55,8 @@ const DictionaryRecord : Record<keyof Dictionary, boolean> = {
   'lcancelsForOpponent': true,
   'ledgeDashesForPlayer': true,
   'ledgeDashesForOpponent': true,
+  'playerWavedashes': true,
+  'opponentWavedashes': true,
   'statsCalculationProgress': true,
   'statsCalculationDone': true,
   'playerCharName': true,

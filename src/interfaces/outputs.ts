@@ -101,6 +101,14 @@ export interface Ledgedashes {
     ]
 }
 
+export interface Wavedashes {
+    frame1: number,
+    frame2: number,
+    frame3: number,
+    more: number,
+    total: number,
+}
+
 export interface StatsItem {
     playerCharName: string,
     playerConversions: StatsWrapper<Conversion[]>,
@@ -113,5 +121,7 @@ export interface StatsItem {
     lcancelsForOpponent: StatsWrapper<LCancels>,
     ledgeDashesForPlayer: StatsWrapper<Ledgedashes>,
     ledgeDashesForOpponent: StatsWrapper<Ledgedashes>,
+    playerWavedashes: StatsWrapper<Wavedashes>,
+    opponentWavedashes: StatsWrapper<Wavedashes>,
     gameResults: StatsWrapper<string>,
   }

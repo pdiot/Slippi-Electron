@@ -4,7 +4,7 @@ import GeneralUtils from 'src/app/components/utils/general.utils';
 import { ElecService } from 'src/app/elec.service';
 import { StatsItem, EnrichedGameFile } from 'src/interfaces/outputs';
 import { TourButton } from 'src/interfaces/tour';
-import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes, ProcessedWavedashes } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
 import { StoreService } from 'src/services/store/store.service';
@@ -28,6 +28,8 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   lcancelsForOpponent: IntermediaryStatsWrapper<ProcessedLCancels>;
   ledgeDashesForPlayer: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
+  playerWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
+  opponentWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
   gameResults: IntermediaryStatsWrapper<number>;
   writeFeedbackMessage: string;
 
@@ -40,7 +42,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   { label: 'Conversions', active: false, key: 'conversions' },
   { label: 'Punished options', active: false, key: 'punishes' },
   { label: 'L-Cancels', active: false, key: 'lcancels' },
-  { label: 'Ledgedashes', active: false, key: 'ledgedashes' }];
+  { label: 'Execution', active: false, key: 'execution' }];
 
   highlightLabels;
   highlightStages;
@@ -82,6 +84,8 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       this.stats?.opponentConversions &&
       this.stats?.playerConversions &&
       this.stats?.playerOveralls &&
+      this.stats?.playerWavedashes &&
+      this.stats?.opponentWavedashes &&
       this.stats?.opponentOveralls) {
       this.writeFeedbackMessage = undefined;
       this.getProcessedStats();
@@ -181,6 +185,20 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
         this.cd.detectChanges();
       });
     }
+    if (newStats.playerWavedashes) {
+      this.statsService.processWavedashes(newStats.playerWavedashes).then(result => {
+        console.log('Stats Display - got player wavedashes back', result);
+        this.playerWavedashes = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.opponentWavedashes) {
+      this.statsService.processWavedashes(newStats.opponentWavedashes).then(result => {
+        console.log('Stats Display - got opponent wavedashes back', result);
+        this.opponentWavedashes = result;
+        this.cd.detectChanges();
+      });
+    }
     if (newStats.playerConversions) {
       this.statsService.processConversions(newStats.playerConversions).then(result => {
         console.log('Stats Display - got player conversions back', result);
@@ -272,7 +290,9 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       lcancelsForPlayer: undefined,
       lcancelsForOpponent: undefined,
       ledgeDashesForPlayer: undefined,
-      ledgeDashesForOpponent: undefined
+      ledgeDashesForOpponent: undefined,
+      playerWavedashes: undefined,
+      opponentWavedashes: undefined
     };
     for (let game of Object.keys(this.stats.playerConversions)) {
       if (niceNamesToKeep.includes(game)) {
@@ -288,6 +308,22 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
           newStats.opponentConversions = {};
         }
         newStats.opponentConversions[game] = this.stats.opponentConversions[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.playerWavedashes)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.playerWavedashes) {
+          newStats.playerWavedashes = {};
+        }
+        newStats.playerWavedashes[game] = this.stats.playerWavedashes[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.opponentWavedashes)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.opponentWavedashes) {
+          newStats.opponentWavedashes = {};
+        }
+        newStats.opponentWavedashes[game] = this.stats.opponentWavedashes[game];
       }
     }
     for (let game of Object.keys(this.stats.playerOveralls)) {

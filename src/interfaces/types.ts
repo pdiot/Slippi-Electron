@@ -134,3 +134,11 @@ export interface ProcessedLedgedashes {
     maxFramesSinceLedgeDrop: number,
   }
 }
+
+export interface ProcessedWavedashes {
+  frame1: number,
+  frame2: number,
+  frame3: number,
+  more: number,
+  total: number,
+}

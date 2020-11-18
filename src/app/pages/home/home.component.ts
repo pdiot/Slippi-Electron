@@ -46,6 +46,16 @@ export class HomeComponent implements OnInit {
           this.initStatsIfNeeded();
           this.stats.gameResults = value.gameResults;
         }
+        if (value.playerWavedashes && !value.reset) {
+          console.log('Home - Received playerWavedashes from store : ', value.playerWavedashes);
+          this.initStatsIfNeeded();
+          this.stats.playerWavedashes = value.playerWavedashes;
+        }
+        if (value.opponentWavedashes && !value.reset) {
+          console.log('Home - Received opponentWavedashes from store : ', value.opponentWavedashes);
+          this.initStatsIfNeeded();
+          this.stats.opponentWavedashes = value.opponentWavedashes;
+        }
         if (value.playerConversions && !value.reset) {
           console.log('Home - Received playerConversions from store : ', value.playerConversions);
           this.initStatsIfNeeded();
@@ -144,6 +154,8 @@ export class HomeComponent implements OnInit {
         punishedActionsForPlayer: undefined,
         lcancelsForPlayer: undefined,
         lcancelsForOpponent: undefined,
+        playerWavedashes: undefined,
+        opponentWavedashes: undefined,
         ledgeDashesForPlayer: undefined,
         ledgeDashesForOpponent: undefined
       };

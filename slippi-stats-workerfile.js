@@ -3,6 +3,7 @@ const { default: SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 const node_utils = require('./node_utils');
 const fs = require('fs');
+const { start } = require('repl');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
@@ -51,6 +52,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let ledgeDashesForPlayer = {};
   let ledgeDashesForOpponent = {};
   let gameResults = {};
+  let wavedashesForPlayer = {};
+  let wavedashesForOpponent = {};
   let playerCharName;
 
   // Getting the data we want
@@ -113,6 +116,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
     const opponentOverall = stats.overall.filter(overall => overall.playerIndex === opponentPort)[0];
     opponentOverall.conversionsRatio = getOpeningRatio(opponentConversions, playerConversions);
     const gameResult = getResult(playerPort, opponentPort, stats.stocks, end);
+    const playerWavedashes = getWavedashes(playerPort, frames);
+    const opponentWavedashes = getWavedashes(opponentPort, frames);
 
     ledgeDashesForPlayer[startAt] = {};
     ledgeDashesForPlayer[startAt][opponentCharName] = {};
@@ -165,6 +170,14 @@ function processGames(gamesFromMain, slippiId, characterId) {
     gameResults[startAt][opponentCharName] = {};
     gameResults[startAt][opponentCharName][stage] = gameResult;
 
+    wavedashesForPlayer[startAt] = {}
+    wavedashesForPlayer[startAt][opponentCharName] = {};
+    wavedashesForPlayer[startAt][opponentCharName][stage] = playerWavedashes;
+
+    wavedashesForOpponent[startAt] = {}
+    wavedashesForOpponent[startAt][opponentCharName] = {};
+    wavedashesForOpponent[startAt][opponentCharName][stage] = opponentWavedashes;
+
     processedGamesNb++;
     node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
     parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
@@ -184,11 +197,70 @@ function processGames(gamesFromMain, slippiId, characterId) {
     ledgeDashesForPlayer,
     ledgeDashesForOpponent,
     gameResults,
+    wavedashesForPlayer,
+    wavedashesForOpponent,
     debug
   }
 
   node_utils.addToLog('WORKER end of treatment');
   return returnValue;
+}
+
+function getWavedashes(playerPort, frames) {
+  let wavedashes = {
+    frame1: 0,
+    frame2: 0,
+    frame3: 0,
+    more: 0,
+    total: 0,
+  };
+  // We will store the 8 previous frames of animation because that's how it's done in slippi stats
+  let previousPosts = [];
+  for (let frameKey of Object.keys(frames)) {
+    currentPost = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).post;
+
+    if (currentPost.actionStateId === 43 && previousPosts[previousPosts.length - 1] !== 43) {
+      // We detected a new waveland
+      const uniqueAnimations = previousPosts.map(val => val.actionStateId).filter(node_utils.onlyUnique);
+      if (uniqueAnimations.includes(24)) { // 24 === Jumpsquat 
+        // We had a jump in the previous 8 frames, so it's pretty safe to assume this was a wavedash
+        // We will count the number of animations it takes us to find the jumpsquat, beginning at the end of previousPosts
+        // Frame perfect WD : the first frame after jumpsquat is 43
+        // If it's not a frame perfect wavedash, we can count the number of frames between the end of jumpsquat and the beginning of airdodge
+        if (previousPosts[previousPosts.length - 1].actionStateId === 24) {
+          // Frame perfect wavedash
+          wavedashes.frame1 ++;
+        } else {
+          let lateness;
+          for (let i = 0; i < previousPosts.length - 1; i ++) {
+            if (previousPosts[i + 1].actionStateId === 236) { // The next frame is our airdodge
+              lateness = previousPosts[i].actionStateCounter + 1; // This contains the number of frames the character spent in it's current actionState before this one
+              break;
+            }
+          }
+          if (lateness) {
+            if (lateness === 1) {
+              wavedashes.frame2 ++;
+            } else if (lateness === 2) {
+              wavedashes.frame3 ++;
+            } else {
+              wavedashes.more ++;
+            }
+          }
+        }
+        wavedashes.total ++;
+        previousPosts = [];
+      }
+    }
+    
+    if (previousPosts.length < 8) {
+      previousPosts.push(currentPost);
+    } else {
+      previousPosts.shift();
+      previousPosts.push(currentPost);
+    }
+  }
+  return wavedashes;
 }
 
 function getResult(playerPort, opponentPort, stocks, end) {

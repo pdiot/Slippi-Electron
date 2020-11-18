@@ -27,8 +27,6 @@ Built upon https://github.com/project-slippi for the data sources
 
 Rework the graph screen to work with the new UX / visuals
 
-App tour to teach people how to use the app
-
 New stats : 
 
 wavedashes (% of frame 1, 2, 3, 4, 5+ wavedashes, maaaaayyyyyyybe angles ?), 

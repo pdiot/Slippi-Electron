@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import GeneralUtils from 'src/app/components/utils/general.utils';
 import { EXTERNALMOVES } from 'src/interfaces/const';
-import { Conversion, LCancels, Ledgedashes, Move, Overall, PunishedActions, StatsWrapper } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, StartersAverageDamage } from 'src/interfaces/types';
+import { Conversion, LCancels, Ledgedashes, Move, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
+import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedWavedashes, StartersAverageDamage } from 'src/interfaces/types';
 
 @Injectable({
   providedIn: 'root'
@@ -752,6 +753,97 @@ export class StatsProcessingService {
       }
     }
     return processedLedgeDashes;
+  }
+
+  public async processWavedashes(data: StatsWrapper<Wavedashes>): Promise<IntermediaryStatsWrapper<ProcessedWavedashes>> {
+    let processedWavedashes = {};
+    let wavedashes;
+    let wavedashesAllStages;
+
+    // Create an intermediary wrapper without the gameData
+    let wavedashesList: IntermediaryStatsWrapper<Wavedashes> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (wavedashesList[character]) {
+          for (const stage of Object.keys(data[game][character])) {
+            // Same here, we'll only have one stage each time here
+            if (wavedashesList[character][stage]) {
+              wavedashesList[character][stage] = {
+                frame1: wavedashesList[character][stage].frame1 + data[game][character][stage].frame1,
+                frame2: wavedashesList[character][stage].frame2 + data[game][character][stage].frame2,
+                frame3: wavedashesList[character][stage].frame3 + data[game][character][stage].frame3,
+                more: wavedashesList[character][stage].more + data[game][character][stage].more,
+                total: wavedashesList[character][stage].total + data[game][character][stage].total,
+              };
+            } else {
+              wavedashesList[character][stage] = data[game][character][stage];
+            }
+          }
+        } else {
+          // First game with this character
+          wavedashesList[character] = data[game][character];
+        }
+      }
+    }
+
+    for (let character of Object.keys(wavedashesList)) {
+      processedWavedashes[character] = {};
+      wavedashesAllStages = {
+        frame1: 0,
+        frame2: 0,
+        frame3: 0,
+        more: 0,
+        total: 0,
+      };
+      for (let stage of Object.keys(wavedashesList[character])) {
+        wavedashes = wavedashesList[character][stage];
+        wavedashesAllStages.frame1 += wavedashes.frame1;
+        wavedashesAllStages.frame2 += wavedashes.frame2;
+        wavedashesAllStages.frame3 += wavedashes.frame3;
+        wavedashesAllStages.more += wavedashes.more;
+        wavedashesAllStages.total += wavedashes.total;
+
+        // Process data for current stage
+        if (wavedashes.total !== 0) {
+          processedWavedashes[character][stage] = {
+            frame1: wavedashes.frame1 / wavedashes.total * 100,
+            frame2: wavedashes.frame2 / wavedashes.total * 100,
+            frame3: wavedashes.frame3 / wavedashes.total * 100,
+            more: wavedashes.more / wavedashes.total * 100,
+            total: wavedashes.total
+          }
+        } else {
+          processedWavedashes[character][stage] = {
+            frame1: 0,
+            frame2: 0,
+            frame3: 0,
+            more: 0,
+            total: 0
+          }
+        }
+      }
+      // Process data for all stages
+      if (wavedashesAllStages.total !== 0) {
+        processedWavedashes[character]['allStages'] = {
+          frame1: wavedashesAllStages.frame1 / wavedashesAllStages.total * 100,
+          frame2: wavedashesAllStages.frame2 / wavedashesAllStages.total * 100,
+          frame3: wavedashesAllStages.frame3 / wavedashesAllStages.total * 100,
+          more: wavedashesAllStages.more / wavedashesAllStages.total * 100,
+          total: wavedashesAllStages.total
+        }
+      } else {
+        processedWavedashes[character]['allStages'] = {
+          frame1: 0,
+          frame2: 0,
+          frame3: 0,
+          more: 0,
+          total: 0
+        }
+      }
+    }
+
+    return processedWavedashes;
   }
 
   private averageDamageForMostCommonStarters(nbMoves: number, conversions: { totalDamage: number, moves: Move[] }[], moveIds: number[]): StartersAverageDamage[] {
