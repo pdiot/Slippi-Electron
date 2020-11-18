@@ -500,7 +500,7 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       lcancelsForPlayer: this.lcancelsForPlayer,
       lcancelsForOpponent: this.lcancelsForOpponent,
       ledgeDashesForPlayer: this.ledgeDashesForPlayer,
-      ledgeDashesForOpponent: this.ledgeDashesForPlayer,
+      ledgeDashesForOpponent: this.ledgeDashesForOpponent,
       playerWavedashes: this.playerWavedashes,
       opponentWavedashes: this.opponentWavedashes,
       playerJCGrabs: this.playerJCGrabs,

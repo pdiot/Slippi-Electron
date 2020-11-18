@@ -54,7 +54,7 @@ export class CompareComponent implements OnInit {
         lcancelsForPlayer: this.firstFile.lcancelsForPlayer,
         lcancelsForOpponent: this.secondFile.lcancelsForPlayer,
         ledgeDashesForPlayer: this.firstFile.ledgeDashesForPlayer,
-        ledgeDashesForOpponent: this.firstFile.ledgeDashesForPlayer,
+        ledgeDashesForOpponent: this.secondFile.ledgeDashesForPlayer,
         playerWavedashes: this.firstFile.playerWavedashes,
         opponentWavedashes: this.secondFile.opponentWavedashes,
         playerJCGrabs: this.firstFile.playerJCGrabs,

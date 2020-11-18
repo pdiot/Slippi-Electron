@@ -603,7 +603,7 @@ function getLedgeDashes(frames, playerPort) {
   let framesSinceLedgeDrop = 0;
   let extraInvincibilityFrames = 0;
   let reset = function (reason) {
-    // node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
+    node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
     foundCliffCatch = false;
     foundCliffDrop = false;
     foundAirDodge = false;
@@ -628,11 +628,11 @@ function getLedgeDashes(frames, playerPort) {
             ledgeDashes['invincible'] = [];
           }
           ledgeDashes['invincible'].push({ framesSinceLedgeDrop, extraInvincibilityFrames });
-          // reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
+          reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
         }
       } else {
         // Should never happen. Probably ? I hope.
-        // reset(`Outside of leniency window, looking for the invincibility frames, frameKey ${frameKey}`);
+        reset(`Outside of leniency window, looking for the invincibility frames, frameKey ${frameKey}`);
       }
     } else if (foundWaveland) {
       // Check for the end of waveland
@@ -650,14 +650,14 @@ function getLedgeDashes(frames, playerPort) {
               ledgeDashes['notInvincible'] = [];
             }
             ledgeDashes['notInvincible'].push({ framesSinceLedgeDrop });
-            // reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
+            reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
           } else {
             // It's an invincible ledgedash, we will look forwards in frames until we lose the invulnerability
             hasWavelandEnded = true;
           }
         }
       } else {
-        // reset(`Outside of leniency window, looking for the end of waveland, frameKey ${frameKey}`);
+        reset(`Outside of leniency window, looking for the end of waveland, frameKey ${frameKey}`);
       }
     } else if (foundAirDodge) {
       // Check for a waveland
@@ -667,7 +667,7 @@ function getLedgeDashes(frames, playerPort) {
           foundWaveland = true;
         }
       } else {
-        // reset(`Outside of leniency window, looking for the waveland, frameKey ${frameKey}`);
+        reset(`Outside of leniency window, looking for the waveland, frameKey ${frameKey}`);
       }
     } else if (foundCliffDrop) {
       // Check for an airdodge
@@ -677,13 +677,13 @@ function getLedgeDashes(frames, playerPort) {
           foundAirDodge = true;
         }
       } else {
-        // reset(`Outside of leniency window, looking for the airdodge, frameKey ${frameKey}`);
+        reset(`Outside of leniency window, looking for the airdodge, frameKey ${frameKey}`);
       }
     } else if (foundCliffCatch) {
       // Check for a cliff drop
       if ([254, 255, 256, 257, 258, 259, 260, 261, 262, 263].includes(playerPostFrameUpdate.actionStateId)) {
         // Standard ledge option
-        // reset(`Found standard ledge option, frameKey ${frameKey}`);
+        reset(`Found standard ledge option, frameKey ${frameKey}`);
       } else {
         foundCliffDrop = true;
       }
