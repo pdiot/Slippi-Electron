@@ -142,3 +142,16 @@ export interface ProcessedWavedashes {
   more: number,
   total: number,
 }
+
+export interface ProcessedJCGrabs {
+  successful: {
+    frame1: number,
+    frame2: number,
+    frame3orMore: number
+  },
+  failed: {
+    oneFrameLate: number,
+    twoFramesLate: number,
+    threeFramesLate: number
+  }
+}

@@ -109,6 +109,20 @@ export interface Wavedashes {
     total: number,
 }
 
+export interface JCGrabs {
+    successful: {
+        frame1: number,
+        frame2: number,
+        frame3orMore: number,
+    },
+    failed: {
+        oneFrameLate: number,
+        twoFramesLate: number,
+        threeFramesLate: number
+    },
+    total: number
+}
+
 export interface StatsItem {
     playerCharName: string,
     playerConversions: StatsWrapper<Conversion[]>,
@@ -123,5 +137,7 @@ export interface StatsItem {
     ledgeDashesForOpponent: StatsWrapper<Ledgedashes>,
     playerWavedashes: StatsWrapper<Wavedashes>,
     opponentWavedashes: StatsWrapper<Wavedashes>,
+    playerJCGrabs: StatsWrapper<JCGrabs>,
+    opponentJCGrabs: StatsWrapper<JCGrabs>,
     gameResults: StatsWrapper<string>,
   }

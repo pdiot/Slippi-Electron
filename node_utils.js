@@ -123,6 +123,21 @@ const GENERICSTATES = {
 	91: {id:91, name: 'DamageFlyRoll', nameForOpponentAttackStats: 'Hit'},
 }
 
+const PHYSICAL_BUTTONS = {
+  dpadLeft: 0x0001,
+  dpadRight: 0x0002,
+  dpadDown: 0x0004,
+  dpadUp: 0x0008,
+  z: 0x0010,
+  rDigital: 0x0020,
+  lDigital: 0x0040,
+  a: 0x0100,
+  b: 0x0200,
+  x: 0x0400,
+  y: 0x0800,
+  start: 0x1000
+}
+
 function getDefensiveAction(id) {
   if (DEFENSIVEACTIONSTATES[id]) {
     return DEFENSIVEACTIONSTATES[id].niceName;
@@ -198,4 +213,5 @@ module.exports = {
   addToLog: addToLog,
   printLog: printLog,
   onlyUnique: onlyUnique,
+  PHYSICAL_BUTTONS: PHYSICAL_BUTTONS
 }

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import GeneralUtils from 'src/app/components/utils/general.utils';
 import { EXTERNALMOVES } from 'src/interfaces/const';
-import { Conversion, LCancels, Ledgedashes, Move, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedWavedashes, StartersAverageDamage } from 'src/interfaces/types';
+import { Conversion, JCGrabs, LCancels, Ledgedashes, Move, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
+import { IntermediaryStatsWrapper, MostCommonMove, MoyenneConversion, ProcessedAttack, ProcessedDefensiveOption, ProcessedJCGrabs, ProcessedLCancels, ProcessedLedgedashes, ProcessedMovementOption, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedWavedashes, StartersAverageDamage } from 'src/interfaces/types';
 
 @Injectable({
   providedIn: 'root'
@@ -844,6 +844,131 @@ export class StatsProcessingService {
     }
 
     return processedWavedashes;
+  }
+
+  public async processJCGrabs(data: StatsWrapper<JCGrabs>): Promise<IntermediaryStatsWrapper<ProcessedJCGrabs>> {
+    let processedJCGrabs = {};
+    let jcGrabs;
+    let jcGrabsAllStages;
+
+    // Create an intermediary wrapper without the gameData
+    let jcGrabsList: IntermediaryStatsWrapper<JCGrabs> = {};
+    for (const game of Object.keys(data)) {
+      for (const character of Object.keys(data[game])) {
+        // We'll only have one character each time here (opponent's character)
+        if (jcGrabsList[character]) {
+          for (const stage of Object.keys(data[game][character])) {
+            // Same here, we'll only have one stage each time here
+            if (jcGrabsList[character][stage]) {
+              jcGrabsList[character][stage] = {
+                successful: {
+                  frame1: jcGrabsList[character][stage].successful.frame1 + data[game][character][stage].successful.frame1,
+                  frame2: jcGrabsList[character][stage].successful.frame2 + data[game][character][stage].successful.frame2,
+                  frame3orMore: jcGrabsList[character][stage].successful.frame3orMore + data[game][character][stage].successful.frame3orMore,
+                },
+                failed: {
+                  oneFrameLate: jcGrabsList[character][stage].failed.oneFrameLate + data[game][character][stage].failed.oneFrameLate,
+                  twoFramesLate: jcGrabsList[character][stage].failed.twoFramesLate + data[game][character][stage].failed.twoFramesLate,
+                  threeFramesLate: jcGrabsList[character][stage].failed.threeFramesLate + data[game][character][stage].failed.threeFramesLate,
+                },
+                total: jcGrabsList[character][stage].total + data[game][character][stage].total
+              }
+            } else {
+              jcGrabsList[character][stage] = data[game][character][stage];
+            }
+          }
+        } else {
+          // First game with this character
+          jcGrabsList[character] = data[game][character];
+        }
+      }
+    }
+    
+    for (let character of Object.keys(jcGrabsList)) {
+      processedJCGrabs[character] = {};
+      jcGrabsAllStages = {
+        successful : {
+          frame1: 0,
+          frame2: 0,
+          frame3orMore: 0
+        },
+        failed: {
+          oneFrameLate: 0,
+          twoFramesLate: 0,
+          threeFramesLate: 0
+        },
+        total: 0
+      };
+      for (let stage of Object.keys(jcGrabsList[character])) {
+        jcGrabs = jcGrabsList[character][stage];
+        jcGrabsAllStages.successful.frame1 += jcGrabs.successful.frame1;
+        jcGrabsAllStages.successful.frame2 += jcGrabs.successful.frame2;
+        jcGrabsAllStages.successful.frame3orMore += jcGrabs.successful.frame3orMore;
+        jcGrabsAllStages.failed.oneFrameLate += jcGrabs.failed.oneFrameLate;
+        jcGrabsAllStages.failed.twoFramesLate += jcGrabs.failed.twoFramesLate;
+        jcGrabsAllStages.failed.threeFramesLate += jcGrabs.failed.threeFramesLate;
+        jcGrabsAllStages.total += jcGrabs.total;
+
+        // Process data for current stage
+        if (jcGrabs.total !== 0) {
+          processedJCGrabs[character][stage] = {
+            successful: {
+              frame1: jcGrabs.successful.frame1 / jcGrabs.total * 100,
+              frame2: jcGrabs.successful.frame2 / jcGrabs.total * 100,
+              frame3orMore: jcGrabs.successful.frame3orMore / jcGrabs.total * 100,
+            },
+            failed: {
+              oneFrameLate: jcGrabs.failed.oneFrameLate / jcGrabs.total * 100,
+              twoFramesLate: jcGrabs.failed.twoFramesLate / jcGrabs.total * 100,
+              threeFramesLate: jcGrabs.failed.threeFramesLate / jcGrabs.total * 100,
+            }
+          };
+        } else {
+          processedJCGrabs[character][stage] = {
+            successful: {
+              frame1: 0,
+              frame2: 0,
+              frame3orMore: 0,
+            },
+            failed: {
+              oneFrameLate: 0,
+              twoFramesLate: 0,
+              threeFramesLate: 0,
+            }
+          }
+        }
+      }
+      // Process data for current stage
+      if (jcGrabsAllStages.total !== 0) {
+        processedJCGrabs[character]['allStages'] = {
+          successful: {
+            frame1: jcGrabsAllStages.successful.frame1 / jcGrabsAllStages.total * 100,
+            frame2: jcGrabsAllStages.successful.frame2 / jcGrabsAllStages.total * 100,
+            frame3orMore: jcGrabsAllStages.successful.frame3orMore / jcGrabsAllStages.total * 100,
+          },
+          failed: {
+            oneFrameLate: jcGrabsAllStages.failed.oneFrameLate / jcGrabsAllStages.total * 100,
+            twoFramesLate: jcGrabsAllStages.failed.twoFramesLate / jcGrabsAllStages.total * 100,
+            threeFramesLate: jcGrabsAllStages.failed.threeFramesLate / jcGrabsAllStages.total * 100,
+          }
+        };
+      } else {
+        processedJCGrabs[character]['allStages'] = {
+          successful: {
+            frame1: 0,
+            frame2: 0,
+            frame3orMore: 0,
+          },
+          failed: {
+            oneFrameLate: 0,
+            twoFramesLate: 0,
+            threeFramesLate: 0,
+          }
+        }
+      }
+    }
+
+    return processedJCGrabs;
   }
 
   private averageDamageForMostCommonStarters(nbMoves: number, conversions: { totalDamage: number, moves: Move[] }[], moveIds: number[]): StartersAverageDamage[] {

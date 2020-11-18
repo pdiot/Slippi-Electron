@@ -357,6 +357,11 @@ body {
         app-stats-line {
           margin-top: 0.5rem;
         }
+        app-stats-line:last-child {
+          .separator {
+            margin-bottom: 4rem;
+          }
+        }
       }
     }
   }

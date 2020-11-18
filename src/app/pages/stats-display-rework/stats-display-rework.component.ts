@@ -4,7 +4,7 @@ import GeneralUtils from 'src/app/components/utils/general.utils';
 import { ElecService } from 'src/app/elec.service';
 import { StatsItem, EnrichedGameFile } from 'src/interfaces/outputs';
 import { TourButton } from 'src/interfaces/tour';
-import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes, ProcessedWavedashes } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedOpenings, ProcessedOverallList, ProcessedPunishedOptions, ProcessedLCancels, ProcessedLedgedashes, ProcessedWavedashes, ProcessedJCGrabs } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import { StatsProcessingService } from 'src/services/stats-processing/stats-processing.service';
 import { StoreService } from 'src/services/store/store.service';
@@ -30,6 +30,8 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
   ledgeDashesForOpponent: IntermediaryStatsWrapper<ProcessedLedgedashes>;
   playerWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
   opponentWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
+  playerJCGrabs: IntermediaryStatsWrapper<ProcessedJCGrabs>;
+  opponentJCGrabs: IntermediaryStatsWrapper<ProcessedJCGrabs>;
   gameResults: IntermediaryStatsWrapper<number>;
   writeFeedbackMessage: string;
 
@@ -75,6 +77,8 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     if (this.selectedGames &&
       this.stats?.playerCharName &&
       this.stats?.gameResults &&
+      this.stats?.playerJCGrabs &&
+      this.stats?.opponentJCGrabs &&
       this.stats?.ledgeDashesForPlayer &&
       this.stats?.ledgeDashesForOpponent &&
       this.stats?.punishedActionsForPlayer &&
@@ -199,6 +203,20 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
         this.cd.detectChanges();
       });
     }
+    if (newStats.playerJCGrabs) {
+      this.statsService.processJCGrabs(newStats.playerJCGrabs).then(result => {
+        console.log('Stats Display - got player jcGrabs back', result);
+        this.playerJCGrabs = result;
+        this.cd.detectChanges();
+      });
+    }
+    if (newStats.opponentJCGrabs) {
+      this.statsService.processJCGrabs(newStats.opponentJCGrabs).then(result => {
+        console.log('Stats Display - got opponent jcGrabs back', result);
+        this.opponentJCGrabs = result;
+        this.cd.detectChanges();
+      });
+    }
     if (newStats.playerConversions) {
       this.statsService.processConversions(newStats.playerConversions).then(result => {
         console.log('Stats Display - got player conversions back', result);
@@ -292,7 +310,9 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       ledgeDashesForPlayer: undefined,
       ledgeDashesForOpponent: undefined,
       playerWavedashes: undefined,
-      opponentWavedashes: undefined
+      opponentWavedashes: undefined,
+      playerJCGrabs: undefined,
+      opponentJCGrabs: undefined
     };
     for (let game of Object.keys(this.stats.playerConversions)) {
       if (niceNamesToKeep.includes(game)) {
@@ -324,6 +344,22 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
           newStats.opponentWavedashes = {};
         }
         newStats.opponentWavedashes[game] = this.stats.opponentWavedashes[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.playerJCGrabs)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.playerJCGrabs) {
+          newStats.playerJCGrabs = {};
+        }
+        newStats.playerJCGrabs[game] = this.stats.playerJCGrabs[game];
+      }
+    }
+    for (let game of Object.keys(this.stats.opponentJCGrabs)) {
+      if (niceNamesToKeep.includes(game)) {
+        if (!newStats.opponentJCGrabs) {
+          newStats.opponentJCGrabs = {};
+        }
+        newStats.opponentJCGrabs[game] = this.stats.opponentJCGrabs[game];
       }
     }
     for (let game of Object.keys(this.stats.playerOveralls)) {
@@ -465,6 +501,10 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
       lcancelsForOpponent: this.lcancelsForOpponent,
       ledgeDashesForPlayer: this.ledgeDashesForPlayer,
       ledgeDashesForOpponent: this.ledgeDashesForPlayer,
+      playerWavedashes: this.playerWavedashes,
+      opponentWavedashes: this.opponentWavedashes,
+      playerJCGrabs: this.playerJCGrabs,
+      opponentJCGrabs: this.opponentJCGrabs,
       dates: this.statsDates,
     }
     this.electron.ipcRenderer.on('fileWrittenOK', (event, arg) => {

@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ElecService } from 'src/app/elec.service';
-import { StatsItem } from 'src/interfaces/outputs';
 import { StoreService } from 'src/services/store/store.service';
 
 @Component({
@@ -55,7 +54,11 @@ export class CompareComponent implements OnInit {
         lcancelsForPlayer: this.firstFile.lcancelsForPlayer,
         lcancelsForOpponent: this.secondFile.lcancelsForPlayer,
         ledgeDashesForPlayer: this.firstFile.ledgeDashesForPlayer,
-        ledgeDashesForOpponent: this.firstFile.ledgeDashesForPlayer
+        ledgeDashesForOpponent: this.firstFile.ledgeDashesForPlayer,
+        playerWavedashes: this.firstFile.playerWavedashes,
+        opponentWavedashes: this.secondFile.opponentWavedashes,
+        playerJCGrabs: this.firstFile.playerJCGrabs,
+        opponentJCGrabs: this.secondFile.opponentJCGrabs,
       }
     }
   }

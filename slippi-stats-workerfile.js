@@ -3,7 +3,6 @@ const { default: SlippiGame } = require('@slippi/slippi-js');
 const constants = require('./constants');
 const node_utils = require('./node_utils');
 const fs = require('fs');
-const { start } = require('repl');
 
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
@@ -54,6 +53,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
   let gameResults = {};
   let wavedashesForPlayer = {};
   let wavedashesForOpponent = {};
+  let jcGrabsForPlayer = {};
+  let jcGrabsForOpponent = {};
   let playerCharName;
 
   // Getting the data we want
@@ -69,7 +70,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     //   if (err) throw err;
     //   console.log('wrote frames in frames.json');
     // })
-    debug = {stats, metadata, end};
+    debug = { stats, metadata, end };
     // DEBUG
     const startAt = gameBlob.gameFile.substring(gameBlob.gameFile.length - 19, gameBlob.gameFile.length - 4);
     const settings = game.getSettings();
@@ -118,6 +119,9 @@ function processGames(gamesFromMain, slippiId, characterId) {
     const gameResult = getResult(playerPort, opponentPort, stats.stocks, end);
     const playerWavedashes = getWavedashes(playerPort, frames);
     const opponentWavedashes = getWavedashes(opponentPort, frames);
+    const playerJCGrabs = getJCGrabs(playerPort, frames);
+    const opponentJCGrabs = getJCGrabs(opponentPort, frames);
+
 
     ledgeDashesForPlayer[startAt] = {};
     ledgeDashesForPlayer[startAt][opponentCharName] = {};
@@ -178,6 +182,14 @@ function processGames(gamesFromMain, slippiId, characterId) {
     wavedashesForOpponent[startAt][opponentCharName] = {};
     wavedashesForOpponent[startAt][opponentCharName][stage] = opponentWavedashes;
 
+    jcGrabsForPlayer[startAt] = {}
+    jcGrabsForPlayer[startAt][opponentCharName] = {};
+    jcGrabsForPlayer[startAt][opponentCharName][stage] = playerJCGrabs;
+
+    jcGrabsForOpponent[startAt] = {}
+    jcGrabsForOpponent[startAt][opponentCharName] = {};
+    jcGrabsForOpponent[startAt][opponentCharName][stage] = opponentJCGrabs;
+
     processedGamesNb++;
     node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
     parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
@@ -199,6 +211,8 @@ function processGames(gamesFromMain, slippiId, characterId) {
     gameResults,
     wavedashesForPlayer,
     wavedashesForOpponent,
+    jcGrabsForPlayer,
+    jcGrabsForOpponent,
     debug
   }
 
@@ -229,10 +243,10 @@ function getWavedashes(playerPort, frames) {
         // If it's not a frame perfect wavedash, we can count the number of frames between the end of jumpsquat and the beginning of airdodge
         if (previousPosts[previousPosts.length - 1].actionStateId === 24) {
           // Frame perfect wavedash
-          wavedashes.frame1 ++;
+          wavedashes.frame1++;
         } else {
           let lateness;
-          for (let i = 0; i < previousPosts.length - 1; i ++) {
+          for (let i = 0; i < previousPosts.length - 1; i++) {
             if (previousPosts[i + 1].actionStateId === 236) { // The next frame is our airdodge
               lateness = previousPosts[i].actionStateCounter + 1; // This contains the number of frames the character spent in it's current actionState before this one
               break;
@@ -240,19 +254,19 @@ function getWavedashes(playerPort, frames) {
           }
           if (lateness) {
             if (lateness === 1) {
-              wavedashes.frame2 ++;
+              wavedashes.frame2++;
             } else if (lateness === 2) {
-              wavedashes.frame3 ++;
+              wavedashes.frame3++;
             } else {
-              wavedashes.more ++;
+              wavedashes.more++;
             }
           }
         }
-        wavedashes.total ++;
+        wavedashes.total++;
         previousPosts = [];
       }
     }
-    
+
     if (previousPosts.length < 8) {
       previousPosts.push(currentPost);
     } else {
@@ -263,6 +277,129 @@ function getWavedashes(playerPort, frames) {
   return wavedashes;
 }
 
+function getJCGrabs(playerPort, frames) {
+  let jcGrabs = {
+    successful: {
+      frame1: 0,
+      frame2: 0,
+      frame3orMore: 0
+    },
+    failed: {
+      oneFrameLate: 0,
+      twoFramesLate: 0,
+      threeFramesLate: 0
+    },
+    total: 0
+  }
+  // We will store the 8 previous frames of animation to account for the longer jumpsquats in the game
+  let previousPosts = [];
+  let isInsideProcessedGrabAnimation = false;
+  let processingDashGrab = false;
+  let framesSinceDashGrab = 0;
+  for (let frameKey of Object.keys(frames)) {
+    currentPost = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).post;
+    currentPre = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).pre;
+    if (processingDashGrab === true) {
+      framesSinceDashGrab ++;
+      if (isButtonPressed('x', currentPre.physicalButtons) || isButtonPressed('y', currentPre.physicalButtons)) {
+        node_utils.addToLog(`WORKER - detected a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
+        if (framesSinceDashGrab === 1) {
+          jcGrabs.failed.twoFramesLate ++;
+        } else if (framesSinceDashGrab === 2) {
+          jcGrabs.failed.threeFramesLate ++;
+        }
+        jcGrabs.total++;
+        processingDashGrab = false;
+        framesSinceDashGrab = 0;
+        previousPosts = [];
+        isInsideProcessedGrabAnimation = true;
+      } else {
+        node_utils.addToLog(`WORKER - didn't detect a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
+        if (framesSinceDashGrab >= 2) {
+          node_utils.addToLog(`WORKER - didn't detect a X or Y press in the 3 frames after dashgrab started, reset`);
+          // It was just a dashgrab, or the jump imput was more than 3 frames late
+          processingDashGrab = false;
+          framesSinceDashGrab = 0;
+          previousPosts = [];
+          isInsideProcessedGrabAnimation = true;
+        }
+      }
+    } else if (isInsideProcessedGrabAnimation === false) {
+      if (currentPost.actionStateId === 212) {
+        // We detected a standing grab, so we want to know whether it was a jc grab or not
+        node_utils.addToLog(`WORKER - found a stand grab, previous posts ${JSON.stringify(previousPosts.map(pp => pp.actionStateId), null, 4)}`);
+        const uniqueAnimations = previousPosts.map(val => val.actionStateId).filter(node_utils.onlyUnique);
+        if (uniqueAnimations.includes(24)) { // 24 === Jumpsquat 
+          let frameCount = 0;
+          for (let i = previousPosts.length - 1; i >= 0; i--) {
+            if (previousPosts[i].actionStateId === 24) {
+              frameCount++;
+            } else {
+              // We're now before the jumpsquat, we know how many frames we spent in it before our jcgrab
+              if (frameCount === 1) {
+                jcGrabs.successful.frame1++;
+              } else if (frameCount === 2) {
+                jcGrabs.successful.frame2++;
+              } else if (frameCount >= 3) {
+                jcGrabs.successful.frame3orMore++;
+              } else {
+                // Something went wrong
+                node_utils.addToLog(`WORKER - GetJCGrabs, something went wrong when looking for lateness, frameKey ${frameKey}`);
+              }
+              // At the end of the treatment of a jc grab we reset stuff
+              previousPosts = [];
+              jcGrabs.total++;
+              // We don't want to treat the same grab multiple times
+              isInsideProcessedGrabAnimation = true;
+              // node_utils.addToLog(`WORKER - End of JC Grab treatment, jcGrabs ${JSON.stringify(jcGrabs, null, 4)}`);
+              i = -1
+            }
+          }
+        } else {
+          previousPosts = [];
+          // We don't want to treat the same grab multiple times
+          isInsideProcessedGrabAnimation = true;
+          // node_utils.addToLog(`WORKER - End of non jc grab`);
+        }
+
+      } else if (currentPost.actionStateId === 214) {
+        node_utils.addToLog(`WORKER - found a dash grab, frameKey ${frameKey}`);
+        // We detect a dash grab, so we want to check if it was an attempted jc grab or not
+          node_utils.addToLog(`WORKER - Testing physicalButtons ${currentPre.physicalButtons}`);
+          node_utils.addToLog(`WORKER - currentPost ${JSON.stringify(currentPre, null, 4)}`);
+        if (isButtonPressed('x', currentPre.physicalButtons) || isButtonPressed('y', currentPre.physicalButtons)) {
+          node_utils.addToLog(`WORKER - detected a X or Y press on the same frame as dashgrab started`);
+          jcGrabs.failed.oneFrameLate++;
+          jcGrabs.total++;
+          previousPosts = [];
+          isInsideProcessedGrabAnimation = true;
+          i = -1;
+        } else {
+          node_utils.addToLog(`WORKER - didn't detect a X or Y press on the same frame as dashgrab started`);
+          // We will need to keep looking forward for 3 frames to see if we find X or Y inputs during the dashgrab input
+          processingDashGrab = true;
+        }
+      }
+      if (previousPosts.length < 8) {
+        previousPosts.push(currentPost);
+      } else {
+        previousPosts.shift();
+        previousPosts.push(currentPost);
+      }
+    } else {
+      if (currentPost.actionStateId !== 212 && currentPost.actionStateId !== 214) {
+        // We've moved past the duration of the last grab we processed
+        isInsideProcessedGrabAnimation = false;
+        previousPosts = [];
+        // node_utils.addToLog(`WORKER - moved out of last grab, jcGrabs ${JSON.stringify(jcGrabs, null, 4)}`);
+        // node_utils.addToLog(`WORKER - moved out of last grab, previousPosts ${JSON.stringify(previousPosts, null, 4)}`);
+      }
+    }
+  }
+  node_utils.addToLog(`WORKER - End of jcgrabs treatment for player ${playerPort}, jcGrabs ${JSON.stringify(jcGrabs, null, 4)}`);
+  return jcGrabs;
+}
+
 function getResult(playerPort, opponentPort, stocks, end) {
   // If a player ragequits, it's a loss.
   if (end?.lrasInitiatorIndex === playerPort) {
@@ -271,30 +408,30 @@ function getResult(playerPort, opponentPort, stocks, end) {
     return 'win';
   }
   // If there was no ragequit, we look for the player who has a stock with no end frame
-  node_utils.addToLog('WORKER GetResults end');
-  node_utils.addToLog(JSON.stringify(end, null, 4));
-  
-  node_utils.addToLog('WORKER GetResults stocks');
-  node_utils.addToLog(JSON.stringify(stocks, null, 4));
+  // node_utils.addToLog('WORKER GetResults end');
+  // node_utils.addToLog(JSON.stringify(end, null, 4));
 
-  node_utils.addToLog('WORKER GetResults playerPort');
-  node_utils.addToLog(JSON.stringify(playerPort, null, 4));
+  // node_utils.addToLog('WORKER GetResults stocks');
+  // node_utils.addToLog(JSON.stringify(stocks, null, 4));
 
-  node_utils.addToLog('WORKER GetResults opponentPort');
-  node_utils.addToLog(JSON.stringify(opponentPort, null, 4));
+  // node_utils.addToLog('WORKER GetResults playerPort');
+  // node_utils.addToLog(JSON.stringify(playerPort, null, 4));
+
+  // node_utils.addToLog('WORKER GetResults opponentPort');
+  // node_utils.addToLog(JSON.stringify(opponentPort, null, 4));
 
   let winnerPort;
   for (let stock of stocks) {
     if (stock.deathAnimation === null) {
-      node_utils.addToLog('WORKER GetResults stock without death animation');
-      node_utils.addToLog(JSON.stringify(stock, null, 4));
+      // node_utils.addToLog('WORKER GetResults stock without death animation');
+      // node_utils.addToLog(JSON.stringify(stock, null, 4));
       if (!winnerPort) {
         winnerPort = stock.playerIndex;
       }
     }
   }
-  node_utils.addToLog('WORKER GetResults winner port');
-  node_utils.addToLog(JSON.stringify(winnerPort, null, 4));
+  // node_utils.addToLog('WORKER GetResults winner port');
+  // node_utils.addToLog(JSON.stringify(winnerPort, null, 4));
   if (winnerPort !== undefined) {
     if (winnerPort === playerPort) {
       return 'win';
@@ -302,6 +439,12 @@ function getResult(playerPort, opponentPort, stocks, end) {
       return 'loss';
     }
   }
+}
+
+function isButtonPressed(button, physicalButtons) {
+  node_utils.addToLog(`WORKER - is Button ${button}, physicalButtons ${physicalButtons}`);
+  node_utils.addToLog(`WORKER - bitValue ${node_utils.PHYSICAL_BUTTONS[button]}`);
+  return physicalButtons & node_utils.PHYSICAL_BUTTONS[button];
 }
 
 function getOpeningRatio(playerConversions, opponentConversions) {
@@ -450,7 +593,7 @@ function getLCancels(frames, playerPort, opponentPort) {
 }
 
 function getLedgeDashes(frames, playerPort) {
-  node_utils.addToLog(`Starting ledgeDash for playerPort ${playerPort}`);
+  // node_utils.addToLog(`Starting ledgeDash for playerPort ${playerPort}`);
   let ledgeDashes;
   let foundCliffCatch = false;
   let foundCliffDrop = false;
@@ -460,7 +603,7 @@ function getLedgeDashes(frames, playerPort) {
   let framesSinceLedgeDrop = 0;
   let extraInvincibilityFrames = 0;
   let reset = function (reason) {
-    node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
+    // node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
     foundCliffCatch = false;
     foundCliffDrop = false;
     foundAirDodge = false;
@@ -485,16 +628,16 @@ function getLedgeDashes(frames, playerPort) {
             ledgeDashes['invincible'] = [];
           }
           ledgeDashes['invincible'].push({ framesSinceLedgeDrop, extraInvincibilityFrames });
-          reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
+          // reset(`Found an invincible ledgedash, frameKey ${frameKey}`);
         }
       } else {
         // Should never happen. Probably ? I hope.
-        reset(`Outside of leniency window, looking for the invincibility frames, frameKey ${frameKey}`);
+        // reset(`Outside of leniency window, looking for the invincibility frames, frameKey ${frameKey}`);
       }
     } else if (foundWaveland) {
       // Check for the end of waveland
       // Check if we're in our leniency window
-      node_utils.addToLog(`Looking for the end of waveland, frameKey ${frameKey}, framesSinceLedgeDrop ${framesSinceLedgeDrop}, actionStateId ${playerPostFrameUpdate.actionStateId}`);
+      // node_utils.addToLog(`Looking for the end of waveland, frameKey ${frameKey}, framesSinceLedgeDrop ${framesSinceLedgeDrop}, actionStateId ${playerPostFrameUpdate.actionStateId}`);
       if (framesSinceLedgeDrop <= LEDGEDASHWINDOW) {
         if (playerPostFrameUpdate.actionStateId !== 43) {
           // The waveland is over, we check the invincibility status
@@ -507,14 +650,14 @@ function getLedgeDashes(frames, playerPort) {
               ledgeDashes['notInvincible'] = [];
             }
             ledgeDashes['notInvincible'].push({ framesSinceLedgeDrop });
-            reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
+            // reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
           } else {
             // It's an invincible ledgedash, we will look forwards in frames until we lose the invulnerability
             hasWavelandEnded = true;
           }
         }
       } else {
-        reset(`Outside of leniency window, looking for the end of waveland, frameKey ${frameKey}`);
+        // reset(`Outside of leniency window, looking for the end of waveland, frameKey ${frameKey}`);
       }
     } else if (foundAirDodge) {
       // Check for a waveland
@@ -524,7 +667,7 @@ function getLedgeDashes(frames, playerPort) {
           foundWaveland = true;
         }
       } else {
-        reset(`Outside of leniency window, looking for the waveland, frameKey ${frameKey}`);
+        // reset(`Outside of leniency window, looking for the waveland, frameKey ${frameKey}`);
       }
     } else if (foundCliffDrop) {
       // Check for an airdodge
@@ -534,13 +677,13 @@ function getLedgeDashes(frames, playerPort) {
           foundAirDodge = true;
         }
       } else {
-        reset(`Outside of leniency window, looking for the airdodge, frameKey ${frameKey}`);
+        // reset(`Outside of leniency window, looking for the airdodge, frameKey ${frameKey}`);
       }
     } else if (foundCliffCatch) {
       // Check for a cliff drop
       if ([254, 255, 256, 257, 258, 259, 260, 261, 262, 263].includes(playerPostFrameUpdate.actionStateId)) {
         // Standard ledge option
-        reset(`Found standard ledge option, frameKey ${frameKey}`);
+        // reset(`Found standard ledge option, frameKey ${frameKey}`);
       } else {
         foundCliffDrop = true;
       }

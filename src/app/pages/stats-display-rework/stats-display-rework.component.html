@@ -229,7 +229,7 @@
           <app-stats-line [separator]="true"></app-stats-line>
         </div>
       </ng-container>
-      <!-- Ledgedashes tab -->
+      <!-- Technical execution tab -->
       <ng-container *ngIf="isActiveTab('execution')">
         <div class="content">
           <ng-container *ngIf="ledgeDashesForPlayer && ledgeDashesForOpponent">
@@ -261,24 +261,61 @@
             <app-stats-line [label]="'Wavedash Stats'" [highlight]="true"></app-stats-line>
             <app-stats-line [separator]="true"></app-stats-line>
             <app-stats-line [label]="'Frame 1 wavedashes'"
-              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame1 ? (playerWavedashes[currentCharacter][currentStage].frame1 | number:'1.0-1') : 'N/A' "
+              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame1 ? (playerWavedashes[currentCharacter][currentStage].frame1 | number:'1.0-1') : '0' "
               [unit1]="'%'" [unit2]="'%'"
-              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame1 ? (opponentWavedashes[currentCharacter][currentStage].frame1 | number:'1.0-1') : 'N/A' ">
+              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame1 ? (opponentWavedashes[currentCharacter][currentStage].frame1 | number:'1.0-1') : '0' ">
             </app-stats-line>
             <app-stats-line [label]="'Frame 2 wavedashes'"
-              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame2 ? (playerWavedashes[currentCharacter][currentStage].frame2 | number:'1.0-1') : 'N/A' "
+              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame2 ? (playerWavedashes[currentCharacter][currentStage].frame2 | number:'1.0-1') : '0' "
               [unit1]="'%'" [unit2]="'%'"
-              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame2 ? (opponentWavedashes[currentCharacter][currentStage].frame2 | number:'1.0-1') : 'N/A' ">
+              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame2 ? (opponentWavedashes[currentCharacter][currentStage].frame2 | number:'1.0-1') : '0' ">
             </app-stats-line>
             <app-stats-line [label]="'Frame 3 wavedashes'"
-              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame3 ? (playerWavedashes[currentCharacter][currentStage].frame3 | number:'1.0-1') : 'N/A' "
+              [value1]="playerWavedashes[currentCharacter][currentStage]?.frame3 ? (playerWavedashes[currentCharacter][currentStage].frame3 | number:'1.0-1') : '0' "
               [unit1]="'%'" [unit2]="'%'"
-              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame3 ? (opponentWavedashes[currentCharacter][currentStage].frame3 | number:'1.0-1') : 'N/A' ">
+              [value2]="opponentWavedashes[currentCharacter][currentStage]?.frame3 ? (opponentWavedashes[currentCharacter][currentStage].frame3 | number:'1.0-1') : '0' ">
             </app-stats-line>
             <app-stats-line [label]="'Frame 4+ wavedashes'"
-              [value1]="playerWavedashes[currentCharacter][currentStage]?.more ? (playerWavedashes[currentCharacter][currentStage].more | number:'1.0-1') : 'N/A' "
+              [value1]="playerWavedashes[currentCharacter][currentStage]?.more ? (playerWavedashes[currentCharacter][currentStage].more | number:'1.0-1') : '0' "
               [unit1]="'%'" [unit2]="'%'"
-              [value2]="opponentWavedashes[currentCharacter][currentStage]?.more ? (opponentWavedashes[currentCharacter][currentStage].more | number:'1.0-1') : 'N/A' ">
+              [value2]="opponentWavedashes[currentCharacter][currentStage]?.more ? (opponentWavedashes[currentCharacter][currentStage].more | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [separator]="true"></app-stats-line>
+          </ng-container>
+          <ng-container *ngIf="playerJCGrabs && opponentJCGrabs">
+            <app-stats-line [label]="'Jump Cancel Grabs Stats'" [highlight]="true"></app-stats-line>
+            <app-stats-line [separator]="true"></app-stats-line>
+            <app-stats-line [label]="'Frame 1 JC Grabs'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.successful?.frame1 ? (playerJCGrabs[currentCharacter][currentStage].successful.frame1 | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.successful?.frame1 ? (opponentJCGrabs[currentCharacter][currentStage].successful.frame1 | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [label]="'Frame 2 JC Grabs'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.successful?.frame2 ? (playerJCGrabs[currentCharacter][currentStage].successful.frame2 | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.successful?.frame2 ? (opponentJCGrabs[currentCharacter][currentStage].successful.frame2 | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [label]="'Frame 3 or more JC Grabs'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.successful?.frame3orMore ? (playerJCGrabs[currentCharacter][currentStage].successful.frame3orMore | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.successful?.frame3orMore ? (opponentJCGrabs[currentCharacter][currentStage].successful.frame3orMore | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [separator]="true"></app-stats-line>
+            <app-stats-line [label]="'Failed JC Grabs'"></app-stats-line>
+            <app-stats-line [label]="'Jump input one frame late'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.failed?.oneFrameLate ? (playerJCGrabs[currentCharacter][currentStage].failed.oneFrameLate | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.failed?.oneFrameLate ? (opponentJCGrabs[currentCharacter][currentStage].failed.oneFrameLate | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [label]="'Jump input two frames late'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.failed?.twoFramesLate ? (playerJCGrabs[currentCharacter][currentStage].failed.twoFramesLate | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.failed?.twoFramesLate ? (opponentJCGrabs[currentCharacter][currentStage].failed.twoFramesLate | number:'1.0-1') : '0' ">
+            </app-stats-line>
+            <app-stats-line [label]="'Jump input three frames late'"
+              [value1]="playerJCGrabs[currentCharacter][currentStage]?.failed?.threeFramesLate ? (playerJCGrabs[currentCharacter][currentStage].failed.threeFramesLate | number:'1.0-1') : '0' "
+              [unit1]="'%'" [unit2]="'%'"
+              [value2]="opponentJCGrabs[currentCharacter][currentStage]?.failed?.threeFramesLate ? (opponentJCGrabs[currentCharacter][currentStage].failed.threeFramesLate | number:'1.0-1') : '0' ">
             </app-stats-line>
             <app-stats-line [separator]="true"></app-stats-line>
           </ng-container>

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Conversion, LCancels, Ledgedashes, Overall, PunishedActions, StatsItem } from 'src/interfaces/outputs';
-import { IntermediaryStatsWrapper } from 'src/interfaces/types';
+import { IntermediaryStatsWrapper, ProcessedJCGrabs, ProcessedWavedashes } from 'src/interfaces/types';
 import { IconsService } from 'src/services/icons/icons.service';
 import GeneralUtils from '../utils/general.utils';
 
@@ -20,7 +20,7 @@ export class StatsCompareDisplayComponent implements OnInit, OnChanges {
   { label: 'Conversions', active: false, key: 'conversions' },
   { label: 'Punished options', active: false, key: 'punishes' },
   { label: 'L-Cancels', active: false, key: 'lcancels' },
-  { label: 'Ledgedashes', active: false, key: 'ledgedashes' }];
+  { label: 'Execution', active: false, key: 'execution' }];
   
   playerConversions: IntermediaryStatsWrapper<Conversion[]>;
   opponentConversions: IntermediaryStatsWrapper<Conversion[]>;
@@ -32,6 +32,10 @@ export class StatsCompareDisplayComponent implements OnInit, OnChanges {
   lcancelsForOpponent: IntermediaryStatsWrapper<LCancels>;
   ledgeDashesForPlayer: IntermediaryStatsWrapper<Ledgedashes>;
   ledgeDashesForOpponent: IntermediaryStatsWrapper<Ledgedashes>;
+  playerWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
+  opponentWavedashes: IntermediaryStatsWrapper<ProcessedWavedashes>;
+  playerJCGrabs: IntermediaryStatsWrapper<ProcessedJCGrabs>;
+  opponentJCGrabs: IntermediaryStatsWrapper<ProcessedJCGrabs>;
   writeFeedbackMessage: string;
 
   currentCharacter;
@@ -60,8 +64,16 @@ export class StatsCompareDisplayComponent implements OnInit, OnChanges {
       this.lcancelsForOpponent = this.stats.lcancelsForOpponent;
       this.ledgeDashesForPlayer = this.stats.ledgeDashesForPlayer;
       this.ledgeDashesForOpponent = this.stats.ledgeDashesForOpponent;
+      this.playerWavedashes = this.stats.playerWavedashes;
+      this.opponentWavedashes = this.stats.opponentWavedashes;
+      this.playerJCGrabs = this.stats.playerJCGrabs;
+      this.opponentJCGrabs = this.stats.opponentJCGrabs;
       if (this.ledgeDashesForPlayer &&
         this.ledgeDashesForOpponent &&
+        this.playerWavedashes &&
+        this.opponentWavedashes &&
+        this.playerJCGrabs &&
+        this.opponentJCGrabs &&
         this.punishedActionsForPlayer &&
         this.punishedActionsForOpponent &&
         this.lcancelsForOpponent &&

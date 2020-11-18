@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import GameFileUtils from 'src/app/components/utils/gameFile.utils';
 import { ElecService } from 'src/app/elec.service';
-import { Conversion, EnrichedGameFile, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
+import { Conversion, EnrichedGameFile, JCGrabs, LCancels, Ledgedashes, Overall, PunishedActions, StatsWrapper, Wavedashes } from 'src/interfaces/outputs';
 import { GameFileFilter, StatsCalculationProgress } from 'src/interfaces/types';
 import { StoreService } from 'src/services/store/store.service';
 
@@ -146,6 +146,8 @@ export class GameListComponent implements OnInit, OnChanges {
         const gameResults = arg.gameResults as StatsWrapper<string>;
         const playerWavedashes = arg.wavedashesForPlayer as StatsWrapper<Wavedashes>;
         const opponentWavedashes = arg.wavedashesForOpponent as StatsWrapper<Wavedashes>;
+        const playerJCGrabs = arg.jcGrabsForPlayer as StatsWrapper<JCGrabs>;
+        const opponentJCGrabs = arg.jcGrabsForOpponent as StatsWrapper<JCGrabs>;
         this.store.setMultiple([
           {
             key: 'playerCharName',
@@ -154,6 +156,14 @@ export class GameListComponent implements OnInit, OnChanges {
           {
             key: 'gameResults',
             data: gameResults
+          },
+          {
+            key: 'playerJCGrabs',
+            data: playerJCGrabs
+          },
+          {
+            key: 'opponentJCGrabs',
+            data: opponentJCGrabs
           },
           {
             key: 'playerWavedashes',

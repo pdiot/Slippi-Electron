@@ -46,6 +46,16 @@ export class HomeComponent implements OnInit {
           this.initStatsIfNeeded();
           this.stats.gameResults = value.gameResults;
         }
+        if (value.playerJCGrabs && !value.reset) {
+          console.log('Home - Received playerJCGrabs from store : ', value.playerJCGrabs);
+          this.initStatsIfNeeded();
+          this.stats.playerJCGrabs = value.playerJCGrabs;
+        }
+        if (value.opponentJCGrabs && !value.reset) {
+          console.log('Home - Received opponentJCGrabs from store : ', value.opponentJCGrabs);
+          this.initStatsIfNeeded();
+          this.stats.opponentJCGrabs = value.opponentJCGrabs;
+        }
         if (value.playerWavedashes && !value.reset) {
           console.log('Home - Received playerWavedashes from store : ', value.playerWavedashes);
           this.initStatsIfNeeded();
@@ -156,10 +166,11 @@ export class HomeComponent implements OnInit {
         lcancelsForOpponent: undefined,
         playerWavedashes: undefined,
         opponentWavedashes: undefined,
+        playerJCGrabs: undefined,
+        opponentJCGrabs: undefined,
         ledgeDashesForPlayer: undefined,
         ledgeDashesForOpponent: undefined
-      };
-      
+      };      
     }
   }
 
