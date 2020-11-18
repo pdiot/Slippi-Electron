@@ -29,6 +29,6 @@ Rework the graph screen to work with the new UX / visuals
 
 New stats : 
 
-wavedashes (% of frame 1, 2, 3, 4, 5+ wavedashes, maaaaayyyyyyybe angles ?), 
+Wavedash angles maybe ?
 
 JC grabs (ratio of succesful to failed JC grabs, then % of frame 1, 2, 3 + of jumpsquat)
