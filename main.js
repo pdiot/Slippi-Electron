@@ -7,6 +7,9 @@ const path = require('path');
 const fs = require('fs');
 
 function createWindow () { 
+    // Initialize the main-debug writable stream
+    node_utils.initLog('main_debug.log');
+
     // Create the browser window. 
     const win = new BrowserWindow({ 
         width: 1400, 
@@ -21,14 +24,13 @@ function createWindow () {
     // Load the index.html of the app 
     // From the dist folder which is created 
     // After running the build command 
-    win.loadFile('dist/ang-electron/index.html') 
+    win.loadFile('dist/ang-electron/index.html');
 
     // Open the DevTools. 
     // win.webContents.openDevTools()
 
     ipcMain.on('openFile', (event, path) => {
         const { dialog } = require('electron');
-        const fs = require('fs');
         dialog.showOpenDialog(win, {
             title: 'Choose the slippi replay files to load',
             filters: [
@@ -41,8 +43,7 @@ function createWindow () {
                 'multiSelections'
             ]
         }).then((returnValue => {
-            node_utils.addToLog(`Main.js openFile => received ${JSON.stringify(returnValue, null, 4)}`);
-            node_utils.printLog(`main_debug.log`);
+            node_utils.addToLog(`main_debug.log`, `Main.js openFile => received ${JSON.stringify(returnValue, null, 4)}`);
             if (!returnValue.canceled) {
                 enrichGameFiles(returnValue.filePaths).then(result => {
                     event.sender.send('fileOpenedOK', result);
@@ -63,13 +64,13 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                node_utils.addToLog('returnValue' + returnValue);
+                node_utils.addToLog(`main_debug.log`, 'returnValue' + returnValue);
                 const value = 
                 {
                     path: returnValue.filePaths[0],
                     statsFromJSON : readStatsFile(returnValue.filePaths[0])
                 }
-                node_utils.addToLog(`sending ${data}StatsFileOpenedOK`);
+                node_utils.addToLog(`main_debug.log`, `sending ${data}StatsFileOpenedOK`);
                 event.sender.send(`${data}StatsFileOpenedOK`, value);
             }
         })); 
@@ -90,12 +91,12 @@ function createWindow () {
             ]
         }).then((returnValue => {
             if (!returnValue.canceled) {
-                node_utils.addToLog('returnValue', returnValue);
+                node_utils.addToLog(`main_debug.log`, 'returnValue', returnValue);
                 value = [];
                 for (let filePath of returnValue.filePaths) {
                     value.push(readStatsFile(filePath));
                 }
-                node_utils.addToLog(`sending statsFilesForGraphsOpened`);
+                node_utils.addToLog(`main_debug.log`, `sending statsFilesForGraphsOpened`);
                 event.sender.send(`statsFilesForGraphsOpened`, value);
             }
         })); 
@@ -115,12 +116,14 @@ function createWindow () {
         let character = characters.find(ec => ec.shortName === data.character);
         if (character) {
             let games = []
+            let lastTime;
+            let processTimes = [];
             for (let game of data.games) {
                 if (!game.filteredOut) {
                     games.push(game)
                 }
             }
-
+            lastTime = Date.now();
             // We need to create a worker so everything doesn't freeze like the huge pile of js that it is
             const worker = new Worker(path.join(__dirname, 'slippi-stats-workerfile.js'), {
                 workerData : {
@@ -130,19 +133,25 @@ function createWindow () {
                 }
             });
             worker.on('message', (data) => {
-                node_utils.addToLog('message : '+ data);
                 if (Object.keys(data).includes('computedStats')) {
                     // It's the end of stats processing message
+                    node_utils.addToLog(`main_debug.log`, `Average file processing time : ${node_utils.moyenne(processTimes)}ms`);
                     event.sender.send('statsDoneTS', data);
                 } else {
                     // It's the stats processing advancement message
                     const processedGamesNb = data.split(' ')[1];
                     const totalGamesNb = data.split(' ')[2];
+                    const newTime = Date.now();
+                    const processTime = newTime - lastTime;
+                    processTimes.push(processTime);
+                    node_utils.addToLog(`main_debug.log`, `received progress data for game ${processedGamesNb} out of ${totalGamesNb}`);
+                    node_utils.addToLog(`main_debug.log`, `Time for processing game : ${processTime}ms`);
+                    lastTime = newTime;
                     event.sender.send('statsProgressTS', {current: processedGamesNb, total: totalGamesNb});
                 }
             });
             worker.on('error', (error) => {
-                node_utils.addToLog('Error inside stats calculator worker' + error);
+                node_utils.addToLog(`main_debug.log`, 'Error inside stats calculator worker' + JSON.stringify(error, null, 4));
             });
             worker.on('exit', (code) => {
                 if (code !== 0)

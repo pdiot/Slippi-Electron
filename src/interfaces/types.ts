@@ -63,6 +63,8 @@ export interface StartersAverageDamage {
 export interface MoyenneConversion {
   averageDamage: number,
   averageLength: number,
+  maxDamage: number,
+  maxLength: number
 }
 
 export interface MostCommonMove {
@@ -132,6 +134,9 @@ export interface ProcessedLedgedashes {
     averageFramesSinceLedgeDrop: number,
     minFramesSinceLedgeDrop: number,
     maxFramesSinceLedgeDrop: number,
+    averageVulnerabilityFrames: number,
+    minVulnerabilityFrames: number,
+    maxVulnerabilityFrames: number
   }
 }
 

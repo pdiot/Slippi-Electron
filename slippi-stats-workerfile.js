@@ -7,7 +7,7 @@ const fs = require('fs');
 const EXTERNALCHARACTERS = constants.EXTERNALCHARACTERS;
 const STAGES = constants.STAGES;
 
-const LEDGEDASHWINDOW = 40;
+const LEDGEDASHWINDOW = 50;
 
 main();
 
@@ -18,16 +18,16 @@ function main() {
   const slippiId = workerData.slippiId;
   const characterId = workerData.characterId;
 
-  node_utils.addToLog('JE SUIS UN WORKER. ENCORE DU TRAVAIL ?');
+  node_utils.initLog('debug_worker.log');
+
+  node_utils.addToLog('debug_worker.log', 'JE SUIS UN WORKER. ENCORE DU TRAVAIL ?');
 
   let stats;
   try {
     stats = processGames(gameFiles, slippiId, characterId);
-    node_utils.printLog('debug_worker.log');
     parentPort.postMessage(stats);
   } catch (err) {
-    node_utils.addToLog(JSON.stringify(err.stack, null, 4));
-    node_utils.printLog('debug_worker.log');
+    node_utils.addToLog('debug_worker.log', JSON.stringify(err.stack, null, 4));
   }
 }
 
@@ -191,7 +191,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     jcGrabsForOpponent[startAt][opponentCharName][stage] = opponentJCGrabs;
 
     processedGamesNb++;
-    node_utils.addToLog(`WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
+    node_utils.addToLog('debug_worker.log', `WORKER sent statProgress n° ${processedGamesNb} for gamefile ${gameBlob.gameFile}`);
     parentPort.postMessage('statsProgress ' + processedGamesNb + ' ' + games.length);
   }
 
@@ -216,7 +216,7 @@ function processGames(gamesFromMain, slippiId, characterId) {
     debug
   }
 
-  node_utils.addToLog('WORKER end of treatment');
+  node_utils.addToLog('debug_worker.log', 'WORKER end of treatment');
   return returnValue;
 }
 
@@ -302,7 +302,7 @@ function getJCGrabs(playerPort, frames) {
     if (processingDashGrab === true) {
       framesSinceDashGrab ++;
       if (isButtonPressed('x', currentPre.physicalButtons) || isButtonPressed('y', currentPre.physicalButtons)) {
-        node_utils.addToLog(`WORKER - detected a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
+        // node_utils.addToLog(`WORKER - detected a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
         if (framesSinceDashGrab === 1) {
           jcGrabs.failed.twoFramesLate ++;
         } else if (framesSinceDashGrab === 2) {
@@ -314,9 +314,9 @@ function getJCGrabs(playerPort, frames) {
         previousPosts = [];
         isInsideProcessedGrabAnimation = true;
       } else {
-        node_utils.addToLog(`WORKER - didn't detect a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
+        // node_utils.addToLog(`WORKER - didn't detect a X or Y press on frame ${framesSinceDashGrab} after dashgrab started`);
         if (framesSinceDashGrab >= 2) {
-          node_utils.addToLog(`WORKER - didn't detect a X or Y press in the 3 frames after dashgrab started, reset`);
+          // node_utils.addToLog(`WORKER - didn't detect a X or Y press in the 3 frames after dashgrab started, reset`);
           // It was just a dashgrab, or the jump imput was more than 3 frames late
           processingDashGrab = false;
           framesSinceDashGrab = 0;
@@ -327,7 +327,7 @@ function getJCGrabs(playerPort, frames) {
     } else if (isInsideProcessedGrabAnimation === false) {
       if (currentPost.actionStateId === 212) {
         // We detected a standing grab, so we want to know whether it was a jc grab or not
-        node_utils.addToLog(`WORKER - found a stand grab, previous posts ${JSON.stringify(previousPosts.map(pp => pp.actionStateId), null, 4)}`);
+        // node_utils.addToLog(`WORKER - found a stand grab, previous posts ${JSON.stringify(previousPosts.map(pp => pp.actionStateId), null, 4)}`);
         const uniqueAnimations = previousPosts.map(val => val.actionStateId).filter(node_utils.onlyUnique);
         if (uniqueAnimations.includes(24)) { // 24 === Jumpsquat 
           let frameCount = 0;
@@ -344,7 +344,7 @@ function getJCGrabs(playerPort, frames) {
                 jcGrabs.successful.frame3orMore++;
               } else {
                 // Something went wrong
-                node_utils.addToLog(`WORKER - GetJCGrabs, something went wrong when looking for lateness, frameKey ${frameKey}`);
+                // node_utils.addToLog(`WORKER - GetJCGrabs, something went wrong when looking for lateness, frameKey ${frameKey}`);
               }
               // At the end of the treatment of a jc grab we reset stuff
               previousPosts = [];
@@ -363,19 +363,19 @@ function getJCGrabs(playerPort, frames) {
         }
 
       } else if (currentPost.actionStateId === 214) {
-        node_utils.addToLog(`WORKER - found a dash grab, frameKey ${frameKey}`);
+        // node_utils.addToLog(`WORKER - found a dash grab, frameKey ${frameKey}`);
         // We detect a dash grab, so we want to check if it was an attempted jc grab or not
-          node_utils.addToLog(`WORKER - Testing physicalButtons ${currentPre.physicalButtons}`);
-          node_utils.addToLog(`WORKER - currentPost ${JSON.stringify(currentPre, null, 4)}`);
+          // node_utils.addToLog(`WORKER - Testing physicalButtons ${currentPre.physicalButtons}`);
+          // node_utils.addToLog(`WORKER - currentPost ${JSON.stringify(currentPre, null, 4)}`);
         if (isButtonPressed('x', currentPre.physicalButtons) || isButtonPressed('y', currentPre.physicalButtons)) {
-          node_utils.addToLog(`WORKER - detected a X or Y press on the same frame as dashgrab started`);
+          // node_utils.addToLog(`WORKER - detected a X or Y press on the same frame as dashgrab started`);
           jcGrabs.failed.oneFrameLate++;
           jcGrabs.total++;
           previousPosts = [];
           isInsideProcessedGrabAnimation = true;
           i = -1;
         } else {
-          node_utils.addToLog(`WORKER - didn't detect a X or Y press on the same frame as dashgrab started`);
+          // node_utils.addToLog(`WORKER - didn't detect a X or Y press on the same frame as dashgrab started`);
           // We will need to keep looking forward for 3 frames to see if we find X or Y inputs during the dashgrab input
           processingDashGrab = true;
         }
@@ -396,7 +396,7 @@ function getJCGrabs(playerPort, frames) {
       }
     }
   }
-  node_utils.addToLog(`WORKER - End of jcgrabs treatment for player ${playerPort}, jcGrabs ${JSON.stringify(jcGrabs, null, 4)}`);
+  // node_utils.addToLog(`WORKER - End of jcgrabs treatment for player ${playerPort}, jcGrabs ${JSON.stringify(jcGrabs, null, 4)}`);
   return jcGrabs;
 }
 
@@ -442,8 +442,8 @@ function getResult(playerPort, opponentPort, stocks, end) {
 }
 
 function isButtonPressed(button, physicalButtons) {
-  node_utils.addToLog(`WORKER - is Button ${button}, physicalButtons ${physicalButtons}`);
-  node_utils.addToLog(`WORKER - bitValue ${node_utils.PHYSICAL_BUTTONS[button]}`);
+  // node_utils.addToLog(`WORKER - is Button ${button}, physicalButtons ${physicalButtons}`);
+  // node_utils.addToLog(`WORKER - bitValue ${node_utils.PHYSICAL_BUTTONS[button]}`);
   return physicalButtons & node_utils.PHYSICAL_BUTTONS[button];
 }
 
@@ -603,7 +603,7 @@ function getLedgeDashes(frames, playerPort) {
   let framesSinceLedgeDrop = 0;
   let extraInvincibilityFrames = 0;
   let reset = function (reason) {
-    node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
+    // node_utils.addToLog(`WORKER LedgeDashes -- Reset for ${reason}`);
     foundCliffCatch = false;
     foundCliffDrop = false;
     foundAirDodge = false;
@@ -611,7 +611,11 @@ function getLedgeDashes(frames, playerPort) {
     hasWavelandEnded = false;
     framesSinceLedgeDrop = 0;
     extraInvincibilityFrames = 0;
+    previousPosts = [];
   }
+
+  // Will be used to determine the amount of vulnerability frames in non-invincible ledgedashes
+  let previousPosts = [];
 
   for (let frameKey of Object.keys(frames)) {
     const playerPostFrameUpdate = frames[frameKey].players.find(player => player.pre.playerIndex === playerPort).post;
@@ -642,14 +646,22 @@ function getLedgeDashes(frames, playerPort) {
         if (playerPostFrameUpdate.actionStateId !== 43) {
           // The waveland is over, we check the invincibility status
           if (playerPostFrameUpdate.hurtboxCollisionState === 0) {
-            // It's not an invincible ledgedash, we save it right now
+            // It's not an invincible ledgedash, we check how many frames ago the character started being vulnerable and save the ledgedash
+            let vulnerableFrames = 0;
+            for (let i = 0; i <= previousPosts.length - 1; i ++) {
+              if (previousPosts[i].hurtboxCollisionState === 0) {
+                // node_utils.addToLog(`Found first vulnerable post for ledgeDash, i = ${i}, previousPosts = ${JSON.stringify(previousPosts, null, 4)}`);
+                vulnerableFrames = previousPosts.length - i; // If we find vulnerability on i === 3 out of 10, it means the character will have been vulnerable for 7 frames total
+                i = 20; // We break the loop
+              } 
+            }
             if (!ledgeDashes) {
               ledgeDashes = {};
             }
             if (!ledgeDashes['notInvincible']) {
               ledgeDashes['notInvincible'] = [];
             }
-            ledgeDashes['notInvincible'].push({ framesSinceLedgeDrop });
+            ledgeDashes['notInvincible'].push({ framesSinceLedgeDrop, vulnerableFrames });
             reset(`Found a non invincible ledgedash, frameKey ${frameKey}`);
           } else {
             // It's an invincible ledgedash, we will look forwards in frames until we lose the invulnerability
@@ -694,6 +706,12 @@ function getLedgeDashes(frames, playerPort) {
       }
     }
     // Counter update after the frame
+    if (previousPosts.length >= 20) {
+      previousPosts.shift();
+      previousPosts.push(playerPostFrameUpdate);
+    } else {
+      previousPosts.push(playerPostFrameUpdate);
+    }
     if (foundCliffDrop) {
       framesSinceLedgeDrop++;
     }

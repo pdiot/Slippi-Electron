@@ -96,7 +96,8 @@ export interface Ledgedashes {
     ],
     notInvincible : [
         {
-            framesSinceLedgeDrop: number
+            framesSinceLedgeDrop: number,
+            vulnerableFrames: number,
         }
     ]
 }

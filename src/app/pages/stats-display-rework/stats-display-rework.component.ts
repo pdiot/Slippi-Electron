@@ -488,6 +488,14 @@ export class StatsDisplayReworkComponent implements OnInit, OnChanges {
     return GeneralUtils.removeLanding(landing);
   }
 
+  addPlus(value: number, max: number): string {
+    if (value >= max) {
+      return `${value} +`;
+    } else {
+      return `${value}`;
+    }
+  }
+
   writeStats() {
     const stats = {
       playerCharName: this.stats.playerCharName,

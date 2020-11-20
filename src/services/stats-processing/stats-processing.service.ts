@@ -13,12 +13,6 @@ export class StatsProcessingService {
 
   public async processConversions(data: StatsWrapper<Conversion[]>): Promise<IntermediaryStatsWrapper<ProcessedOpenings>> {
     let conversions = {};
-    let processedNeutralWinsConversions = {};
-    let processedNeutralWinsFirstHits = {};
-    let processedKillNeutralFirstHits = {};
-    let processedPunishes = {};
-    let processedPunishesFirstHits = {};
-    let processedKillPunishFirstHits = {};
 
     // Create an intermediary wrapper without the gameData
     let conversionsList: IntermediaryStatsWrapper<Conversion[]> = {};
@@ -44,36 +38,28 @@ export class StatsProcessingService {
     }
 
     for (const opponentChar of Object.keys(conversionsList)) {
-      processedNeutralWinsConversions[opponentChar] = {};
-      processedNeutralWinsFirstHits[opponentChar] = {};
-      processedKillNeutralFirstHits[opponentChar] = {};
-      processedPunishes[opponentChar] = {};
-      processedPunishesFirstHits[opponentChar] = {};
-      processedKillPunishFirstHits[opponentChar] = {};
       let neutralAllStages = [];
       let punishesAllStages = [];
       let oneHitOnlyNeutralAllStages = [];
       let oneHitOnlyPunishesAllStages = [];
       let neutralFirstHitsAllStages = [];
+      let neutralKillLastHitsAllStages = [];
       let neutralKillFirstHitsAllStages = [];
       let punishFirstHitsAllStages = [];
       let punishKillFirstHitsAllStages = [];
+      let punishKillLastHitsAllStages = [];
 
       for (const stage of Object.keys(conversionsList[opponentChar])) {
-        processedNeutralWinsConversions[opponentChar][stage] = {};
-        processedNeutralWinsFirstHits[opponentChar][stage] = {};
-        processedKillNeutralFirstHits[opponentChar][stage] = {};
-        processedPunishes[opponentChar][stage] = {};
-        processedPunishesFirstHits[opponentChar][stage] = {};
-        processedKillPunishFirstHits[opponentChar][stage] = {};
         let neutral = [];
         let punishes = [];
         let oneHitOnlyNeutral = [];
         let oneHitOnlyPunishes = [];
         let neutralFirstHits = [];
+        let neutralKillLastHits = [];
         let neutralKillFirstHits = [];
         let punishFirstHits = [];
         let punishKillFirstHits = [];
+        let punishKillLastHits = [];
         for (const conversion of conversionsList[opponentChar][stage]) {
           if (conversion.openingType === 'neutral-win') {
             // Neutral Win
@@ -92,6 +78,11 @@ export class StatsProcessingService {
               neutralKillFirstHits.push({
                 moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
               });
+              if (conversion?.moves?.length > 0) {
+                neutralKillLastHits.push({
+                  moveId: conversion.moves[conversion.moves.length - 1]?.moveId ? conversion.moves[conversion.moves.length - 1].moveId : undefined
+                });
+              }
             }
             neutralFirstHits.push({
               moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
@@ -113,6 +104,11 @@ export class StatsProcessingService {
               punishKillFirstHits.push({
                 moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
               });
+              if (conversion?.moves?.length > 0) {
+                punishKillLastHits.push({
+                  moveId: conversion.moves[conversion.moves.length - 1]?.moveId ? conversion.moves[conversion.moves.length - 1].moveId : undefined
+                });
+              }
             }
             punishFirstHits.push({
               moveId: conversion.moves[0]?.moveId ? conversion.moves[0]?.moveId : undefined
@@ -132,8 +128,10 @@ export class StatsProcessingService {
         conversions[opponentChar][stage].processedPunishes['single-hit'] = this.calculMoyenneConversion(oneHitOnlyPunishes, true);
         conversions[opponentChar][stage].processedNeutralWinsFirstHits = this.calculMostCommonMove(neutralFirstHits);
         conversions[opponentChar][stage].processedKillNeutralFirstHits = this.calculMostCommonMove(neutralKillFirstHits);
+        conversions[opponentChar][stage].processedKillNeutralLastHits = this.calculMostCommonMove(neutralKillLastHits);
         conversions[opponentChar][stage].processedPunishesFirstHits = this.calculMostCommonMove(punishFirstHits);
         conversions[opponentChar][stage].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHits);
+        conversions[opponentChar][stage].processedKillPunishLastHits = this.calculMostCommonMove(punishKillLastHits);
         conversions[opponentChar][stage].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutral, ...oneHitOnlyNeutral], neutralFirstHits.map(move => move.moveId));
         conversions[opponentChar][stage].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishes, ...oneHitOnlyPunishes], punishFirstHits.map(move => move.moveId));
 
@@ -141,10 +139,12 @@ export class StatsProcessingService {
         neutralAllStages.push(...neutral);
         oneHitOnlyNeutralAllStages.push(...oneHitOnlyNeutral);
         neutralKillFirstHitsAllStages.push(...neutralKillFirstHits);
+        neutralKillLastHitsAllStages.push(...neutralKillLastHits);
         neutralFirstHitsAllStages.push(...neutralFirstHits);
         punishesAllStages.push(...punishes);
         oneHitOnlyPunishesAllStages.push(...oneHitOnlyPunishes);
         punishKillFirstHitsAllStages.push(...punishKillFirstHits);
+        punishKillLastHitsAllStages.push(...punishFirstHits);
         punishFirstHitsAllStages.push(...punishFirstHits);
       }
 
@@ -159,8 +159,10 @@ export class StatsProcessingService {
       conversions[opponentChar]['allStages'].processedPunishes['single-hit'] = this.calculMoyenneConversion(oneHitOnlyPunishesAllStages, true);
       conversions[opponentChar]['allStages'].processedNeutralWinsFirstHits = this.calculMostCommonMove(neutralFirstHitsAllStages);
       conversions[opponentChar]['allStages'].processedKillNeutralFirstHits = this.calculMostCommonMove(neutralKillFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedKillNeutralLastHits = this.calculMostCommonMove(neutralKillLastHitsAllStages);
       conversions[opponentChar]['allStages'].processedPunishesFirstHits = this.calculMostCommonMove(punishFirstHitsAllStages);
       conversions[opponentChar]['allStages'].processedKillPunishFirstHits = this.calculMostCommonMove(punishKillFirstHitsAllStages);
+      conversions[opponentChar]['allStages'].processedKillPunishLastHits = this.calculMostCommonMove(punishKillLastHitsAllStages);
       conversions[opponentChar]['allStages'].processedDamageForMostCommonNeutralOpeners = this.averageDamageForMostCommonStarters(3, [...neutralAllStages, ...oneHitOnlyNeutralAllStages], neutralFirstHitsAllStages.map(move => move.moveId));
       conversions[opponentChar]['allStages'].processedDamageForMostCommonPunishStarts = this.averageDamageForMostCommonStarters(3, [...punishesAllStages, ...oneHitOnlyPunishesAllStages], punishFirstHitsAllStages.map(move => move.moveId));
       console.debug('Conversions for ' + opponentChar + ' : ', conversions[opponentChar]);
@@ -678,13 +680,21 @@ export class StatsProcessingService {
           const maxFramesSinceLedgedropNotInvincible = GeneralUtils.maxValueFromNumberArray(ledgeDashes['notInvincible'].map(
             ledgeDash => ledgeDash.framesSinceLedgeDrop
           ));
-
+          const averageVulnerabilityFrames = this.calculMoyenneOverall(ledgeDashes['notInvincible'].map(ledgeDash => ledgeDash.vulnerableFrames));
+          const minVulnerabilityFrames = GeneralUtils.minValueFromNumberArray(ledgeDashes['notInvincible'].map(
+            ledgeDash => ledgeDash.vulnerableFrames
+          ));
+          const maxVulnerabilityFrames = GeneralUtils.maxValueFromNumberArray(ledgeDashes['notInvincible'].map(
+            ledgeDash => ledgeDash.vulnerableFrames
+          ));
           notInvincible = {
             averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropNotInvincible,
             minFramesSinceLedgeDrop: minFramesSinceLedgedropNotInvincible,
-            maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible
+            maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible,
+            averageVulnerabilityFrames,
+            minVulnerabilityFrames,
+            maxVulnerabilityFrames
           }
-
         }
 
         processedLedgeDashes[character][stage] = {
@@ -739,11 +749,21 @@ export class StatsProcessingService {
         const maxFramesSinceLedgedropNotInvincible = GeneralUtils.maxValueFromNumberArray(ledgeDashesAllStages['notInvincible'].map(
           ledgeDash => ledgeDash.framesSinceLedgeDrop
         ));
+        const averageVulnerabilityFrames = this.calculMoyenneOverall(ledgeDashesAllStages['notInvincible'].map(ledgeDash => ledgeDash.vulnerableFrames));
+        const minVulnerabilityFrames = GeneralUtils.minValueFromNumberArray(ledgeDashesAllStages['notInvincible'].map(
+          ledgeDash => ledgeDash.vulnerableFrames
+        ));
+        const maxVulnerabilityFrames = GeneralUtils.maxValueFromNumberArray(ledgeDashesAllStages['notInvincible'].map(
+          ledgeDash => ledgeDash.vulnerableFrames
+        ));
 
         notInvincible = {
           averageFramesSinceLedgeDrop: averageFramesSinceLedgeDropNotInvincible,
           minFramesSinceLedgeDrop: minFramesSinceLedgedropNotInvincible,
-          maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible
+          maxFramesSinceLedgeDrop: maxFramesSinceLedgedropNotInvincible,
+          averageVulnerabilityFrames,
+          minVulnerabilityFrames,
+          maxVulnerabilityFrames
         }
       }
 
@@ -883,11 +903,11 @@ export class StatsProcessingService {
         }
       }
     }
-    
+
     for (let character of Object.keys(jcGrabsList)) {
       processedJCGrabs[character] = {};
       jcGrabsAllStages = {
-        successful : {
+        successful: {
           frame1: 0,
           frame2: 0,
           frame3orMore: 0
@@ -1020,15 +1040,25 @@ export class StatsProcessingService {
   private calculMoyenneConversion(conversions, oneHitMode = false): MoyenneConversion {
     let damage = 0;
     let moves = 0;
+    let maxDamage = 0;
+    let maxLength = 0;
     for (let i = 0; i < conversions.length; i++) {
       damage += conversions[i].totalDamage;
+      if (maxDamage < conversions[i].totalDamage) {
+        maxDamage = conversions[i].totalDamage;
+      }
       if (!oneHitMode) {
         moves += conversions[i].moves.length;
+        if (maxLength < conversions[i].moves.length) {
+          maxLength = conversions[i].moves.length;
+        }
       }
     }
     return {
       averageDamage: conversions.length !== 0 ? damage / conversions.length : undefined,
-      averageLength: oneHitMode ? undefined : conversions.length !== 0 ? moves / conversions.length : undefined
+      averageLength: oneHitMode ? undefined : conversions.length !== 0 ? moves / conversions.length : undefined,
+      maxDamage,
+      maxLength,
     };
   }
 

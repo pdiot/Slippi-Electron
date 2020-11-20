@@ -187,20 +187,34 @@ function isNewPowerShield(currentStateId, PreviousStateId) {
   }
 }
 
-function addToLog(stringValue) {
-  logString = `${logString}
-  ${stringValue}`;
+function addToLog(path, stringValue) {
+  fs.appendFile(path, `${stringValue} \n`, err => {
+    if (err) throw err;
+    console.log(`Logged data to ${path}`);
+  })
 }
 
-function printLog(path) {
-  fs.writeFile(path, logString, err => {
+function initLog(path) {
+  fs.writeFile(path, 'Log init', err => {
     if (err) throw err;
-    console.log(`Wrote ${path}`);
+    console.log(`Initialized ${path}`);
   })
 }
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
+}
+
+function moyenne(values) {
+  if (values.length > 0) {
+    let total = 0;
+    let count = 0;
+    for (let val of values) {
+      total += val;
+      count ++;
+    }
+    return total / count;
+  }
 }
 
 
@@ -211,7 +225,8 @@ module.exports = {
   isNewShield: isNewShield,
   isNewPowerShield: isNewPowerShield,
   addToLog: addToLog,
-  printLog: printLog,
+  initLog,
+  moyenne,
   onlyUnique: onlyUnique,
   PHYSICAL_BUTTONS: PHYSICAL_BUTTONS
 }

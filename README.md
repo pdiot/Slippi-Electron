@@ -27,6 +27,10 @@ Built upon https://github.com/project-slippi for the data sources
 
 Rework the graph screen to work with the new UX / visuals
 
+Make some better pics for the change character overlay / stages
+
 New stats : 
 
 Wavedash angles maybe ?
+
+Aerial Interrupts ? Take into account ledgecancels somehow for l cancel rates and a separate stat ?

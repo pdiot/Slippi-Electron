@@ -59,85 +59,119 @@
           <app-stats-line [separator]="true"></app-stats-line>
           <app-stats-line [label]="'Damage for most common neutral openers'"></app-stats-line>
           <app-stats-line *ngFor="let i of [0,1,2]"
-            [value1]="getMoveName(getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [value1]="getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i] ? getMoveName(getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getMoveName(getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [value2]="getData('processedDamageForMostCommonNeutralOpeners', playerConversions, currentCharacter, currentStage)[i] ? getMoveName(getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonNeutralOpeners', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1') : 'N/A'"
             [unit2]="'%'">
           </app-stats-line>
           <app-stats-line [label]="'Damage for most common punishes'"></app-stats-line>
           <app-stats-line *ngFor="let i of [0,1,2]"
-            [value1]="getMoveName(getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [value1]="getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i] ? getMoveName(getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getMoveName(getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1')"
+            [value2]="getData('processedDamageForMostCommonPunishStarts', playerConversions, currentCharacter, currentStage)[i] ? getMoveName(getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].moveId) + ' - ' + (getData('processedDamageForMostCommonPunishStarts', opponentConversions, currentCharacter, currentStage)[i].averageDamage | number:'1.0-1') : 'N/A'"
             [unit2]="'%'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
-
           <app-stats-line [label]="'Neutral Wins'" [highlight]="true"></app-stats-line>
           <app-stats-line
-            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
-            [unit2]="'%'" [label]="'Average damage (single-hit)'">
+            [value2]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Average damage (single-move)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
-            [unit2]="'%'" [label]="'Average damage (multi-hits)'">
+            [value2]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Average damage (multi-moves conversions)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
-            [value2]="getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
-            [label]="'Average length (multi-hits)'">
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1') : 'N/A'"
+            [label]="'Average length (multi-moves conversions)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].maxDamage | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].maxDamage | number:'1.0-1') : 'N/A'"
+            [label]="'Maximum damage (multi-moves conversions)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage)['multi-hits'].maxLength | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedNeutralWinsConversions', playerConversions, currentCharacter, currentStage) ? (getData('processedNeutralWinsConversions', opponentConversions, currentCharacter, currentStage)['multi-hits'].maxLength | number:'1.0-1') : 'N/A'"
+            [label]="'Longest multi-moves conversion'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage) ? getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedNeutralWinsFirstHits', playerConversions, currentCharacter, currentStage) ? getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedNeutralWinsFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit2]="'%'" [label]="'Most common neutral opener'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
 
           <app-stats-line [label]="'Punishes'" [highlight]="true"></app-stats-line>
           <app-stats-line
-            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', playerConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1'"
-            [unit2]="'%'" [label]="'Average damage (single-hit)'">
+            [value2]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['single-hit'].averageDamage | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Average damage (single-move)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1'"
-            [unit2]="'%'" [label]="'Average damage (multi-hits)'">
+            [value2]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageDamage | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Average damage (multi-moves conversions)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
-            [value2]="getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1'"
-            [label]="'Average length (multi-hits)'">
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].averageLength | number:'1.0-1') : 'N/A'"
+            [label]="'Average length (multi-moves conversions)'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].maxDamage | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].maxDamage | number:'1.0-1') : 'N/A'"
+            [label]="'Maximum damage (multi-moves conversions)'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', playerConversions, currentCharacter, currentStage)['multi-hits'].maxLength | number:'1.0-1') : 'N/A'"
+            [value2]="getData('processedPunishes', playerConversions, currentCharacter, currentStage) ? (getData('processedPunishes', opponentConversions, currentCharacter, currentStage)['multi-hits'].maxLength | number:'1.0-1') : 'N/A'"
+            [label]="'Longest multi-moves conversion'">
+          </app-stats-line>
+          <app-stats-line
+            [value1]="getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage) ? getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value2]="getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage) ? getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedPunishesFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit2]="'%'" [label]="'Most common punish option'">
           </app-stats-line>
           <app-stats-line [separator]="true"></app-stats-line>
-
           <app-stats-line [label]="'Kills'" [highlight]="true"></app-stats-line>
           <app-stats-line
-            [value1]="getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value1]="getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage) ? getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
-            [unit2]="'%'" [label]="'Most common neutral kill option'">
+            [value2]="getData('processedKillNeutralFirstHits', playerConversions, currentCharacter, currentStage) ? getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Most common neutral kill starter'">
           </app-stats-line>
           <app-stats-line
-            [value1]="getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+            [value1]="getData('processedKillNeutralLastHits', playerConversions, currentCharacter, currentStage) ? getData('processedKillNeutralLastHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralLastHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
             [unit1]="'%'"
-            [value2]="getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
-            [unit2]="'%'" [label]="'Most common punish kill option'">
+            [value2]="getData('processedKillNeutralLastHits', playerConversions, currentCharacter, currentStage) ? getData('processedKillNeutralLastHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillNeutralLastHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1') : 'N/A'"
+            [unit2]="'%'" [label]="'Most common neutral kill finisher'">
           </app-stats-line>
+          <ng-container *ngIf="getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage) !== undefined">
+            <app-stats-line
+              [value1]="getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+              [unit1]="'%'"
+              [value2]="getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishFirstHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+              [unit2]="'%'" [label]="'Most common punish kill starter'">
+            </app-stats-line>
+          </ng-container>
+          <ng-container *ngIf="getData('processedKillPunishLastHits', playerConversions, currentCharacter, currentStage) !== undefined">
+            <app-stats-line
+              [value1]="getData('processedKillPunishLastHits', playerConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishLastHits', playerConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+              [unit1]="'%'"
+              [value2]="getData('processedKillPunishLastHits', opponentConversions, currentCharacter, currentStage).move + ' - ' + (getData('processedKillPunishLastHits', opponentConversions, currentCharacter, currentStage).count | number:'1.0-1')"
+              [unit2]="'%'" [label]="'Most common punish kill finisher'">
+            </app-stats-line>
+          </ng-container>
           <app-stats-line [separator]="true"></app-stats-line>
         </div>
       </ng-container>
@@ -254,6 +288,18 @@
             <app-stats-line [label]="'Average framecount since ledgedrop'"
               [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'"
               [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageFramesSinceLedgeDrop | number:'1.0-1') : 'N/A'">
+            </app-stats-line>
+            <app-stats-line [label]="'Average vulnerability frames'"
+              [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.averageVulnerabilityFrames | number:'1.0-1') : 'N/A'"
+              [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.averageVulnerabilityFrames | number:'1.0-1') : 'N/A'">
+            </app-stats-line>
+            <app-stats-line [label]="'Min vulnerability frames'"
+              [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.minVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.minVulnerabilityFrames | number:'1.0-1') : 'N/A'"
+              [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.minVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.minVulnerabilityFrames | number:'1.0-1') : 'N/A'">
+            </app-stats-line>
+            <app-stats-line [label]="'Max vulnerability frames'"
+              [value1]="getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.maxVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForPlayer, currentCharacter, currentStage)?.maxVulnerabilityFrames | number:'1.0-1') : 'N/A'"
+              [value2]="getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.maxVulnerabilityFrames ? (getData('notInvincible', ledgeDashesForOpponent, currentCharacter, currentStage)?.maxVulnerabilityFrames| number:'1.0-1') : 'N/A'">
             </app-stats-line>
             <app-stats-line [separator]="true"></app-stats-line>
           </ng-container>
